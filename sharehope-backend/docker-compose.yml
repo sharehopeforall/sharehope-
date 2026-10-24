@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sharehope-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-sharehope}
+      POSTGRES_USER: ${DB_USERNAME:-sharehope}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-sharehope}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - sharehope-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  sharehope-postgres-data:

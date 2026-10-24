@@ -1,0 +1,2 @@
+package com.sharehope.event.dto; import java.time.*; import java.util.*;
+public record EventResponse(UUID id,String slug,String category,OffsetDateTime startAt,OffsetDateTime endAt,String timezone,String location,String virtualUrl,String imageUrl,Integer displayOrder,String status,Boolean featured,Boolean highlighted,Integer capacity,Long reservedSeats,Boolean enableRsvp,Boolean enableDonate,Boolean enableVolunteer,Map<String,Object> en,Map<String,Object> fr){}
