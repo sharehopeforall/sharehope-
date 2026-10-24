@@ -1,0 +1,114 @@
+{
+  "Metadata": {
+    "title": "ShareHope",
+    "description": "ShareHope website"
+  },
+  "Nav": {
+    "home": "Home",
+    "about": "About",
+    "aboutUs": "About Us",
+    "ourStory": "Our Story",
+    "founder": "Our Founder",
+    "programs": "Programs",
+    "events": "Events",
+    "ministry": "Ministry",
+    "blog": "Blog",
+    "getInvolved": "Get Involved",
+    "volunteer": "Volunteer",
+    "partnerWithUs": "Partner With Us",
+    "donate": "Donate",
+    "contact": "Contact"
+  },
+  "Home": {
+    "heading": "Every Child Deserves the Opportunity to Thrive.",
+    "subheading": "Education. Resources. Life Skills. A Brighter Tomorrow."
+  },
+  "About": {
+    "heading": "About Us",
+    "ourStoryHeading": "Our Story",
+    "founderHeading": "Our Founder"
+  },
+  "Programs": {
+    "heading": "Our Programs"
+  },
+  "Events": {
+    "heading": "Upcoming Events"
+  },
+  "GetInvolved": {
+    "heading": "Get Involved",
+    "volunteerHeading": "Volunteer",
+    "partnerHeading": "Partner With Us"
+  },
+  "Donate": {
+    "heading": "Support Our Mission"
+  },
+  "Contact": {
+    "heading": "Contact Us"
+  },
+  "Footer": {
+    "rights": "All rights reserved."
+  },
+  "Admin": {
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "website": "Website",
+    "homepage": "Homepage",
+    "navigation": "Navigation",
+    "programs": "Programs",
+    "events": "Events",
+    "gallery": "Gallery",
+    "team": "Team",
+    "testimonials": "Testimonials",
+    "blog": "Blog",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Log out",
+    "education": "Education"
+  },
+  "HomepageEditor": {
+    "loading": "Loading homepage content...",
+    "loadError": "Failed to load homepage content.",
+    "enabled": "Enabled",
+    "order": "Order",
+    "save": "Save",
+    "saveHint": "Use Save changes below to publish all sections.",
+    "saving": "Saving...",
+    "translating": "Translating...",
+    "translationError": "French translation failed. Check the backend translation configuration and try again.",
+    "translationWarning": "Automatic French translation is unavailable; saving the other changes.",
+    "saveError": "Save failed. Check the backend and try again.",
+    "translationStale": "English changed; review the French translation.",
+    "visualEditor": "Visual homepage editor",
+    "missionEditor": "Visual mission editor",
+    "clickTextToEdit": "Click text to edit",
+    "replacePhoto": "Replace photo",
+    "uploadError": "The image could not be uploaded. Try a JPG, PNG, WebP, or GIF under 10 MB.",
+    "requiredFields": "Complete the required English heading, description, and button text.",
+    "invalidLink": "Use a site path such as /donate or a complete https:// link.",
+    "visible": "Visible",
+    "hidden": "Hidden",
+    "saved": "Saved",
+    "english": "English",
+    "french": "Fran\u00e7ais",
+    "heading": "Heading",
+    "subheading": "Subheading",
+    "description": "Description",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "showSecureMessage": "Show secure payment message",
+    "heroImages": "Hero Images",
+    "photo": "Photo {number}",
+    "category": "Category",
+    "sectionNames": {
+      "hero": "Hero",
+      "mission": "Mission",
+      "impact": "Impact",
+      "programs": "Programs",
+      "events": "Events",
+      "testimonials": "Testimonials",
+      "get-involved": "Get Involved",
+      "partners": "Partners",
+      "newsletter": "Newsletter"
+    }
+  }
+}

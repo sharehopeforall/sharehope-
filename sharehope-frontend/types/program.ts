@@ -1,0 +1,4 @@
+export interface ProgramTranslation { title: string; description: string; buttonText: string; imageAlt: string; initiatives: string[]; }
+export interface AdminProgram { id: string; slug: string; category: string; displayOrder: number; published: boolean; featured: boolean; imageUrl: string | null; en: ProgramTranslation; fr: ProgramTranslation; createdAt: string; updatedAt: string; }
+export interface PublicProgram { id: string; slug: string; category: string; displayOrder: number; featured: boolean; imageUrl: string | null; title: string; description: string; buttonText: string; imageAlt: string; initiatives: string[]; }
+export interface ProgramInput { slug: string; category: string; displayOrder: number; published: boolean; featured: boolean; imageUrl: string | null; en: ProgramTranslation; fr: ProgramTranslation | null; }

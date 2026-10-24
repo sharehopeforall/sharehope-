@@ -1,0 +1,114 @@
+{
+  "Metadata": {
+    "title": "ShareHope",
+    "description": "Site web de ShareHope"
+  },
+  "Nav": {
+    "home": "Accueil",
+    "about": "\u00c0 propos",
+    "aboutUs": "\u00c0 propos de nous",
+    "ourStory": "Notre histoire",
+    "founder": "Notre fondatrice",
+    "programs": "Programmes",
+    "events": "\u00c9v\u00e9nements",
+    "ministry": "Minist\u00e8re",
+    "blog": "Blogue",
+    "getInvolved": "S'impliquer",
+    "volunteer": "Faire du b\u00e9n\u00e9volat",
+    "partnerWithUs": "Devenir partenaire",
+    "donate": "Faire un don",
+    "contact": "Contact"
+  },
+  "Home": {
+    "heading": "Chaque enfant m\u00e9rite la chance de s'\u00e9panouir.",
+    "subheading": "\u00c9ducation. Ressources. Comp\u00e9tences de vie. Un avenir meilleur."
+  },
+  "About": {
+    "heading": "\u00c0 propos de nous",
+    "ourStoryHeading": "Notre histoire",
+    "founderHeading": "Notre fondatrice"
+  },
+  "Programs": {
+    "heading": "Nos programmes"
+  },
+  "Events": {
+    "heading": "\u00c9v\u00e9nements \u00e0 venir"
+  },
+  "GetInvolved": {
+    "heading": "S'impliquer",
+    "volunteerHeading": "Faire du b\u00e9n\u00e9volat",
+    "partnerHeading": "Devenir partenaire"
+  },
+  "Donate": {
+    "heading": "Soutenez notre mission"
+  },
+  "Contact": {
+    "heading": "Contactez-nous"
+  },
+  "Footer": {
+    "rights": "Tous droits r\u00e9serv\u00e9s."
+  },
+  "Admin": {
+    "login": "Connexion",
+    "dashboard": "Tableau de bord",
+    "website": "Site web",
+    "homepage": "Page d'accueil",
+    "navigation": "Navigation",
+    "programs": "Programmes",
+    "events": "\u00c9v\u00e9nements",
+    "gallery": "Galerie",
+    "team": "\u00c9quipe",
+    "testimonials": "T\u00e9moignages",
+    "blog": "Blog",
+    "users": "Utilisateurs",
+    "settings": "Param\u00e8tres",
+    "logout": "Se d\u00e9connecter",
+    "education": "\u00c9ducation"
+  },
+  "HomepageEditor": {
+    "loading": "Chargement du contenu de la page d'accueil...",
+    "loadError": "Impossible de charger le contenu de la page d'accueil.",
+    "enabled": "Activ\u00e9",
+    "order": "Ordre",
+    "save": "Enregistrer",
+    "saveHint": "Utilisez Enregistrer les modifications ci-dessous pour publier toutes les sections.",
+    "saving": "Enregistrement...",
+    "translating": "Traduction...",
+    "translationError": "La traduction fran\u00e7aise a \u00e9chou\u00e9. V\u00e9rifiez la configuration du service de traduction et r\u00e9essayez.",
+    "translationWarning": "La traduction fran\u00e7aise automatique est indisponible; les autres modifications seront enregistr\u00e9es.",
+    "saveError": "\u00c9chec de l'enregistrement. V\u00e9rifiez le serveur et r\u00e9essayez.",
+    "translationStale": "Le texte anglais a chang\u00e9; v\u00e9rifiez la traduction fran\u00e7aise.",
+    "visualEditor": "\u00c9diteur visuel de la page d'accueil",
+    "missionEditor": "\u00c9diteur visuel de la mission",
+    "clickTextToEdit": "Cliquez sur le texte pour le modifier",
+    "replacePhoto": "Remplacer la photo",
+    "uploadError": "Impossible de t\u00e9l\u00e9verser l'image. Essayez un fichier JPG, PNG, WebP ou GIF de moins de 10 Mo.",
+    "requiredFields": "Remplissez le titre, la description et le texte du bouton en anglais.",
+    "invalidLink": "Utilisez un chemin comme /donate ou un lien https:// complet.",
+    "visible": "Visible",
+    "hidden": "Masqu\u00e9e",
+    "saved": "Enregistr\u00e9",
+    "english": "English",
+    "french": "Fran\u00e7ais",
+    "heading": "Titre",
+    "subheading": "Sous-titre",
+    "description": "Description",
+    "buttonText": "Texte du bouton",
+    "buttonLink": "Lien du bouton",
+    "showSecureMessage": "Afficher le message de paiement s\u00e9curis\u00e9",
+    "heroImages": "Images de la section h\u00e9ro",
+    "photo": "Photo {number}",
+    "category": "Cat\u00e9gorie",
+    "sectionNames": {
+      "hero": "H\u00e9ro",
+      "mission": "Mission",
+      "impact": "Impact",
+      "programs": "Programmes",
+      "events": "\u00c9v\u00e9nements",
+      "testimonials": "T\u00e9moignages",
+      "get-involved": "S'impliquer",
+      "partners": "Partenaires",
+      "newsletter": "Bulletin d'information"
+    }
+  }
+}
