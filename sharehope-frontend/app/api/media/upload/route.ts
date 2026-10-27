@@ -56,7 +56,12 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (shouldOptimize) extension = ".webp";
   const pathname = `uploads/${randomUUID()}${extension}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  const hasBlobCredentials = Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN ||
+      (process.env.VERCEL === "1" && process.env.BLOB_STORE_ID),
+  );
+
+  if (hasBlobCredentials) {
     const blob = await put(pathname, storedFile, { access: "public", addRandomSuffix: false, contentType });
     return NextResponse.json({
       url: blob.url,
@@ -67,7 +72,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   if (process.env.NODE_ENV === "production") {
     return NextResponse.json(
-      { error: "Persistent image storage is not configured." },
+      { error: "Persistent media storage is not configured." },
       { status: 503 },
     );
   }
