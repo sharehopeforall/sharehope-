@@ -66,7 +66,7 @@ export default function WhyShareHopeSection({ content = {} }: { content?: WhySha
             ))}
             </div>
           </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-[#EDE8DF] sm:aspect-[16/10] lg:aspect-[16/9]">
+          <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-sm bg-neutral-900 sm:aspect-[16/10] lg:aspect-[16/9]">
             <Image
               key={`${activeIndex}-${active.imageUrl}`}
               data-visual-key={`why-sharehope-image-${activeIndex}`}
@@ -75,7 +75,7 @@ export default function WhyShareHopeSection({ content = {} }: { content?: WhySha
               fill
               sizes="(min-width: 1200px) 960px, 100vw"
               unoptimized={active.imageUrl.startsWith("/uploads/")}
-              className="object-contain"
+              className="object-cover transition duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" aria-hidden="true" />
             <div className="absolute bottom-4 left-4 right-4 rounded-sm border border-[#E5E0D8] bg-white/95 p-5 shadow-xl backdrop-blur-md sm:bottom-8 sm:left-auto sm:right-8 sm:max-w-sm sm:p-6">
