@@ -105,19 +105,22 @@ export function VisualEditingBridge() {
       content.querySelectorAll<HTMLImageElement>("img[data-visual-editable='true']").forEach((image) => {
         const parent = image.parentElement;
         if (!parent) return;
+        const hoverHost = parent.classList.contains("absolute") && parent.parentElement
+          ? parent.parentElement
+          : parent;
         const targetSelector = selectorFor(image, root);
         const existingButton = [...parent.children].find(
           (child): child is HTMLButtonElement =>
             child instanceof HTMLButtonElement && child.dataset.visualImageButton === "true",
         );
         if (existingButton) {
-          parent.dataset.visualMediaControl = "true";
+          hoverHost.dataset.visualMediaControl = "true";
           image.dataset.visualImageControl = "true";
           existingButton.dataset.visualTarget = targetSelector;
           existingButton.setAttribute("aria-label", `Change picture${image.alt ? `: ${image.alt}` : ""}`);
           return;
         }
-        parent.dataset.visualMediaControl = "true";
+        hoverHost.dataset.visualMediaControl = "true";
         image.dataset.visualImageControl = "true";
         if (getComputedStyle(parent).position === "static") {
           parent.dataset.visualPreviousPosition = parent.style.position;
@@ -168,18 +171,21 @@ export function VisualEditingBridge() {
       content.querySelectorAll<HTMLVideoElement>("video[data-visual-key]").forEach((video) => {
         const parent = video.parentElement;
         if (!parent) return;
+        const hoverHost = parent.classList.contains("absolute") && parent.parentElement
+          ? parent.parentElement
+          : parent;
         const targetSelector = selectorFor(video, root);
         const existingButton = [...parent.children].find(
           (child): child is HTMLButtonElement =>
             child instanceof HTMLButtonElement && child.dataset.visualVideoButton === "true",
         );
         if (existingButton) {
-          parent.dataset.visualMediaControl = "true";
+          hoverHost.dataset.visualMediaControl = "true";
           video.dataset.visualVideoControl = "true";
           existingButton.dataset.visualTarget = targetSelector;
           return;
         }
-        parent.dataset.visualMediaControl = "true";
+        hoverHost.dataset.visualMediaControl = "true";
         video.dataset.visualVideoControl = "true";
         if (getComputedStyle(parent).position === "static") {
           parent.dataset.visualPreviousPosition = parent.style.position;
@@ -301,15 +307,15 @@ export function VisualEditingBridge() {
     html[data-visual-editing="true"] [contenteditable="true"] { cursor: text; }
     html[data-visual-editing="true"] [data-visual-image-button="true"],
     html[data-visual-editing="true"] [data-visual-video-button="true"] {
-      position: absolute; z-index: 20; top: 12px; right: 12px; display: inline-flex; align-items: center;
+      position: absolute; z-index: 40; top: 12px; right: 12px; display: inline-flex; align-items: center;
       border: 1px solid rgba(255,255,255,.8); border-radius: 8px; background: rgba(11,39,70,.92);
       padding: 9px 12px; color: white; font: 700 12px/1.1 ui-sans-serif, system-ui, sans-serif;
       box-shadow: 0 6px 18px rgba(0,0,0,.2); cursor: pointer; white-space: nowrap;
       opacity: 0; pointer-events: none; transform: translateY(-4px);
       transition: opacity .16s ease, transform .16s ease, background-color .16s ease;
     }
-    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover > [data-visual-image-button="true"],
-    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover > [data-visual-video-button="true"],
+    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover [data-visual-image-button="true"],
+    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover [data-visual-video-button="true"],
     html[data-visual-editing="true"] [data-visual-image-button="true"]:focus-visible,
     html[data-visual-editing="true"] [data-visual-video-button="true"]:focus-visible {
       opacity: 1; pointer-events: auto; transform: translateY(0);
