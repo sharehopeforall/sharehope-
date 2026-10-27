@@ -311,14 +311,7 @@ export function VisualEditingBridge() {
       border: 1px solid rgba(255,255,255,.8); border-radius: 8px; background: rgba(11,39,70,.92);
       padding: 9px 12px; color: white; font: 700 12px/1.1 ui-sans-serif, system-ui, sans-serif;
       box-shadow: 0 6px 18px rgba(0,0,0,.2); cursor: pointer; white-space: nowrap;
-      opacity: 0; pointer-events: none; transform: translateY(-4px);
-      transition: opacity .16s ease, transform .16s ease, background-color .16s ease;
-    }
-    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover [data-visual-image-button="true"],
-    html[data-visual-editing="true"] [data-visual-media-control="true"]:hover [data-visual-video-button="true"],
-    html[data-visual-editing="true"] [data-visual-image-button="true"]:focus-visible,
-    html[data-visual-editing="true"] [data-visual-video-button="true"]:focus-visible {
-      opacity: 1; pointer-events: auto; transform: translateY(0);
+      transition: background-color .16s ease;
     }
     html[data-visual-editing="true"] [data-visual-image-button="true"]:hover,
     html[data-visual-editing="true"] [data-visual-video-button="true"]:hover { background: #0c7a43; }
