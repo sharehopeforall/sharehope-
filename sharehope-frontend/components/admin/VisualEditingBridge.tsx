@@ -103,9 +103,19 @@ export function VisualEditingBridge() {
         element.dataset.visualEditable = "true";
       });
       content.querySelectorAll<HTMLImageElement>("img[data-visual-editable='true']").forEach((image) => {
-        if (image.dataset.visualImageControl === "true") return;
         const parent = image.parentElement;
         if (!parent) return;
+        const targetSelector = selectorFor(image, root);
+        const existingButton = [...parent.children].find(
+          (child): child is HTMLButtonElement =>
+            child instanceof HTMLButtonElement && child.dataset.visualImageButton === "true",
+        );
+        if (existingButton) {
+          image.dataset.visualImageControl = "true";
+          existingButton.dataset.visualTarget = targetSelector;
+          existingButton.setAttribute("aria-label", `Change picture${image.alt ? `: ${image.alt}` : ""}`);
+          return;
+        }
         image.dataset.visualImageControl = "true";
         if (getComputedStyle(parent).position === "static") {
           parent.dataset.visualPreviousPosition = parent.style.position;
@@ -115,6 +125,7 @@ export function VisualEditingBridge() {
         changeButton.type = "button";
         changeButton.dataset.visualEditorLock = "true";
         changeButton.dataset.visualImageButton = "true";
+        changeButton.dataset.visualTarget = targetSelector;
         changeButton.textContent = "Change picture";
         changeButton.setAttribute("aria-label", `Change picture${image.alt ? `: ${image.alt}` : ""}`);
         changeButton.addEventListener("click", (event) => {
@@ -131,7 +142,10 @@ export function VisualEditingBridge() {
             changeButton.textContent = "Uploading…";
             try {
               const result = await uploadFile(file);
-              const patch: VisualPatch = { selector: selectorFor(image, root), type: "image", value: result.url };
+              const selector = changeButton.dataset.visualTarget ?? targetSelector;
+              const currentImage = document.querySelector<HTMLImageElement>(selector);
+              if (!currentImage) throw new Error("The picture is no longer available.");
+              const patch: VisualPatch = { selector, type: "image", value: result.url };
               activePatches[`${patch.selector}::${patch.type}`] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
@@ -150,9 +164,18 @@ export function VisualEditingBridge() {
         parent.appendChild(changeButton);
       });
       content.querySelectorAll<HTMLVideoElement>("video[data-visual-key]").forEach((video) => {
-        if (video.dataset.visualVideoControl === "true") return;
         const parent = video.parentElement;
         if (!parent) return;
+        const targetSelector = selectorFor(video, root);
+        const existingButton = [...parent.children].find(
+          (child): child is HTMLButtonElement =>
+            child instanceof HTMLButtonElement && child.dataset.visualVideoButton === "true",
+        );
+        if (existingButton) {
+          video.dataset.visualVideoControl = "true";
+          existingButton.dataset.visualTarget = targetSelector;
+          return;
+        }
         video.dataset.visualVideoControl = "true";
         if (getComputedStyle(parent).position === "static") {
           parent.dataset.visualPreviousPosition = parent.style.position;
@@ -162,6 +185,7 @@ export function VisualEditingBridge() {
         uploadButton.type = "button";
         uploadButton.dataset.visualEditorLock = "true";
         uploadButton.dataset.visualVideoButton = "true";
+        uploadButton.dataset.visualTarget = targetSelector;
         uploadButton.textContent = video.currentSrc ? "Change video" : "Upload video";
         uploadButton.setAttribute("aria-label", video.currentSrc ? "Change ministry video" : "Upload ministry video");
         uploadButton.addEventListener("click", (event) => {
@@ -178,7 +202,10 @@ export function VisualEditingBridge() {
             uploadButton.textContent = "Uploading video…";
             try {
               const result = await uploadFile(file);
-              const patch: VisualPatch = { selector: selectorFor(video, root), type: "video", value: result.url };
+              const selector = uploadButton.dataset.visualTarget ?? targetSelector;
+              const currentVideo = document.querySelector<HTMLVideoElement>(selector);
+              if (!currentVideo) throw new Error("The video is no longer available.");
+              const patch: VisualPatch = { selector, type: "video", value: result.url };
               activePatches[`${patch.selector}::${patch.type}`] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
@@ -272,7 +299,7 @@ export function VisualEditingBridge() {
       position: absolute; z-index: 50; top: 12px; right: 12px; display: inline-flex; align-items: center;
       border: 1px solid rgba(255,255,255,.8); border-radius: 8px; background: rgba(11,39,70,.92);
       padding: 9px 12px; color: white; font: 700 12px/1.1 ui-sans-serif, system-ui, sans-serif;
-      box-shadow: 0 6px 18px rgba(0,0,0,.2); cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.2); cursor: pointer; white-space: nowrap;
     }
     html[data-visual-editing="true"] [data-visual-image-button="true"]:hover,
     html[data-visual-editing="true"] [data-visual-video-button="true"]:hover { background: #0c7a43; }
