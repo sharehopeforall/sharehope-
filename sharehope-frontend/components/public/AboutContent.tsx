@@ -185,30 +185,20 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
             <p className="max-w-sm text-slate-600 md:text-right">{t.teamLead}</p>
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {t.team.map((member) => (
+            {t.team.map((member, index) => (
               <article
                 key={member.name}
                 className="group overflow-hidden rounded-2xl border border-[#E5E0D8] bg-[#FAF7F2] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <div className="relative aspect-square overflow-hidden bg-gradient-to-b from-[#E9E3D9] to-[#D9D1C4]">
-                  {member.photo ? (
-                    <Image
-                      src={member.photo}
-                      alt={member.name}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <svg
-                      viewBox="0 0 100 100"
-                      aria-hidden="true"
-                      className="absolute inset-0 h-full w-full text-[#B9AE9D] transition-transform duration-500 group-hover:scale-105"
-                    >
-                      <circle cx="50" cy="40" r="17" fill="currentColor" />
-                      <path d="M14 100c0-22 16-36 36-36s36 14 36 36z" fill="currentColor" />
-                    </svg>
-                  )}
+                  <Image
+                    src={member.photo || "/images/team-photo-placeholder.svg"}
+                    alt={member.photo ? member.name : `${member.name} photo placeholder`}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    data-visual-key={`team-photo-${index + 1}`}
+                  />
                 </div>
                 <div className="p-5">
                   <h3 className="font-serif text-lg font-semibold text-brand-navy">{member.name}</h3>
