@@ -29,10 +29,10 @@ const copy = {
     teamTitle: "Meet the team",
     teamLead: "A small team, powered by hundreds of volunteers and local partners.",
     team: [
-      { name: "Marie L.", role: "Founder & Director" },
-      { name: "Kwame A.", role: "Programs Lead" },
-      { name: "Sofia R.", role: "Community Partnerships" },
-      { name: "Daniel T.", role: "Operations" },
+      { name: "Marie L.", role: "Founder & Director", bio: "Started ShareHope with one classroom and a lot of hope.", photo: "" },
+      { name: "Kwame A.", role: "Programs Lead", bio: "Turns community ideas into programs that last.", photo: "" },
+      { name: "Sofia R.", role: "Community Partnerships", bio: "Builds bridges between local leaders and supporters.", photo: "" },
+      { name: "Daniel T.", role: "Operations", bio: "Keeps every dollar accountable and every project on track.", photo: "" },
     ],
     statsTitle: "By the numbers",
     stats: [
@@ -72,10 +72,10 @@ const copy = {
     teamTitle: "Rencontrez l'équipe",
     teamLead: "Une petite équipe, portée par des centaines de bénévoles et de partenaires locaux.",
     team: [
-      { name: "Marie L.", role: "Fondatrice et directrice" },
-      { name: "Kwame A.", role: "Responsable des programmes" },
-      { name: "Sofia R.", role: "Partenariats communautaires" },
-      { name: "Daniel T.", role: "Opérations" },
+      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A lancé ShareHope avec une salle de classe et beaucoup d'espoir.", photo: "" },
+      { name: "Kwame A.", role: "Responsable des programmes", bio: "Transforme les idées des communautés en programmes durables.", photo: "" },
+      { name: "Sofia R.", role: "Partenariats communautaires", bio: "Crée des liens entre leaders locaux et soutiens.", photo: "" },
+      { name: "Daniel T.", role: "Opérations", bio: "Veille à ce que chaque dollar et chaque projet soient suivis.", photo: "" },
     ],
     statsTitle: "En chiffres",
     stats: [
@@ -176,19 +176,47 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
 
       {/* Team */}
       <section className="border-t border-[#E5E0D8] bg-white px-6 py-20">
-        <div className="mx-auto max-w-5xl text-center">
-          <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
-          <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
-          <p className="mt-3 text-slate-600">{t.teamLead}</p>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
+              <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
+            </div>
+            <p className="max-w-sm text-slate-600 md:text-right">{t.teamLead}</p>
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {t.team.map((member) => (
-              <div key={member.name}>
-                <div className="font-serif mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-navy text-2xl font-bold text-[#FFC72C]">
-                  {member.name.charAt(0)}
+              <article
+                key={member.name}
+                className="group overflow-hidden rounded-2xl border border-[#E5E0D8] bg-[#FAF7F2] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="relative aspect-square overflow-hidden bg-gradient-to-b from-[#E9E3D9] to-[#D9D1C4]">
+                  {member.photo ? (
+                    <Image
+                      src={member.photo}
+                      alt={member.name}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <svg
+                      viewBox="0 0 100 100"
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full text-[#B9AE9D] transition-transform duration-500 group-hover:scale-105"
+                    >
+                      <circle cx="50" cy="40" r="17" fill="currentColor" />
+                      <path d="M14 100c0-22 16-36 36-36s36 14 36 36z" fill="currentColor" />
+                    </svg>
+                  )}
                 </div>
-                <h3 className="font-serif mt-4 text-lg font-semibold">{member.name}</h3>
-                <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-slate-500">{member.role}</p>
-              </div>
+                <div className="p-5">
+                  <h3 className="font-serif text-lg font-semibold text-brand-navy">{member.name}</h3>
+                  <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-[#2D8A56]">{member.role}</p>
+                  <span className="mt-3 block h-0.5 w-8 bg-[#FFC72C] transition-all duration-300 group-hover:w-16" />
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{member.bio}</p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
