@@ -105,6 +105,8 @@ export function VisualEditingBridge() {
       content.querySelectorAll<HTMLImageElement>("img[data-visual-editable='true']").forEach((image) => {
         const parent = image.parentElement;
         if (!parent) return;
+        const isTeamPhotoPlaceholder = (image.getAttribute("src") ?? image.currentSrc).includes("team-photo-placeholder");
+        const imageActionLabel = isTeamPhotoPlaceholder ? "Add picture" : "Change picture";
         const hoverHost = parent.classList.contains("absolute") && parent.parentElement
           ? parent.parentElement
           : parent;
@@ -117,7 +119,8 @@ export function VisualEditingBridge() {
           hoverHost.dataset.visualMediaControl = "true";
           image.dataset.visualImageControl = "true";
           existingButton.dataset.visualTarget = targetSelector;
-          existingButton.setAttribute("aria-label", `Change picture${image.alt ? `: ${image.alt}` : ""}`);
+          if (existingButton.textContent !== imageActionLabel) existingButton.textContent = imageActionLabel;
+          existingButton.setAttribute("aria-label", `${imageActionLabel}${image.alt ? `: ${image.alt}` : ""}`);
           return;
         }
         hoverHost.dataset.visualMediaControl = "true";
@@ -131,8 +134,8 @@ export function VisualEditingBridge() {
         changeButton.dataset.visualEditorLock = "true";
         changeButton.dataset.visualImageButton = "true";
         changeButton.dataset.visualTarget = targetSelector;
-        changeButton.textContent = "Change picture";
-        changeButton.setAttribute("aria-label", `Change picture${image.alt ? `: ${image.alt}` : ""}`);
+        changeButton.textContent = imageActionLabel;
+        changeButton.setAttribute("aria-label", `${imageActionLabel}${image.alt ? `: ${image.alt}` : ""}`);
         changeButton.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
