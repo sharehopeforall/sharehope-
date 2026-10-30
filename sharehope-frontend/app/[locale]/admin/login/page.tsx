@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
       <section className="relative hidden min-h-dvh overflow-hidden bg-[linear-gradient(145deg,#173F61_0%,#0F2942_48%,#091C2E_100%)] lg:block">
         <div className="absolute -left-24 top-1/3 h-80 w-80 rounded-full border border-white/10" aria-hidden="true" />
         <div className="absolute -left-8 top-[42%] h-52 w-52 rounded-full border border-brand-gold/20" aria-hidden="true" />
-        <div className="absolute bottom-[-12rem] right-[-9rem] h-[34rem] w-[34rem] rounded-full bg-brand-green/20 blur-3xl" aria-hidden="true" />
+        <div className="absolute bottom-[-12rem] right-[-9rem] h-[34rem] w-[34rem] rounded-full bg-blue-500/15 blur-3xl" aria-hidden="true" />
         <div className="relative z-10 flex h-full min-h-dvh flex-col justify-between p-10 xl:p-14">
           <Link href="/" aria-label="Return to the ShareHope website" className="w-fit rounded-xl bg-white/95 px-5 py-3 shadow-lg backdrop-blur">
             <Image src="/logo-sharehope-blue.png" alt="ShareHope" width={202} height={64} className="h-12 w-auto" priority />
@@ -70,10 +70,10 @@ export default function AdminLoginPage() {
           </Link>
 
           <div className="mb-8">
-            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFF0E8] text-brand-green">
+            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-brand-navy">
               <LockKeyhole size={22} aria-hidden="true" />
             </div>
-            <p className="font-mono-spaced text-[11px] font-bold uppercase tracking-[0.2em] text-brand-green">Admin portal</p>
+            <p className="font-mono-spaced text-[11px] font-bold uppercase tracking-[0.2em] text-brand-navy">Admin portal</p>
             <h2 className="font-serif mt-3 text-4xl font-semibold tracking-tight text-brand-navy">Welcome back</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">Sign in with your authorized ShareHope account to continue.</p>
           </div>
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
                 aria-invalid={Boolean(errors.email)}
                 aria-describedby={errors.email ? "email-error" : undefined}
                 placeholder="name@sharehope.org"
-                className="h-12 w-full rounded-xl border border-[#CCD5D0] bg-white px-4 text-[15px] text-brand-navy shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
+                className="h-12 w-full rounded-xl border border-[#CCD5D0] bg-white px-4 text-[15px] text-brand-navy shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-4 focus:ring-blue-100"
                 {...register("email")}
               />
               {errors.email && <p id="email-error" className="mt-2 text-sm font-medium text-red-700">{errors.email.message}</p>}
@@ -105,13 +105,13 @@ export default function AdminLoginPage() {
                   aria-invalid={Boolean(errors.password)}
                   aria-describedby={errors.password ? "password-error" : undefined}
                   placeholder="Enter your password"
-                  className="h-12 w-full rounded-xl border border-[#CCD5D0] bg-white px-4 pr-12 text-[15px] text-brand-navy shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"
+                  className="h-12 w-full rounded-xl border border-[#CCD5D0] bg-white px-4 pr-12 text-[15px] text-brand-navy shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-4 focus:ring-blue-100"
                   {...register("password")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((visible) => !visible)}
-                  className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-500 transition hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand-green"
+                  className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-500 transition hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand-navy"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff size={19} aria-hidden="true" /> : <Eye size={19} aria-hidden="true" />}
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(15,41,66,.18)] transition hover:bg-[#173A59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-orange disabled:cursor-wait disabled:opacity-65"
+              className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(15,41,66,.18)] transition hover:bg-[#173A59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy disabled:cursor-wait disabled:opacity-65"
             >
               <span>{isPending ? "Signing in…" : t("login")}</span>
               {!isPending && <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />}
@@ -137,7 +137,7 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-8 flex items-start gap-3 border-t border-[#DDD8CF] pt-6 text-xs leading-5 text-slate-500">
-            <ShieldCheck className="mt-0.5 shrink-0 text-brand-green" size={17} aria-hidden="true" />
+            <ShieldCheck className="mt-0.5 shrink-0 text-brand-navy" size={17} aria-hidden="true" />
             <p>Your session is protected and access is limited according to your assigned administrative role.</p>
           </div>
         </div>
