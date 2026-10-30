@@ -128,41 +128,6 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
         </div>
       </section>
 
-      {/* Team */}
-      <section className="border-b border-[#E5E0D8] bg-white px-6 py-24 sm:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
-            <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
-            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-slate-600">{t.teamLead}</p>
-          </div>
-          <div className="mt-10 grid gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-4">
-            {t.team.map((member, index) => (
-              <article
-                key={member.name}
-                className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-b from-[#E9E3D9] to-[#D9D1C4]">
-                  <Image
-                    src={member.photo || "/images/team-photo-placeholder.svg"}
-                    alt={member.photo ? member.name : `${member.name} photo placeholder`}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    data-visual-key={`team-photo-${index + 1}`}
-                  />
-                </div>
-                <div className="p-5 text-[#13306B]">
-                  <h3 className="font-serif text-xl font-semibold">{member.name}</h3>
-                  <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-[#13306B]/80">{member.role}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{member.bio}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Timeline */}
       <section className="mx-auto max-w-4xl px-6 py-20">
         <p className="font-mono-spaced text-center text-xs font-bold uppercase text-[#2D8A56]">{t.timelineEyebrow}</p>
@@ -206,6 +171,43 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
               <p className="font-mono-spaced mt-2 text-[11px] font-bold uppercase text-slate-500">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="border-t border-[#E5E0D8] bg-white px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
+              <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
+            </div>
+            <p className="max-w-sm text-slate-600 md:text-right">{t.teamLead}</p>
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {t.team.map((member, index) => (
+              <article
+                key={member.name}
+                className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl"
+              >
+                <div className="relative aspect-square overflow-hidden bg-gradient-to-b from-[#E9E3D9] to-[#D9D1C4]">
+                  <Image
+                    src={member.photo || "/images/team-photo-placeholder.svg"}
+                    alt={member.photo ? member.name : `${member.name} photo placeholder`}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    data-visual-key={`team-photo-${index + 1}`}
+                  />
+                </div>
+                <div className="p-5 text-[#13306B]">
+                  <h3 className="font-serif text-xl font-semibold">{member.name}</h3>
+                  <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-[#13306B]/80">{member.role}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{member.bio}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
