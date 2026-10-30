@@ -15,7 +15,7 @@ const copy = {
     heroEyebrow: "Health & Wellness",
     heroTitle: "Care shouldn't depend on where you're born.",
     heroBody:
-      "Mobile clinics, clean water, and nutrition support bring essential care to communities where the nearest hospital can be days away.",
+      "We visit the sick, support pregnant women, and help families carry the weight of illness, with care packages, prayer, and help with medical costs.",
     heroCta: "Support health",
     heroSecondary: "See how it works ↓",
     stats: [
@@ -63,7 +63,7 @@ const copy = {
     heroEyebrow: "Santé et bien-être",
     heroTitle: "Les soins ne devraient pas dépendre du lieu de naissance.",
     heroBody:
-      "Cliniques mobiles, eau potable et soutien nutritionnel apportent des soins essentiels aux communautés où l'hôpital le plus proche peut être à des jours de distance.",
+      "Nous rendons visite aux malades, soutenons les femmes enceintes et aidons les familles à porter le poids de la maladie, avec des colis de soins, la prière et une aide pour les frais médicaux.",
     heroCta: "Soutenir la santé",
     heroSecondary: "Voir comment ça fonctionne ↓",
     stats: [
