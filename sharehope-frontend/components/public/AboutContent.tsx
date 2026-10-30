@@ -29,7 +29,7 @@ const copy = {
     teamTitle: "Meet the team",
     teamLead: "A small team, powered by hundreds of volunteers and local partners.",
     team: [
-      { name: "Marie L.", role: "Founder & Director", bio: "Started ShareHope with one classroom and a lot of hope.", photo: "" },
+      { name: "Marie L.", role: "Founder & Director", bio: "Started ShareHope with one classroom and a lot of hope.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
       { name: "Kwame A.", role: "Programs Lead", bio: "Turns community ideas into programs that last.", photo: "" },
       { name: "Sofia R.", role: "Community Partnerships", bio: "Builds bridges between local leaders and supporters.", photo: "" },
       { name: "Daniel T.", role: "Operations", bio: "Keeps every dollar accountable and every project on track.", photo: "" },
@@ -72,7 +72,7 @@ const copy = {
     teamTitle: "Rencontrez l'équipe",
     teamLead: "Une petite équipe, portée par des centaines de bénévoles et de partenaires locaux.",
     team: [
-      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A lancé ShareHope avec une salle de classe et beaucoup d'espoir.", photo: "" },
+      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A lancé ShareHope avec une salle de classe et beaucoup d'espoir.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
       { name: "Kwame A.", role: "Responsable des programmes", bio: "Transforme les idées des communautés en programmes durables.", photo: "" },
       { name: "Sofia R.", role: "Partenariats communautaires", bio: "Crée des liens entre leaders locaux et soutiens.", photo: "" },
       { name: "Daniel T.", role: "Opérations", bio: "Veille à ce que chaque dollar et chaque projet soient suivis.", photo: "" },
@@ -188,7 +188,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
             {t.team.map((member, index) => (
               <article
                 key={member.name}
-                className="group overflow-hidden rounded-2xl border border-[#E5E0D8] bg-[#FAF7F2] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl"
               >
                 <div className="relative aspect-square overflow-hidden bg-gradient-to-b from-[#E9E3D9] to-[#D9D1C4]">
                   <Image
@@ -200,11 +200,10 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
                     data-visual-key={`team-photo-${index + 1}`}
                   />
                 </div>
-                <div className="p-5">
-                  <h3 className="font-serif text-lg font-semibold text-brand-navy">{member.name}</h3>
-                  <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-[#2D8A56]">{member.role}</p>
-                  <span className="mt-3 block h-0.5 w-8 bg-[#FFC72C] transition-all duration-300 group-hover:w-16" />
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{member.bio}</p>
+                <div className="p-5 text-[#13306B]">
+                  <h3 className="font-serif text-xl font-semibold">{member.name}</h3>
+                  <p className="font-mono-spaced mt-1 text-[10px] font-bold uppercase text-[#13306B]/80">{member.role}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{member.bio}</p>
                 </div>
               </article>
             ))}
