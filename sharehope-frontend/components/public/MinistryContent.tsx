@@ -304,24 +304,24 @@ export default function MinistryContent({ locale }: { locale: string }) {
       </section>
 
       {/* Youth on Fire for Jesus */}
-      <section className="relative isolate overflow-hidden bg-[#17110c] px-6 pb-20 pt-12 text-white lg:pb-24 lg:pt-14">
-        <div className="absolute -left-32 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#F05A24]/25 blur-3xl" />
-        <div className="absolute -bottom-40 right-0 -z-10 h-[380px] w-[380px] rounded-full bg-[#FFC72C]/15 blur-3xl" />
+      <section className="relative isolate overflow-hidden bg-brand-navy px-6 pb-20 pt-12 text-white lg:pb-24 lg:pt-14">
+        <div className="absolute -left-32 top-0 -z-10 h-[420px] w-[420px] rounded-full bg-[#2F5BB7]/30 blur-3xl" />
+        <div className="absolute -bottom-40 right-0 -z-10 h-[380px] w-[380px] rounded-full bg-[#13306B]/60 blur-3xl" />
         <div className="mx-auto max-w-6xl">
           <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_1fr]">
             <div>
               <h2 className="font-serif text-4xl font-bold leading-tight sm:text-5xl">{t.programEyebrow}</h2>
-              <p className="font-serif mt-3 text-xl italic text-[#FFC72C]">{t.programTitle}</p>
+              <p className="font-serif mt-3 text-xl italic text-[#A9C4F5]">{t.programTitle}</p>
               <p className="mt-5 max-w-lg text-base leading-relaxed text-white/70">{t.programBody}</p>
               <Link
                 href="/contact?topic=youth"
-                className="font-mono-spaced mt-8 inline-flex items-center gap-2 rounded-lg bg-[#F05A24] px-7 py-3.5 text-xs font-bold uppercase tracking-widest text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-[#d94c1a]"
+                className="font-mono-spaced mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-xs font-bold uppercase tracking-widest text-[#13306B] shadow-md transition-all hover:-translate-y-0.5 hover:bg-[#E6EEFB]"
               >
                 {t.programCta} →
               </Link>
             </div>
             <div className="relative">
-              <div className="absolute -inset-3 -z-10 rotate-2 rounded-3xl bg-gradient-to-br from-[#F05A24] to-[#FFC72C] opacity-80" />
+              <div className="absolute -inset-3 -z-10 rotate-2 rounded-3xl bg-gradient-to-br from-[#2F5BB7] to-[#A9C4F5] opacity-80" />
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80"
@@ -337,8 +337,8 @@ export default function MinistryContent({ locale }: { locale: string }) {
             {t.activities.map((activity, i) => {
               const Icon = ACTIVITY_ICONS[i];
               return (
-                <div key={activity.title} className="bg-[#17110c] p-6 transition-colors hover:bg-[#21180f]">
-                  <Icon size={22} className="text-[#F05A24]" />
+                <div key={activity.title} className="bg-brand-navy p-6 transition-colors hover:bg-[#13306B]">
+                  <Icon size={22} className="text-[#A9C4F5]" />
                   <h3 className="font-serif mt-4 text-lg font-semibold">{activity.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-white/60">{activity.body}</p>
                 </div>
