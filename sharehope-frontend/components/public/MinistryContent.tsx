@@ -321,7 +321,6 @@ export default function MinistryContent({ locale }: { locale: string }) {
               </Link>
             </div>
             <div className="relative">
-              <div className="absolute -inset-3 -z-10 rotate-2 rounded-3xl bg-gradient-to-br from-[#2F5BB7] to-[#A9C4F5] opacity-80" />
               <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl">
                 <Image
                   src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80"
