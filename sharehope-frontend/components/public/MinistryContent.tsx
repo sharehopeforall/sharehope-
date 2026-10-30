@@ -288,7 +288,7 @@ export default function MinistryContent({ locale }: { locale: string }) {
 
       {/* Founder's letter */}
       <section className="mx-auto max-w-3xl px-6 py-20">
-        <p className="font-mono-spaced text-xs font-bold uppercase text-[#2D8A56]">{t.letterEyebrow}</p>
+        <p className="font-mono-spaced text-xs font-bold uppercase text-brand-navy">{t.letterEyebrow}</p>
         <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.letterTitle}</h2>
         <div className="mt-8 space-y-5">
           {t.letter.map((paragraph, i) => (
@@ -350,7 +350,7 @@ export default function MinistryContent({ locale }: { locale: string }) {
       {/* Widows & hospital outreach */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-mono-spaced text-xs font-bold uppercase text-[#2D8A56]">{t.outreachEyebrow}</p>
+          <p className="font-mono-spaced text-xs font-bold uppercase text-brand-navy">{t.outreachEyebrow}</p>
           <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.outreachTitle}</h2>
           <p className="font-serif mt-5 text-lg italic leading-relaxed text-slate-600">{t.outreachLead}</p>
         </div>
@@ -360,7 +360,7 @@ export default function MinistryContent({ locale }: { locale: string }) {
             const Icon = OUTREACH_ICONS[i];
             return (
               <div key={item.title} className="rounded-xl border border-[#E5E0D8] bg-white p-7 shadow-sm">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#2D8A56] text-white">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-navy text-white">
                   <Icon size={20} />
                 </div>
                 <h3 className="font-serif mt-4 text-2xl font-semibold text-brand-navy">{item.title}</h3>

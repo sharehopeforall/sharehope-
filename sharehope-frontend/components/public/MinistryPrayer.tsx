@@ -95,7 +95,7 @@ export default function MinistryPrayer({ eyebrow, title, lead, commitLabel, comm
                   <div>
                     <h3 className="font-serif text-xl font-semibold text-brand-navy">{prayer.title}</h3>
                     <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{prayer.body}</p>
-                    <p className="font-mono-spaced mt-2 text-[10px] font-bold uppercase text-[#2D8A56]">{prayer.verse}</p>
+                    <p className="font-mono-spaced mt-2 text-[10px] font-bold uppercase text-brand-navy">{prayer.verse}</p>
                   </div>
                 </li>
               ))}
@@ -110,10 +110,10 @@ export default function MinistryPrayer({ eyebrow, title, lead, commitLabel, comm
                 })
               }
               aria-pressed={isCommitted}
-              className={`font-mono-spaced mt-10 inline-flex items-center justify-center gap-2 self-start rounded-lg px-7 py-3.5 text-xs font-bold uppercase tracking-widest transition-all ${
+              className={`font-mono-spaced mt-10 inline-flex items-center justify-center gap-2 self-start rounded-lg border-2 border-brand-navy px-7 py-3.5 text-xs font-bold uppercase tracking-widest transition-all ${
                 isCommitted
-                  ? "bg-[#2D8A56] text-white"
-                  : "bg-brand-navy text-white hover:-translate-y-0.5 hover:bg-[#0a1f33]"
+                  ? "text-brand-navy"
+                  : "bg-brand-navy text-white hover:-translate-y-0.5 hover:border-[#0a1f33] hover:bg-[#0a1f33]"
               }`}
             >
               {isCommitted && <Check size={15} />}
