@@ -21,11 +21,7 @@ interface ProgramRow {
   rotationClass: string;
 }
 
-const ACCENTS = {
-  education: { hex: "#F5B731", text: "#121212" },
-  health: { hex: "#13306B", text: "#FFFFFF" },
-  community: { hex: "#F05A24", text: "#FFFFFF" },
-} as const;
+const ACCENT = { hex: "#13306B", text: "#FFFFFF" } as const;
 
 const IMAGES = {
   education:
@@ -231,7 +227,7 @@ export default function ProgramsContent({ locale, programs, editor }: { locale: 
         {rows.length === 0 && <p className="py-16 text-center text-slate-600">{locale === "fr" ? "Aucun programme publié." : "No published programs."}</p>}
         {rows.map((row, index) => {
           const imageFirst = index % 2 === 0;
-          const accent = ACCENTS[row.id];
+          const accent = ACCENT;
           return (
             <section
               key={row.slug}
