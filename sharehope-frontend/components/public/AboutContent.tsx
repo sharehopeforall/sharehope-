@@ -131,12 +131,10 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
       {/* Team */}
       <section className="border-t border-[#E5E0D8] bg-white px-6 py-20">
         <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
-              <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
-            </div>
-            <p className="max-w-sm text-slate-600 md:text-right">{t.teamLead}</p>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.teamEyebrow}</p>
+            <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
+            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-slate-600">{t.teamLead}</p>
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {t.team.map((member, index) => (
