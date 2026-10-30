@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="grid gap-5 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-7">
             <div className="flex gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E7F1EA] text-brand-green"><UsersRound size={20} aria-hidden="true" /></div>
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFF0E8] text-brand-green"><UsersRound size={20} aria-hidden="true" /></div>
               <div><h2 className="font-semibold text-brand-navy">Administrators</h2><p className="mt-1 text-sm leading-6 text-slate-600">Manage who can access the admin and assign their role.</p></div>
             </div>
             <Link href="/admin/users" className="inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition hover:text-brand-green">Manage <ArrowRight size={16} aria-hidden="true" /></Link>

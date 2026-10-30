@@ -55,13 +55,13 @@ export default function AdminUsersPage() {
             <fieldset>
               <legend className="text-sm font-semibold text-brand-navy">Role</legend>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <button type="button" onClick={() => setRole("CONTENT_EDITOR")} aria-pressed={role === "CONTENT_EDITOR"} className={`rounded-xl border p-4 text-left transition ${role === "CONTENT_EDITOR" ? "border-brand-green bg-[#F1F8F3] ring-2 ring-brand-green/10" : "border-slate-200 hover:border-slate-300"}`}><FilePenLine size={19} className="text-brand-green" aria-hidden="true" /><span className="mt-3 block text-sm font-bold text-brand-navy">Content Editor</span><span className="mt-1 block text-xs leading-5 text-slate-500">Creates and updates website content and events.</span></button>
+                <button type="button" onClick={() => setRole("CONTENT_EDITOR")} aria-pressed={role === "CONTENT_EDITOR"} className={`rounded-xl border p-4 text-left transition ${role === "CONTENT_EDITOR" ? "border-brand-green bg-[#FFF0E8] ring-2 ring-brand-green/10" : "border-slate-200 hover:border-slate-300"}`}><FilePenLine size={19} className="text-brand-green" aria-hidden="true" /><span className="mt-3 block text-sm font-bold text-brand-navy">Content Editor</span><span className="mt-1 block text-xs leading-5 text-slate-500">Creates and updates website content and events.</span></button>
                 <button type="button" onClick={() => setRole("SUPER_ADMIN")} aria-pressed={role === "SUPER_ADMIN"} className={`rounded-xl border p-4 text-left transition ${role === "SUPER_ADMIN" ? "border-brand-orange bg-orange-50 ring-2 ring-brand-orange/10" : "border-slate-200 hover:border-slate-300"}`}><ShieldCheck size={19} className="text-brand-orange" aria-hidden="true" /><span className="mt-3 block text-sm font-bold text-brand-navy">Super Administrator</span><span className="mt-1 block text-xs leading-5 text-slate-500">Full access, including publishing and users.</span></button>
               </div>
             </fieldset>
 
             {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{error}</p>}
-            {result && <div role="status" className="flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"><CheckCircle2 size={19} className="mt-0.5 shrink-0" aria-hidden="true" /><div><p className="font-bold">Invitation created</p><p className="mt-0.5">{result.email} was added as {result.role === "SUPER_ADMIN" ? "a Super Administrator" : "a Content Editor"}.</p></div></div>}
+            {result && <div role="status" className="flex gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"><CheckCircle2 size={19} className="mt-0.5 shrink-0" aria-hidden="true" /><div><p className="font-bold">Invitation created</p><p className="mt-0.5">{result.email} was added as {result.role === "SUPER_ADMIN" ? "a Super Administrator" : "a Content Editor"}.</p></div></div>}
 
             <button type="submit" disabled={pending} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-[#173A59] disabled:cursor-wait disabled:opacity-60">{pending ? <Loader2 className="animate-spin" size={17} aria-hidden="true" /> : <MailPlus size={17} aria-hidden="true" />}{pending ? "Creating invitation…" : "Invite administrator"}</button>
           </form>
@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
 
         <aside className="space-y-5">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E7F1EA] text-brand-green"><UserRoundPlus size={20} aria-hidden="true" /></div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFF0E8] text-brand-green"><UserRoundPlus size={20} aria-hidden="true" /></div>
             <h2 className="mt-4 font-semibold text-brand-navy">Signed-in administrator</h2>
             <p className="mt-3 text-sm font-bold text-slate-800">{currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Loading…"}</p>
             {currentUser && <><p className="mt-1 break-all text-xs text-slate-500">{currentUser.email}</p><span className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">{currentUser.role === "SUPER_ADMIN" ? "Super Administrator" : "Content Editor"}</span></>}

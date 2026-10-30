@@ -26,7 +26,7 @@ export function EventDetail({ event, locale }: { event: PublicEvent; locale: str
             </div>
           </article>
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            {event.remainingSeats !== null && <p className={`border p-3 text-center text-sm font-bold ${event.soldOut ? "border-red-200 bg-red-50 text-red-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>{event.soldOut ? (isFrench ? "Complet" : "Sold out") : isFrench ? `${event.remainingSeats} places restantes` : `${event.remainingSeats} spaces left`}</p>}
+            {event.remainingSeats !== null && <p className={`border p-3 text-center text-sm font-bold ${event.soldOut ? "border-red-200 bg-red-50 text-red-800" : "border-blue-200 bg-blue-50 text-blue-800"}`}>{event.soldOut ? (isFrench ? "Complet" : "Sold out") : isFrench ? `${event.remainingSeats} places restantes` : `${event.remainingSeats} spaces left`}</p>}
             {event.enableRsvp && <EventRsvpForm event={event} locale={locale} />}
             <div className="grid gap-3 sm:grid-cols-2">
               {event.enableDonate && <Link href={`/events/${event.slug}/donate`} className="border border-brand-navy px-4 py-3 text-center text-sm font-bold text-brand-navy transition hover:bg-brand-navy hover:text-white">{isFrench ? "Soutenir cet événement" : "Donate to this event"}</Link>}

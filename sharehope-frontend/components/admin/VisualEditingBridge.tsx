@@ -305,7 +305,7 @@ export function VisualEditingBridge() {
 
   return <style>{`
     html[data-visual-editing="true"] [data-visual-editable="true"] { cursor: pointer; }
-    html[data-visual-editing="true"] [data-visual-editable="true"]:hover { outline: 2px dashed #0c7a43; outline-offset: 3px; }
+    html[data-visual-editing="true"] [data-visual-editable="true"]:hover { outline: 2px dashed #f05a24; outline-offset: 3px; }
     html[data-visual-editing="true"] [data-visual-selected="true"] { outline: 3px solid #ff5917 !important; outline-offset: 3px; }
     html[data-visual-editing="true"] [contenteditable="true"] { cursor: text; }
     html[data-visual-editing="true"] [data-visual-image-button="true"],
@@ -317,7 +317,7 @@ export function VisualEditingBridge() {
       transition: background-color .16s ease;
     }
     html[data-visual-editing="true"] [data-visual-image-button="true"]:hover,
-    html[data-visual-editing="true"] [data-visual-video-button="true"]:hover { background: #0c7a43; }
+    html[data-visual-editing="true"] [data-visual-video-button="true"]:hover { background: #f05a24; }
     html[data-visual-editing="true"] [data-visual-image-button="true"]:disabled,
     html[data-visual-editing="true"] [data-visual-video-button="true"]:disabled { cursor: wait; }
   `}</style>;

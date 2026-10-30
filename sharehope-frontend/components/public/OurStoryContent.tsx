@@ -83,7 +83,7 @@ export default function OurStoryContent({ locale, managed }: { locale: string; m
     <div className="bg-brand-cream text-[#121212]">
       {/* Hero — centered editorial */}
       <section className="mx-auto max-w-3xl px-6 pb-12 pt-20 text-center sm:pt-28">
-        <p className="font-mono-spaced text-xs font-bold uppercase text-[#2D8A56]">{t.eyebrow}</p>
+        <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.eyebrow}</p>
         <h1 className="font-serif mt-6 text-4xl font-bold leading-[1.1] text-brand-navy sm:text-5xl lg:text-6xl">
           {t.title}
         </h1>

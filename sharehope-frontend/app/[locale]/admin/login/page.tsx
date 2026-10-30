@@ -65,12 +65,12 @@ export default function AdminLoginPage() {
 
       <section className="flex min-h-dvh items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
         <div className="w-full max-w-md">
-          <Link href="/" aria-label="Return to the ShareHope website" className="mb-10 inline-flex rounded-xl bg-white px-4 py-2 shadow-sm ring-1 ring-[#DADFD9] lg:hidden">
+          <Link href="/" aria-label="Return to the ShareHope website" className="mb-10 inline-flex rounded-xl bg-white px-4 py-2 shadow-sm ring-1 ring-[#DDD8CF] lg:hidden">
             <Image src="/logo-sharehope-blue.png" alt="ShareHope" width={174} height={55} className="h-10 w-auto" priority />
           </Link>
 
           <div className="mb-8">
-            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E5EFE8] text-brand-green">
+            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFF0E8] text-brand-green">
               <LockKeyhole size={22} aria-hidden="true" />
             </div>
             <p className="font-mono-spaced text-[11px] font-bold uppercase tracking-[0.2em] text-brand-green">Admin portal</p>
@@ -136,7 +136,7 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 flex items-start gap-3 border-t border-[#D9DED9] pt-6 text-xs leading-5 text-slate-500">
+          <div className="mt-8 flex items-start gap-3 border-t border-[#DDD8CF] pt-6 text-xs leading-5 text-slate-500">
             <ShieldCheck className="mt-0.5 shrink-0 text-brand-green" size={17} aria-hidden="true" />
             <p>Your session is protected and access is limited according to your assigned administrative role.</p>
           </div>

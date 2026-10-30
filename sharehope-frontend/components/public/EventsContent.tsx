@@ -733,7 +733,7 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                     <span>{t.locationLabel}</span>
                     <span className="font-normal text-[#64748B]">{event.location}</span>
                   </div>
-                  {event.remainingSeats !== null && <p className={`font-space-mono text-xs font-bold uppercase tracking-wider ${event.soldOut ? "text-red-700" : "text-emerald-700"}`}>{event.soldOut ? (locale === "fr" ? "Complet" : "Sold out") : locale === "fr" ? `${event.remainingSeats} places restantes` : `${event.remainingSeats} spaces left`}</p>}
+                  {event.remainingSeats !== null && <p className={`font-space-mono text-xs font-bold uppercase tracking-wider ${event.soldOut ? "text-red-700" : "text-blue-700"}`}>{event.soldOut ? (locale === "fr" ? "Complet" : "Sold out") : locale === "fr" ? `${event.remainingSeats} places restantes` : `${event.remainingSeats} spaces left`}</p>}
                 </div>
 
                 {/* Action */}
@@ -893,11 +893,11 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                 {activeTab === "rsvp" ? (
                   <div id="event-panel-rsvp" role="tabpanel" aria-labelledby="event-tab-rsvp" className="space-y-4">
                     {rsvpStatus === "success" ? (
-                      <div className="space-y-4 border border-emerald-200 bg-emerald-50 p-5 text-center" role="status" tabIndex={-1}>
-                        <p className="font-serif text-xl font-bold text-emerald-900">{t.drawer.rsvp.success}</p>
-                        <p className="mt-2 text-xs text-emerald-800">{t.drawer.successNote}</p>
-                        <div className="text-xs text-emerald-900"><strong>{openEvent.title}</strong><br />{openEvent.dateLine}<br />{openEvent.location}{registrationId&&<><br />{locale === "fr" ? "Référence" : "Reference"}: {registrationId.slice(0,8).toUpperCase()}</>}</div>
-                        {calendarLinks&&<div className="flex flex-wrap justify-center gap-2"><a href={calendarLinks.google} target="_blank" rel="noreferrer" className="border border-emerald-700 px-3 py-2 text-xs font-bold text-emerald-900">Google Calendar</a><a href={calendarLinks.ics} download={`${openEvent.id}.ics`} className="border border-emerald-700 px-3 py-2 text-xs font-bold text-emerald-900">{locale === "fr" ? "Télécharger .ics" : "Download .ics"}</a></div>}
+                      <div className="space-y-4 border border-blue-200 bg-blue-50 p-5 text-center" role="status" tabIndex={-1}>
+                        <p className="font-serif text-xl font-bold text-blue-900">{t.drawer.rsvp.success}</p>
+                        <p className="mt-2 text-xs text-blue-800">{t.drawer.successNote}</p>
+                        <div className="text-xs text-blue-900"><strong>{openEvent.title}</strong><br />{openEvent.dateLine}<br />{openEvent.location}{registrationId&&<><br />{locale === "fr" ? "Référence" : "Reference"}: {registrationId.slice(0,8).toUpperCase()}</>}</div>
+                        {calendarLinks&&<div className="flex flex-wrap justify-center gap-2"><a href={calendarLinks.google} target="_blank" rel="noreferrer" className="border border-blue-700 px-3 py-2 text-xs font-bold text-blue-900">Google Calendar</a><a href={calendarLinks.ics} download={`${openEvent.id}.ics`} className="border border-blue-700 px-3 py-2 text-xs font-bold text-blue-900">{locale === "fr" ? "Télécharger .ics" : "Download .ics"}</a></div>}
                       </div>
                     ) : openEvent.soldOut ? <div className="border border-amber-200 bg-amber-50 p-5 text-center"><p className="font-serif text-xl font-bold text-amber-900">{locale === "fr" ? "Cet événement est complet" : "This event is sold out"}</p><p className="mt-2 text-xs text-amber-800">{locale === "fr" ? "Contactez notre équipe pour connaître les prochaines possibilités." : "Contact our team for future opportunities."}</p></div> : (
                       <form className="space-y-4" onSubmit={submitRsvp}>
@@ -950,7 +950,7 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                 {/* Volunteer action */}
                 {activeTab === "volunteer" ? (
                   <div id="event-panel-volunteer" role="tabpanel" aria-labelledby="event-tab-volunteer" className="space-y-4">
-                    {volunteerStatus === "success" ? <div role="status" className="border border-emerald-200 bg-emerald-50 p-5 text-center text-sm font-semibold text-emerald-900">{locale === "fr" ? "Merci! Votre place de bénévole est confirmée." : "Thank you! Your volunteer place is confirmed."}</div> : <form className="space-y-4" onSubmit={submitVolunteer}>
+                    {volunteerStatus === "success" ? <div role="status" className="border border-blue-200 bg-blue-50 p-5 text-center text-sm font-semibold text-blue-900">{locale === "fr" ? "Merci! Votre place de bénévole est confirmée." : "Thank you! Your volunteer place is confirmed."}</div> : <form className="space-y-4" onSubmit={submitVolunteer}>
                       <p className="text-xs text-[#64748B]">{t.drawer.volunteer.intro}</p>
                       <label className="block space-y-1.5 text-xs font-bold text-brand-navy"><span>{locale === "fr" ? "Rôle bénévole" : "Volunteer role"}</span><select name="role" required className="w-full border border-[#CBD5E1] bg-white px-3 py-3 font-normal">{(openEvent.roles.length ? openEvent.roles : [locale === "fr" ? "Soutien général à l’événement" : "General event support"]).map((role) => <option key={role}>{role}</option>)}</select></label>
                       <label className="block space-y-1.5 text-xs font-bold text-brand-navy"><span>{locale === "fr" ? "Nom complet *" : "Full name *"}</span><input name="fullName" required maxLength={160} autoComplete="name" className="w-full border border-[#CBD5E1] px-3 py-3 font-normal" /></label>

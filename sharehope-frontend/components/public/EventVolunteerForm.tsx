@@ -37,7 +37,7 @@ export function EventVolunteerForm({ event, locale }: { event: PublicEvent; loca
     formElement.reset();
   }
 
-  if (status === "success") return <div role="status" className="border border-emerald-200 bg-emerald-50 p-6 font-semibold text-emerald-900">{message}</div>;
+  if (status === "success") return <div role="status" className="border border-blue-200 bg-blue-50 p-6 font-semibold text-blue-900">{message}</div>;
 
   return (
     <form onSubmit={submit} className="space-y-5 border border-slate-200 bg-white p-6 shadow-sm">

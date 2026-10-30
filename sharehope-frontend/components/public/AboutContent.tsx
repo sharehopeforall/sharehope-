@@ -100,7 +100,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
       {/* Hero */}
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
         <div className="space-y-6">
-          <p className="font-mono-spaced text-xs font-bold uppercase text-[#2D8A56]">{t.heroEyebrow}</p>
+          <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.heroEyebrow}</p>
           <h1 className="font-serif text-4xl font-bold leading-tight text-brand-navy sm:text-5xl lg:text-6xl">
             {t.heroTitle}
           </h1>
@@ -165,7 +165,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
 
       {/* Timeline */}
       <section className="mx-auto max-w-4xl px-6 py-20">
-        <p className="font-mono-spaced text-center text-xs font-bold uppercase text-[#2D8A56]">{t.timelineEyebrow}</p>
+        <p className="font-mono-spaced text-center text-xs font-bold uppercase text-[#F05A24]">{t.timelineEyebrow}</p>
         <h2 className="font-serif mt-3 text-center text-3xl font-bold text-brand-navy sm:text-4xl">{t.timelineTitle}</h2>
         <div className="mt-12 space-y-0">
           {t.timeline.map((milestone) => (
@@ -182,7 +182,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
       {/* Values */}
       <section className="border-y border-[#E5E0D8] bg-white px-6 py-20">
         <div className="mx-auto max-w-6xl">
-          <p className="font-mono-spaced text-center text-xs font-bold uppercase text-[#2D8A56]">{t.valuesEyebrow}</p>
+          <p className="font-mono-spaced text-center text-xs font-bold uppercase text-[#F05A24]">{t.valuesEyebrow}</p>
           <h2 className="font-serif mt-3 text-center text-3xl font-bold text-brand-navy sm:text-4xl">{t.valuesTitle}</h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {t.values.map((value, i) => (

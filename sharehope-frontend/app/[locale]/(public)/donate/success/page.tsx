@@ -60,10 +60,10 @@ export default async function DonationSuccessPage({
   return (
     <main className="flex min-h-[70vh] items-center bg-[#FAF7F2] px-6 py-20 text-[#121212]">
       <section className="mx-auto w-full max-w-2xl rounded-xl border border-[#E5E0D8] bg-white p-8 text-center shadow-xl sm:p-12">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-blue-100 text-blue-700">
           <CheckCircle2 size={36} />
         </div>
-        <p className="font-mono-spaced mt-6 text-xs font-bold uppercase tracking-widest text-emerald-700">
+        <p className="font-mono-spaced mt-6 text-xs font-bold uppercase tracking-widest text-blue-700">
           {french ? "Don confirmé" : "Donation confirmed"}
         </p>
         <h1 className="font-serif mt-3 text-4xl font-bold sm:text-5xl">

@@ -1,12 +1,12 @@
 export default function PublicPageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <section className="section-space border-b border-[#E6E9E3] bg-brand-cream px-6">
+    <section className="section-space border-b border-[#E5E0D8] bg-brand-cream px-6">
       <div className="mx-auto max-w-[1180px]">
         <h1 className="type-page-title text-role-primary max-w-[820px] text-balance">
           {title}
         </h1>
         {subtitle && <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">{subtitle}</p>}
-        <div className="mt-6 h-1 w-20 rounded-full bg-[#159C7C]" aria-hidden="true" />
+        <div className="mt-6 h-1 w-20 rounded-full bg-[#F05A24]" aria-hidden="true" />
       </div>
     </section>
   );

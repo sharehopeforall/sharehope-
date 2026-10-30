@@ -23,7 +23,7 @@ interface ProgramRow {
 
 const ACCENTS = {
   education: { hex: "#F5B731", text: "#121212" },
-  health: { hex: "#2D8A56", text: "#FFFFFF" },
+  health: { hex: "#F05A24", text: "#FFFFFF" },
   community: { hex: "#F05A24", text: "#FFFFFF" },
 } as const;
 
@@ -194,7 +194,7 @@ export default function ProgramsContent({ locale, programs, editor }: { locale: 
       {/* Hero */}
       <section className="mx-auto max-w-4xl space-y-6 px-6 pb-10 pt-12 text-center">
         <div className="space-y-3">
-          <span className="font-mono-spaced block text-xs font-bold uppercase text-[#2D8A56]">
+          <span className="font-mono-spaced block text-xs font-bold uppercase text-[#F05A24]">
             {t.eyebrow}
           </span>
           <h1 className="font-serif text-4xl font-bold tracking-tight text-brand-navy sm:text-5xl md:text-6xl">

@@ -15,7 +15,7 @@ const previewDonations: Donation[] = [
 ];
 
 const statusStyle: Record<DonationStatus, string> = {
-  Succeeded: "bg-emerald-100 text-emerald-800",
+  Succeeded: "bg-blue-100 text-blue-800",
   Pending: "bg-amber-100 text-amber-800",
   Refunded: "bg-slate-100 text-slate-600",
   Failed: "bg-red-100 text-red-700",

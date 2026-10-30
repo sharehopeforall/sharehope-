@@ -133,7 +133,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
       {/* Hero */}
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
         <div className="space-y-6">
-          <p className="font-mono-spaced text-xs font-bold uppercase text-[#2D8A56]">{t.eyebrow}</p>
+          <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.eyebrow}</p>
           <h1 className="font-serif text-4xl font-bold leading-tight text-brand-navy sm:text-5xl lg:text-6xl">
             {t.title}
           </h1>
@@ -216,7 +216,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
         <div className="rounded-2xl border border-[#E5E0D8] bg-white p-8 shadow-sm">
           {submitted ? (
             <div className="py-8 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-600">✓</div>
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-600">✓</div>
               <h3 className="font-serif mt-5 text-2xl font-bold text-brand-navy">{t.successTitle}</h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">{t.successBody}</p>
               <button
