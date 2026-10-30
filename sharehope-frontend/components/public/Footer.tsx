@@ -28,11 +28,11 @@ export function Footer({ managed }: { managed?: ManagedPageContent | null }) {
   ] as const;
 
   return (
-    <footer className="border-t border-[#E5E0D8] bg-[#FFFEFB] text-brand-navy">
+    <footer className="border-t border-[#E2E8F0] bg-[#F8FAFC] text-brand-navy">
       <div className="mx-auto max-w-[1280px] px-6 pb-8 pt-14 sm:pt-16 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[1.35fr_0.7fr_0.8fr_1fr] lg:gap-10">
           <div className="max-w-[380px]">
-            <Link href="/" className="inline-flex rounded-xl border border-[#E5E0D8] bg-[#FFFEFA] px-4 py-2">
+            <Link href="/" className="inline-flex rounded-xl border border-[#E2E8F0] bg-[#FFFEFA] px-4 py-2">
               <Image src="/logo-sharehope-blue.png" alt="ShareHope" width={270} height={75} className="h-[68px] w-auto object-contain" />
             </Link>
             <p className="mt-6 max-w-[360px] text-[16px] leading-[1.7] text-brand-body">
@@ -45,14 +45,14 @@ export function Footer({ managed }: { managed?: ManagedPageContent | null }) {
           <div>
             <h2 className="text-[13px] font-bold uppercase tracking-[0.18em] text-[#111111]">{locale === "fr" ? "Explorer" : "Explore"}</h2>
             <ul className="mt-5 space-y-3.5 text-[15px] font-medium text-[#465568]">
-              {exploreLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition hover:text-[#F05A24] hover:underline hover:underline-offset-4">{link.label}</Link></li>)}
+              {exploreLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition hover:text-[#13306B] hover:underline hover:underline-offset-4">{link.label}</Link></li>)}
             </ul>
           </div>
 
           <div>
             <h2 className="text-[13px] font-bold uppercase tracking-[0.18em] text-[#111111]">{t("getInvolved")}</h2>
             <ul className="mt-5 space-y-3.5 text-[15px] font-medium text-[#465568]">
-              {actionLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition hover:text-[#F05A24] hover:underline hover:underline-offset-4">{link.label}</Link></li>)}
+              {actionLinks.map((link) => <li key={link.href}><Link href={link.href} className="transition hover:text-[#13306B] hover:underline hover:underline-offset-4">{link.label}</Link></li>)}
             </ul>
           </div>
 
@@ -62,22 +62,22 @@ export function Footer({ managed }: { managed?: ManagedPageContent | null }) {
             <Link href="/donate" className="type-button mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-orange px-6 py-3.5 text-white transition hover:-translate-y-0.5 hover:bg-brand-orange-hover">
               {managed?.buttonText || (locale === "fr" ? "Donnez aujourd'hui" : "Give Today")}<ArrowRight size={18} aria-hidden="true" />
             </Link>
-            <Link href={contactEmail ? `mailto:${contactEmail}` : "/contact"} className="mt-5 flex items-center gap-2 text-[14px] font-semibold text-[#465568] transition hover:text-[#F05A24]">
+            <Link href={contactEmail ? `mailto:${contactEmail}` : "/contact"} className="mt-5 flex items-center gap-2 text-[14px] font-semibold text-[#465568] transition hover:text-[#13306B]">
               <Mail size={17} aria-hidden="true" />{t("contact")}
             </Link>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-5 border-t border-[#E5E0D8] pt-6 text-[13px] text-[#708097] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-5 border-t border-[#E2E8F0] pt-6 text-[13px] text-[#708097] sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <p>© {year} ShareHope. {footer("rights")}</p>
-            <Link href="/privacy" className="font-semibold text-[#465568] transition hover:text-[#F05A24] hover:underline hover:underline-offset-4">
+            <Link href="/privacy" className="font-semibold text-[#465568] transition hover:text-[#13306B] hover:underline hover:underline-offset-4">
               {locale === "fr" ? "Politique de confidentialité" : "Privacy Policy"}
             </Link>
           </div>
           <div className="flex items-center gap-2" aria-label={locale === "fr" ? "Choisir la langue" : "Choose language"}>
-            <Link href={pathname} locale="en" className={`rounded-lg px-3 py-2 font-bold transition ${locale === "en" ? "bg-[#0B2746] text-white" : "hover:bg-[#FAF7F2] hover:text-[#0B2746]"}`}>EN</Link>
-            <Link href={pathname} locale="fr" className={`rounded-lg px-3 py-2 font-bold transition ${locale === "fr" ? "bg-[#0B2746] text-white" : "hover:bg-[#FAF7F2] hover:text-[#0B2746]"}`}>FR</Link>
+            <Link href={pathname} locale="en" className={`rounded-lg px-3 py-2 font-bold transition ${locale === "en" ? "bg-[#0B2746] text-white" : "hover:bg-[#F8FAFC] hover:text-[#0B2746]"}`}>EN</Link>
+            <Link href={pathname} locale="fr" className={`rounded-lg px-3 py-2 font-bold transition ${locale === "fr" ? "bg-[#0B2746] text-white" : "hover:bg-[#F8FAFC] hover:text-[#0B2746]"}`}>FR</Link>
           </div>
         </div>
       </div>

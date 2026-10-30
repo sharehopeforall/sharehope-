@@ -160,7 +160,7 @@ export default function BlogContent({ locale, posts: managedPosts, settings, edi
                     {post.excerpt}
                   </p>
                 </div>
-                <span className="font-mono-spaced shrink-0 text-[10px] font-bold uppercase text-[#F05A24]">
+                <span className="font-mono-spaced shrink-0 text-[10px] font-bold uppercase text-[#13306B]">
                   {categoryLabel(post.category)}
                 </span>
               </Link>

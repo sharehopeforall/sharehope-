@@ -35,7 +35,7 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
         <div className="mx-auto grid min-h-[690px] max-w-[1440px] lg:grid-cols-[1.02fr_.98fr]">
           <div className="flex items-center px-6 py-20 sm:px-10 lg:px-16 xl:px-24">
             <div className="max-w-2xl">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F05A24]">{page.eyebrow}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#13306B]">{page.eyebrow}</p>
               <h1 className="mt-7 max-w-xl font-serif text-[2.8rem] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.6rem] xl:text-[4.4rem]">{page.title}</h1>
               <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600">{page.intro}</p>
               <a href="#founder-letter" className="mt-9 inline-flex items-center gap-3 border-b-2 border-brand-navy pb-2 text-xs font-black uppercase tracking-[0.18em] transition hover:gap-5">
@@ -55,7 +55,7 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
       <section id="founder-letter" className="bg-white px-6 py-20 sm:px-10 lg:py-28">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F05A24]">A letter from Marie</p>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#13306B]">A letter from Marie</p>
             <h2 className="mt-5 max-w-sm font-serif text-4xl font-semibold leading-[1.12] tracking-[-0.02em] sm:text-5xl">This work began by listening.</h2>
           </div>
           <div className="max-w-2xl space-y-6 text-[1.05rem] leading-8 text-slate-700">
@@ -83,7 +83,7 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[.92fr_1.08fr] lg:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F05A24]">What guides her</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#13306B]">What guides her</p>
               <h2 className="mt-5 max-w-lg font-serif text-4xl font-semibold leading-[1.12] tracking-[-0.02em] sm:text-5xl">Leadership rooted in partnership.</h2>
             </div>
             <p className="max-w-xl text-lg leading-8 text-slate-600 lg:justify-self-end">Three principles keep ShareHope close to the people and communities at the center of the work.</p>

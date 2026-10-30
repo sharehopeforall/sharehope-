@@ -63,7 +63,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
               </section>
             ))}
           </div>
-          <div className="mt-14 rounded-2xl bg-[#FFF0E8] p-7 sm:p-8">
+          <div className="mt-14 rounded-2xl bg-[#EFF6FF] p-7 sm:p-8">
             <h2 className="type-card-title text-[#0B2746]">{page.contactTitle}</h2>
             <p className="type-body text-role-secondary mt-3">{page.contactBody}</p>
             <Link href="/contact" className="type-button mt-5 inline-flex rounded-lg bg-[#FF5917] px-6 py-3 text-white transition hover:bg-[#E94E0B]">{page.contactLink}</Link>

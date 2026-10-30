@@ -145,9 +145,9 @@ export function VisualWhyShareHopeEditor({ section, onSave, isSaving, locale }: 
 
       <div className="mx-auto max-w-[1120px]">
         <div className="mb-9 pt-8 text-center">
-          <input aria-label={t("subheading")} value={eyebrow[locale]} onChange={(event) => { if (locale === "en") setTranslationStale(true); setEyebrow((current) => ({ ...current, [locale]: event.target.value })); }} className="mx-auto block w-full border-0 bg-transparent text-center text-[13px] font-bold uppercase tracking-[0.22em] text-[#F05A24] outline-none focus:ring-2 focus:ring-[#F05A24]/40" />
-          <div className="mx-auto mt-4 h-0.5 w-16 bg-[#F05A24]" />
-          <textarea aria-label={t("heading")} rows={2} value={title[locale]} onChange={(event) => { if (locale === "en") setTranslationStale(true); setTitle((current) => ({ ...current, [locale]: event.target.value })); }} className="mx-auto mt-5 block w-full max-w-[700px] resize-none border-0 bg-transparent text-center font-serif text-[36px] leading-[1.02] tracking-[-0.025em] text-[#132A52] outline-none focus:ring-2 focus:ring-[#F05A24]/40 md:text-[48px] lg:text-[56px]" />
+          <input aria-label={t("subheading")} value={eyebrow[locale]} onChange={(event) => { if (locale === "en") setTranslationStale(true); setEyebrow((current) => ({ ...current, [locale]: event.target.value })); }} className="mx-auto block w-full border-0 bg-transparent text-center text-[13px] font-bold uppercase tracking-[0.22em] text-[#13306B] outline-none focus:ring-2 focus:ring-[#13306B]/40" />
+          <div className="mx-auto mt-4 h-0.5 w-16 bg-[#13306B]" />
+          <textarea aria-label={t("heading")} rows={2} value={title[locale]} onChange={(event) => { if (locale === "en") setTranslationStale(true); setTitle((current) => ({ ...current, [locale]: event.target.value })); }} className="mx-auto mt-5 block w-full max-w-[700px] resize-none border-0 bg-transparent text-center font-serif text-[36px] leading-[1.02] tracking-[-0.025em] text-[#132A52] outline-none focus:ring-2 focus:ring-[#13306B]/40 md:text-[48px] lg:text-[56px]" />
         </div>
 
         <div className="relative min-h-[500px] overflow-hidden rounded-[20px] md:min-h-[540px]">
@@ -156,16 +156,16 @@ export function VisualWhyShareHopeEditor({ section, onSave, isSaving, locale }: 
           <button type="button" onClick={() => fileInput.current?.click()} className="absolute inset-0 z-10 flex items-center justify-center bg-black/0 font-semibold text-white opacity-0 transition hover:bg-black/35 hover:opacity-100 focus:bg-black/35 focus:opacity-100">{upload.isPending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ImagePlus className="mr-2 h-5 w-5" />}{t("replacePhoto")}</button>
           <div className="absolute left-1/2 top-7 z-20 flex w-full -translate-x-1/2 flex-wrap justify-center gap-3 px-4">
             {items[locale].map((item, index) => (
-              <button key={index} type="button" onClick={() => setActiveIndex(index)} className={`rounded-full px-5 py-3 text-xs font-bold uppercase tracking-[0.12em] shadow-sm ${activeIndex === index ? "bg-[#FFF0E8] text-[#D94814] ring-2 ring-white/70" : "bg-white text-[#1C2744]"}`}>{item.label}</button>
+              <button key={index} type="button" onClick={() => setActiveIndex(index)} className={`rounded-full px-5 py-3 text-xs font-bold uppercase tracking-[0.12em] shadow-sm ${activeIndex === index ? "bg-[#EFF6FF] text-[#0B2746] ring-2 ring-white/70" : "bg-white text-[#1C2744]"}`}>{item.label}</button>
             ))}
           </div>
           <div className="absolute bottom-5 left-5 right-5 z-20 rounded-[16px] bg-white p-6 shadow-[0_18px_50px_rgba(0,0,0,0.12)] md:bottom-8 md:left-auto md:right-8 md:max-w-[420px] md:p-7">
-            <input aria-label={t("category")} value={active.label} onChange={(event) => updateItem("label", event.target.value)} className="mb-3 w-full border-0 bg-transparent text-xs font-bold uppercase tracking-[0.14em] text-[#F05A24] outline-none focus:ring-2 focus:ring-[#F05A24]/40" />
-            <textarea aria-label={t("description")} rows={5} value={active.description} onChange={(event) => updateItem("description", event.target.value)} className="w-full resize-none border-0 bg-transparent p-0 font-serif text-[17px] leading-[1.5] text-[#26334A] outline-none focus:ring-2 focus:ring-[#F05A24]/40 md:text-[18px]" />
-            <div className="mt-6 inline-flex items-center gap-3 border-b border-[#F05A24] pb-1 text-[#D94814]">
+            <input aria-label={t("category")} value={active.label} onChange={(event) => updateItem("label", event.target.value)} className="mb-3 w-full border-0 bg-transparent text-xs font-bold uppercase tracking-[0.14em] text-[#13306B] outline-none focus:ring-2 focus:ring-[#13306B]/40" />
+            <textarea aria-label={t("description")} rows={5} value={active.description} onChange={(event) => updateItem("description", event.target.value)} className="w-full resize-none border-0 bg-transparent p-0 font-serif text-[17px] leading-[1.5] text-[#26334A] outline-none focus:ring-2 focus:ring-[#13306B]/40 md:text-[18px]" />
+            <div className="mt-6 inline-flex items-center gap-3 border-b border-[#13306B] pb-1 text-[#0B2746]">
               <input aria-label={t("buttonText")} value={active.buttonText} onChange={(event) => updateItem("buttonText", event.target.value)} className="min-w-0 border-0 bg-transparent text-[13px] font-bold uppercase tracking-[0.12em] outline-none" /><ArrowRight size={17} />
             </div>
-            <label className="mt-4 flex items-center gap-2 text-xs font-semibold text-[#D94814]"><span>{t("buttonLink")}</span><input aria-label={t("buttonLink")} value={active.buttonUrl} onChange={(event) => updateItem("buttonUrl", event.target.value)} className="min-w-0 flex-1 rounded border border-[#E5E0D8] bg-white px-2 py-1 text-[#26334A]" /></label>
+            <label className="mt-4 flex items-center gap-2 text-xs font-semibold text-[#0B2746]"><span>{t("buttonLink")}</span><input aria-label={t("buttonLink")} value={active.buttonUrl} onChange={(event) => updateItem("buttonUrl", event.target.value)} className="min-w-0 flex-1 rounded border border-[#E2E8F0] bg-white px-2 py-1 text-[#26334A]" /></label>
           </div>
         </div>
       </div>

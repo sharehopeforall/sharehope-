@@ -24,7 +24,7 @@
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
   --color-brand-navy: #0f2942;
-  --color-brand-green: #f05a24;
+  --color-brand-green: #13306b;
   --color-brand-orange: #f05a24;
   --color-brand-orange-hover: #d94814;
   --color-brand-gold: #f5b731;
@@ -61,7 +61,7 @@
   --text-primary: #0f2942;
   --text-secondary: #505e70;
   --text-muted: #708097;
-  --text-accent: #f05a24;
+  --text-accent: #13306b;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

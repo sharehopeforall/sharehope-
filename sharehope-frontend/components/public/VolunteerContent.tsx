@@ -133,7 +133,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
       {/* Hero */}
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
         <div className="space-y-6">
-          <p className="font-mono-spaced text-xs font-bold uppercase text-[#F05A24]">{t.eyebrow}</p>
+          <p className="font-mono-spaced text-xs font-bold uppercase text-[#13306B]">{t.eyebrow}</p>
           <h1 className="font-serif text-4xl font-bold leading-tight text-brand-navy sm:text-5xl lg:text-6xl">
             {t.title}
           </h1>

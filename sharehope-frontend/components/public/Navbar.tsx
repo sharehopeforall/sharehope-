@@ -63,7 +63,7 @@ export default function Navbar({ managed }: { managed?: ManagedPageContent | nul
                 setLanguageOpen(false);
               }}
               aria-expanded={aboutOpen}
-              className="flex items-center gap-1 transition hover:text-[#F05A24]"
+              className="flex items-center gap-1 transition hover:text-[#13306B]"
             >
               {setting("aboutLabel", t("about"))}
               <ChevronDown
@@ -102,19 +102,19 @@ export default function Navbar({ managed }: { managed?: ManagedPageContent | nul
             )}
           </div>
 
-          <Link href="/programs" className="transition hover:text-[#F05A24]">
+          <Link href="/programs" className="transition hover:text-[#13306B]">
             {setting("programsLabel", t("programs"))}
           </Link>
 
-          <Link href="/events" className="transition hover:text-[#F05A24]">
+          <Link href="/events" className="transition hover:text-[#13306B]">
             {setting("eventsLabel", t("events"))}
           </Link>
 
-          <Link href="/ministry" className="transition hover:text-[#F05A24]">
+          <Link href="/ministry" className="transition hover:text-[#13306B]">
             {t("ministry")}
           </Link>
 
-          <Link href="/blog" className="transition hover:text-[#F05A24]">
+          <Link href="/blog" className="transition hover:text-[#13306B]">
             {t("blog")}
           </Link>
 
@@ -127,7 +127,7 @@ export default function Navbar({ managed }: { managed?: ManagedPageContent | nul
                 setLanguageOpen(false);
               }}
               aria-expanded={getInvolvedOpen}
-              className="flex items-center gap-1 transition hover:text-[#F05A24]"
+              className="flex items-center gap-1 transition hover:text-[#13306B]"
             >
               {setting("getInvolvedLabel", t("getInvolved"))}
               <ChevronDown
