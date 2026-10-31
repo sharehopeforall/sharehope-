@@ -1,6 +1,5 @@
 import type { UploadMediaResult } from "@/types/media";
 import { getAccessToken } from "@/lib/auth/token";
-import { upload } from "@vercel/blob/client";
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 250 * 1024 * 1024;
@@ -42,22 +41,8 @@ export async function uploadFile(file: File, options: UploadFileOptions = {}): P
   }
 
   const token = getAccessToken() ?? "";
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "-") || (isVideo ? "video" : "image");
-  try {
-    const blob = await upload(`uploads/${safeName}`, file, {
-      access: "public",
-      handleUploadUrl: "/api/blob/upload",
-      headers: { Authorization: `Bearer ${token}` },
-      clientPayload: JSON.stringify({ contentType: file.type, size: file.size }),
-      contentType: file.type,
-      multipart: file.size > 5 * 1024 * 1024,
-      onUploadProgress: ({ percentage }) => options.onProgress?.(Math.round(percentage)),
-    });
-    return { url: blob.url, pathname: blob.pathname, contentType: blob.contentType };
-  } catch {
-    // Some production environments cannot issue a direct Blob client token.
-    // Keep the preview visible and retry through the authenticated server route.
-    options.onProgress?.(0);
-    return uploadThroughServer(file, token);
-  }
+  options.onProgress?.(0);
+  const result = await uploadThroughServer(file, token);
+  options.onProgress?.(100);
+  return result;
 }
