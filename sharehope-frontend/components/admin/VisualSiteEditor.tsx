@@ -109,7 +109,7 @@ export function VisualSiteEditor() {
       patchesRef.current = result.draftContent;
       setPatches(result.draftContent);
       setSaved(result.draftContent);
-      setStatus("English and French synchronized");
+      setStatus("Draft saved — translation runs automatically when available");
       return true;
     } catch (error) {
       if (identityRef.current === identity) {

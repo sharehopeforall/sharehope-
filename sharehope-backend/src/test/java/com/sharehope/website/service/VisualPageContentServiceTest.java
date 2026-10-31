@@ -1,9 +1,12 @@
 package com.sharehope.website.service;
 
+import com.sharehope.website.dto.VisualPageContentResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 import com.sharehope.website.model.VisualPageContent;
 import com.sharehope.website.repository.VisualPageContentRepository;
@@ -56,5 +59,34 @@ class VisualPageContentServiceTest {
                 () -> service.saveDraft("/", "en", Map.of("title::text", patch), 2L)
         );
         assertEquals(409, error.getStatusCode().value());
+    }
+
+    @Test
+    void savesSourceDraftWhenTranslationProviderFails() {
+        VisualPageContent page = VisualPageContent.builder()
+                .id(UUID.randomUUID())
+                .pagePath("/")
+                .locale("en")
+                .draftContent(new HashMap<>())
+                .publishedContent(new HashMap<>())
+                .updatedAt(OffsetDateTime.now())
+                .version(0L)
+                .build();
+        when(repository.findByPagePathAndLocale("/", "en")).thenReturn(Optional.of(page));
+        Map<String, Object> patch = Map.of(
+                "selector", "[data-visual-key=title]",
+                "type", "text",
+                "value", "A brighter future"
+        );
+        Map<String, Object> content = Map.of("title::text", patch);
+        doThrow(new IllegalStateException("DeepL unavailable"))
+                .when(translation).translateContent(content, "EN", "FR");
+
+        VisualPageContentResponse result = service.saveDraft("/", "en", content, 0L);
+
+        assertEquals(content, result.draftContent());
+        assertEquals(content, page.getDraftContent());
+        verify(repository).save(page);
+        verify(repository).flush();
     }
 }

@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service @RequiredArgsConstructor
 public class VisualPageContentService {
+    private static final Logger log = LoggerFactory.getLogger(VisualPageContentService.class);
     private final VisualPageContentRepository repository;
     private final TranslationService translationService;
 
@@ -42,14 +45,21 @@ public class VisualPageContentService {
         repository.save(page);
 
         String targetLocale = opposite(locale);
-        Map<String, Object> translated = translationService.translateContent(
-                content,
-                locale.toUpperCase(),
-                targetLocale.toUpperCase()
-        );
-        VisualPageContent target = page(path, targetLocale);
-        target.setDraftContent(new HashMap<>(translated));
-        repository.save(target);
+        try {
+            Map<String, Object> translated = translationService.translateContent(
+                    content,
+                    locale.toUpperCase(),
+                    targetLocale.toUpperCase()
+            );
+            VisualPageContent target = page(path, targetLocale);
+            target.setDraftContent(new HashMap<>(translated));
+            repository.save(target);
+        } catch (RuntimeException exception) {
+            // The editor's source-language work is authoritative. A temporary
+            // translation-provider failure must never roll back or erase it.
+            log.warn("Saved visual draft for {} ({}) but automatic translation to {} failed: {}",
+                    path, locale, targetLocale, exception.getMessage());
+        }
         repository.flush();
         return response(page);
     }
