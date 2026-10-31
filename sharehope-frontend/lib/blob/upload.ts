@@ -32,6 +32,7 @@ export async function uploadFile(file: File, options: UploadFileOptions = {}): P
     access: "public",
     handleUploadUrl: "/api/blob/upload",
     headers: { Authorization: `Bearer ${token}` },
+    clientPayload: JSON.stringify({ contentType: file.type, size: file.size }),
     contentType: file.type,
     multipart: file.size > 5 * 1024 * 1024,
     onUploadProgress: ({ percentage }) => options.onProgress?.(Math.round(percentage)),

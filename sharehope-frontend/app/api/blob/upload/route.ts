@@ -18,7 +18,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname) => {
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        const metadata = JSON.parse(clientPayload ?? "{}") as { contentType?: string; size?: number };
+        const isVideo = metadata.contentType?.startsWith("video/") ?? false;
+        const maximumSizeInBytes = isVideo ? 250 * 1024 * 1024 : 10 * 1024 * 1024;
+        if (typeof metadata.size !== "number" || metadata.size > maximumSizeInBytes) {
+          throw new Error(isVideo ? "Video must be smaller than 250 MB." : "Image must be smaller than 10 MB.");
+        }
         return {
           allowedContentTypes: [
             "image/jpeg",
@@ -29,7 +35,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             "video/webm",
             "video/quicktime",
           ],
-          maximumSizeInBytes: 250 * 1024 * 1024,
+          maximumSizeInBytes,
           addRandomSuffix: true,
           tokenPayload: JSON.stringify({ pathname }),
         };

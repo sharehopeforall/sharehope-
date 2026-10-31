@@ -73,9 +73,11 @@ export function TeamDirectoryClient() {
     const previewUrl = URL.createObjectURL(file);
     patch("photoUrl", previewUrl);
     try { const result = await uploadFile(file); patch("photoUrl", result.url); }
-    catch (cause) { setError(cause instanceof Error ? cause.message : "Photo upload failed."); }
+    catch (cause) {
+      patch("photoUrl", previousPhoto);
+      setError(cause instanceof Error ? cause.message : "Photo upload failed.");
+    }
     finally {
-      if (form.photoUrl === previewUrl) patch("photoUrl", previousPhoto);
       URL.revokeObjectURL(previewUrl);
       setUploading(false);
     }
