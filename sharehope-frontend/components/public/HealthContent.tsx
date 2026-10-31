@@ -7,7 +7,6 @@ const images = {
   visits: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=85",
   mothers: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=1000&q=85",
   families: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1000&q=85",
-  wide: "https://images.unsplash.com/photo-1531983412531-1f49a365ffed?auto=format&fit=crop&w=1800&q=85",
 };
 
 const copy = {
@@ -45,9 +44,6 @@ const copy = {
         image: images.families,
       },
     ],
-    quoteText:
-      "For the first time, a doctor came to us. My children were checked, vaccinated, and cared for — in our own village.",
-    quoteAttribution: "Mother of three — Tigray region, Ethiopia",
     bandTitle: "Care within reach changes everything.",
     bandBody:
       "Healthy children stay in school. Parents can work and plan. Entire communities gain the strength to grow on their own terms.",
@@ -93,9 +89,6 @@ const copy = {
         image: images.families,
       },
     ],
-    quoteText:
-      "Pour la première fois, un médecin est venu à nous. Mes enfants ont été examinés, vaccinés et soignés — dans notre propre village.",
-    quoteAttribution: "Mère de trois enfants — région du Tigré, Éthiopie",
     bandTitle: "Des soins à portée de main changent tout.",
     bandBody:
       "Les enfants en santé restent à l'école. Les parents peuvent travailler et planifier. Des communautés entières gagnent la force de grandir selon leurs propres termes.",
@@ -182,16 +175,6 @@ export default function HealthContent({ locale }: { locale: string }) {
             })}
           </div>
         </div>
-      </section>
-
-      {/* Quote */}
-      <section className="relative isolate overflow-hidden px-6 py-24 text-white sm:py-32">
-        <Image data-visual-key="health-quote-image" src={images.wide} alt="Children playing near a clean water source" fill sizes="100vw" className="-z-20 object-cover" />
-        <div className="absolute inset-0 -z-10 bg-brand-green/80" />
-        <blockquote className="mx-auto max-w-4xl text-center">
-          <p className="text-balance font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">“{t.quoteText}”</p>
-          <footer className="mt-8 text-sm uppercase tracking-[0.18em] text-white/80">{t.quoteAttribution}</footer>
-        </blockquote>
       </section>
 
       {/* Pledge grid */}
