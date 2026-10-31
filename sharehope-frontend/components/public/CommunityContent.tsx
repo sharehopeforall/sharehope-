@@ -57,8 +57,6 @@ const copy = {
         cta: "Support a widow",
       },
     ],
-    bandTitle: "Help a family stand again.",
-    bandCta: "Give to community",
   },
   fr: {
     heroEyebrow: "Développement communautaire",
@@ -99,8 +97,6 @@ const copy = {
         cta: "Soutenir une veuve",
       },
     ],
-    bandTitle: "Aidez une famille à se relever.",
-    bandCta: "Donner pour la communauté",
   },
 } as const;
 
@@ -191,19 +187,6 @@ export default function CommunityContent({ locale }: { locale: string }) {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      <section className="border-t border-brand-navy/10 bg-[#F7F1E6] px-6 py-20 text-brand-navy sm:px-10 sm:py-24">
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="type-eyebrow text-brand-green">{t.heroEyebrow}</p>
-            <h2 className="mt-5 max-w-2xl text-balance font-serif text-4xl font-semibold leading-tight sm:text-5xl">{t.bandTitle}</h2>
-          </div>
-          <Link href="/donate?program=community" className="group inline-flex w-fit shrink-0 items-center gap-5 rounded-full bg-[#F6C54B] py-2 pl-6 pr-2 text-sm font-black uppercase tracking-[0.11em] text-brand-navy shadow-sm transition hover:bg-white">
-            {t.bandCta}
-            <span className="flex size-11 items-center justify-center rounded-full bg-brand-navy text-white transition group-hover:translate-x-1"><ArrowRight size={18} /></span>
-          </Link>
         </div>
       </section>
     </div>
