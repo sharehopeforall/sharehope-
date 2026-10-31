@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { fetchBackend } from "@/lib/server/backend-fetch";
+import { rateLimited } from "@/lib/server/rate-limit";
 
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
 const subscriptionSchema = z.object({
@@ -11,6 +12,7 @@ const subscriptionSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  if (rateLimited(request, "newsletter", 5)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   const parsed = subscriptionSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid subscription details." }, { status: 400 });
 
