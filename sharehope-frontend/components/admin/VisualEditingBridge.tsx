@@ -152,6 +152,9 @@ export function VisualEditingBridge() {
             const previousSrc = currentImage.src;
             const previousSrcSet = currentImage.srcset;
             const previewUrl = URL.createObjectURL(file);
+            const patchKey = `${selector}::image`;
+            const previousPatch = activePatches[patchKey];
+            activePatches[patchKey] = { selector, type: "image", value: previewUrl };
             currentImage.srcset = "";
             currentImage.src = previewUrl;
             changeButton.disabled = true;
@@ -161,12 +164,14 @@ export function VisualEditingBridge() {
                 onProgress: (percentage) => { changeButton.textContent = `Uploading ${percentage}%`; },
               });
               const patch: VisualPatch = { selector, type: "image", value: result.url };
-              activePatches[`${patch.selector}::${patch.type}`] = patch;
+              activePatches[patchKey] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
               changeButton.textContent = "Picture changed";
               window.setTimeout(() => { changeButton.textContent = "Change picture"; }, 1400);
             } catch {
+              if (previousPatch) activePatches[patchKey] = previousPatch;
+              else delete activePatches[patchKey];
               currentImage.src = previousSrc;
               currentImage.srcset = previousSrcSet;
               changeButton.textContent = "Upload failed — try again";
@@ -249,7 +254,12 @@ export function VisualEditingBridge() {
     };
     mark();
     const observer = new MutationObserver(mark);
-    observer.observe(content, { childList: true, subtree: true });
+    observer.observe(content, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["src", "srcset", "style"],
+    });
     cleanups.push(() => observer.disconnect());
 
     const select = (event: MouseEvent) => {
