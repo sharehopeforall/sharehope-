@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { uploadFile } from "@/lib/blob/upload";
+import { websiteApi } from "@/lib/api/website";
 import type { VisualPatch, VisualPatchMap, VisualPatchType } from "@/types/website";
 
 type EditorMessage =
@@ -28,7 +29,6 @@ function applyPatch(patch: VisualPatch) {
   let element: HTMLElement | null = null;
   try { element = document.querySelector<HTMLElement>(patch.selector); } catch { return; }
   if (!element) return;
-  if (patch.type === "image" && element instanceof HTMLImageElement && element.dataset.visualKey && !patch.selector.startsWith("[data-visual-key=")) return;
   if (patch.type === "text" && element.textContent !== patch.value) {
     element.textContent = patch.value;
   }
@@ -85,7 +85,12 @@ export function VisualEditingBridge() {
           applyAll(publishedPatches);
         });
       });
-      publicObserver.observe(content, { childList: true, subtree: true });
+      publicObserver.observe(content, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["src", "srcset", "style"],
+      });
       return () => {
         publicObserver.disconnect();
         if (patchFrame !== null) cancelAnimationFrame(patchFrame);
@@ -167,7 +172,12 @@ export function VisualEditingBridge() {
               activePatches[patchKey] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
-              changeButton.textContent = "Picture changed";
+              try {
+                await websiteApi.saveVisualDraft(pagePath, locale, activePatches);
+                changeButton.textContent = "Saved to draft";
+              } catch {
+                changeButton.textContent = "Uploaded — click Save draft";
+              }
               window.setTimeout(() => { changeButton.textContent = "Change picture"; }, 1400);
             } catch {
               if (previousPatch) activePatches[patchKey] = previousPatch;
