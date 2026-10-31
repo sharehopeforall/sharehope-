@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface NewsletterSubscriberRepository extends JpaRepository<NewsletterSubscriber, UUID> {
     boolean existsByEmailIgnoreCase(String email);
+    java.util.Optional<NewsletterSubscriber> findByEmailIgnoreCase(String email);
 }

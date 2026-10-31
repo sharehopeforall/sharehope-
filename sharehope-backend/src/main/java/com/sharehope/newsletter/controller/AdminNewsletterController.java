@@ -1,0 +1,2 @@
+package com.sharehope.newsletter.controller;import com.sharehope.newsletter.model.NewsletterSubscriber;import com.sharehope.newsletter.service.NewsletterService;import lombok.RequiredArgsConstructor;import org.springframework.web.bind.annotation.*;import java.util.*;
+@RestController @RequestMapping("/api/admin/newsletter") @RequiredArgsConstructor public class AdminNewsletterController{private final NewsletterService service;@GetMapping("/subscribers")public List<NewsletterSubscriber> list(){return service.list();}}

@@ -30,12 +30,13 @@ export function DonationsAdminTemplate() {
   const succeeded = donations.filter((donation) => donation.status === "Succeeded");
   const total = succeeded.reduce((sum, donation) => sum + donation.amount, 0);
   const monthly = succeeded.filter((donation) => donation.frequency === "Monthly");
+  const exportCsv = () => { const rows=[["Reference","Donor","Email","Amount USD","Frequency","Designation","Date","Status"],...filtered.map(d=>[d.id,d.donor,d.email,d.amount.toFixed(2),d.frequency,d.designation,d.date,d.status])];const csv=rows.map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(",")).join("\n");const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));link.download=`sharehope-donations-${new Date().toISOString().slice(0,10)}.csv`;link.click();URL.revokeObjectURL(link.href);};
 
   return <div className="bg-[#F5F6F4] p-6 lg:p-8">
     <div className="mx-auto max-w-7xl space-y-7">
       <section className="flex flex-col justify-between gap-5 rounded-3xl bg-brand-navy p-7 text-white lg:flex-row lg:items-end">
         <div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#FFC72C]">Giving operations</p><h1 className="mt-3 font-serif text-4xl font-bold">Donations</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">Review gifts, recurring support, designations, receipts, and payment status from one place.</p></div>
-        <button type="button" disabled className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white/70"><Download size={17} />Export CSV</button>
+        <button type="button" onClick={exportCsv} disabled={!filtered.length} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white disabled:opacity-50"><Download size={17} />Export CSV</button>
       </section>
 
       {loading && <div className="rounded-2xl border bg-white p-5 text-sm text-slate-500">Loading verified donations…</div>}
