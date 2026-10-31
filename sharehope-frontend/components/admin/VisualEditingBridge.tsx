@@ -179,12 +179,15 @@ export function VisualEditingBridge() {
                 changeButton.textContent = "Uploaded — click Save draft";
               }
               window.setTimeout(() => { changeButton.textContent = "Change picture"; }, 1400);
-            } catch {
+            } catch (error) {
               if (previousPatch) activePatches[patchKey] = previousPatch;
               else delete activePatches[patchKey];
               currentImage.src = previousSrc;
               currentImage.srcset = previousSrcSet;
-              changeButton.textContent = "Upload failed — try again";
+              const message = error instanceof Error ? error.message : "Please try again.";
+              changeButton.textContent = "Upload failed";
+              changeButton.title = message;
+              console.error("ShareHope image upload failed:", error);
             } finally {
               URL.revokeObjectURL(previewUrl);
               changeButton.disabled = false;
