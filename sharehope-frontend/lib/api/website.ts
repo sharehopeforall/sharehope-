@@ -37,12 +37,12 @@ export const websiteApi = {
 
   getVisualContent: (path: string, locale: string) =>
     apiClient.get<VisualPageContentResponse>(`/admin/website/visual-content?path=${encodeURIComponent(path)}&locale=${locale}`),
-  saveVisualDraft: (path: string, locale: string, content: VisualPatchMap) =>
-    apiClient.put<VisualPageContentResponse>(`/admin/website/visual-content/draft?path=${encodeURIComponent(path)}&locale=${locale}`, { content }),
-  publishVisualContent: (path: string, locale: string) =>
-    apiClient.post<VisualPageContentResponse>(`/admin/website/visual-content/publish?path=${encodeURIComponent(path)}&locale=${locale}`),
-  discardVisualDraft: (path: string, locale: string) =>
-    apiClient.post<VisualPageContentResponse>(`/admin/website/visual-content/discard?path=${encodeURIComponent(path)}&locale=${locale}`),
+  saveVisualDraft: (path: string, locale: string, content: VisualPatchMap, expectedVersion?: number) =>
+    apiClient.put<VisualPageContentResponse>(`/admin/website/visual-content/draft?path=${encodeURIComponent(path)}&locale=${locale}`, { content, expectedVersion }),
+  publishVisualContent: (path: string, locale: string, expectedVersion?: number) =>
+    apiClient.post<VisualPageContentResponse>(`/admin/website/visual-content/publish?path=${encodeURIComponent(path)}&locale=${locale}&expectedVersion=${expectedVersion ?? 0}`),
+  discardVisualDraft: (path: string, locale: string, expectedVersion?: number) =>
+    apiClient.post<VisualPageContentResponse>(`/admin/website/visual-content/discard?path=${encodeURIComponent(path)}&locale=${locale}&expectedVersion=${expectedVersion ?? 0}`),
 
   translateToFrench: (fields: Record<string, string>) =>
     apiClient.post<TranslateContentResponse>("/admin/website/translate", { fields }),

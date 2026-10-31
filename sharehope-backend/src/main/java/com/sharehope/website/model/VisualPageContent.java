@@ -20,6 +20,7 @@ public class VisualPageContent {
     @JdbcTypeCode(SqlTypes.JSON) @Column(name = "published_content", columnDefinition = "jsonb", nullable = false) @Builder.Default private Map<String, Object> publishedContent = new HashMap<>();
     @Column(name = "updated_at", nullable = false) private OffsetDateTime updatedAt;
     @Column(name = "published_at") private OffsetDateTime publishedAt;
+    @Version @Column(nullable = false) @Builder.Default private Long version = 0L;
 
     @PrePersist void onCreate() { if (id == null) id = UUID.randomUUID(); if (updatedAt == null) updatedAt = OffsetDateTime.now(); }
     @PreUpdate void onUpdate() { updatedAt = OffsetDateTime.now(); }

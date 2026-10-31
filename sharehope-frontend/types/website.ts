@@ -92,4 +92,5 @@ export interface VisualPageContentResponse {
   publishedContent: VisualPatchMap;
   updatedAt: string | null;
   publishedAt: string | null;
+  version: number;
 }

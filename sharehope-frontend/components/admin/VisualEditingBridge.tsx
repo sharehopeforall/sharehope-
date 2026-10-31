@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import { uploadFile } from "@/lib/blob/upload";
-import { websiteApi } from "@/lib/api/website";
+import { getAccessToken } from "@/lib/auth/token";
 import type { VisualPatch, VisualPatchMap, VisualPatchType } from "@/types/website";
 
 type EditorMessage =
@@ -57,26 +57,69 @@ function applyPatch(patch: VisualPatch) {
 
 function applyAll(patches: VisualPatchMap) { Object.values(patches).forEach(applyPatch); }
 
+function stableHash(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function assignStableKeys(content: HTMLElement) {
+  const selector = "h1,h2,h3,h4,h5,h6,p,li,figcaption,a,span,img,video,[style*='background-image']";
+  const occurrences = new Map<string, number>();
+  content.querySelectorAll<HTMLElement>(selector).forEach((element) => {
+    if (element.dataset.visualKey || element.id) return;
+    const signature = [
+      element.tagName.toLowerCase(),
+      element.getAttribute("alt") ?? "",
+      element.getAttribute("aria-label") ?? "",
+      element instanceof HTMLImageElement ? element.getAttribute("src") ?? "" : "",
+      element.textContent?.replace(/\s+/g, " ").trim().slice(0, 160) ?? "",
+    ].join("|");
+    const occurrence = occurrences.get(signature) ?? 0;
+    occurrences.set(signature, occurrence + 1);
+    element.dataset.visualKey = `auto-${stableHash(signature)}-${occurrence}`;
+  });
+}
+
 export function VisualEditingBridge() {
   const pathname = usePathname();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.querySelector<HTMLElement>("#visual-page-root");
     if (!root) return;
     const content = root.querySelector<HTMLElement>("[data-visual-editor-content]") ?? root;
     const params = new URLSearchParams(window.location.search);
-    const editing = params.get("visualEditor") === "1";
+    const requestedEditing = params.get("visualEditor") === "1";
+    let trustedAdminFrame = false;
+    try {
+      trustedAdminFrame = window.parent !== window
+        && window.parent.location.pathname.includes("/admin/website")
+        && Boolean(getAccessToken());
+    } catch {
+      trustedAdminFrame = false;
+    }
+    const editing = requestedEditing && trustedAdminFrame;
     const session = params.get("visualEditorSession") ?? "";
     const locale = pathname.split("/")[1] === "fr" ? "fr" : "en";
     const pagePath = `/${pathname.split("/").slice(2).join("/")}`.replace(/\/$/, "") || "/";
     const cleanups: (() => void)[] = [];
 
     if (!editing) {
+      assignStableKeys(content);
+      content.dataset.visualContentLoading = "true";
+      const revealTimer = window.setTimeout(() => delete content.dataset.visualContentLoading, 1500);
       let publishedPatches: VisualPatchMap = {};
       fetch(`/backend-api/public/website/visual-content?path=${encodeURIComponent(pagePath)}&locale=${locale}`)
         .then((response) => response.ok ? response.json() as Promise<VisualPatchMap> : {})
         .then((patches) => { publishedPatches = patches; applyAll(patches); })
-        .catch(() => undefined);
+        .catch(() => undefined)
+        .finally(() => {
+          window.clearTimeout(revealTimer);
+          delete content.dataset.visualContentLoading;
+        });
       let patchFrame: number | null = null;
       const publicObserver = new MutationObserver(() => {
         if (patchFrame !== null) return;
@@ -92,6 +135,8 @@ export function VisualEditingBridge() {
         attributeFilter: ["src", "srcset", "style"],
       });
       return () => {
+        window.clearTimeout(revealTimer);
+        delete content.dataset.visualContentLoading;
         publicObserver.disconnect();
         if (patchFrame !== null) cancelAnimationFrame(patchFrame);
       };
@@ -102,9 +147,12 @@ export function VisualEditingBridge() {
     const editableSelector = "h1,h2,h3,h4,h5,h6,p,li,figcaption,a,span,img,[style*='background-image']";
     const interactiveSelector = "button,[role='button'],[data-visual-editor-lock],input,select,textarea";
     const mark = () => {
+      assignStableKeys(content);
       applyAll(activePatches);
       content.querySelectorAll<HTMLElement>(editableSelector).forEach((element) => {
         if (element.closest("[data-visual-editor-ignore]") || element.closest(interactiveSelector)) return;
+        const editableBackground = element.matches("[style*='background-image']");
+        if (!(element instanceof HTMLImageElement) && !(element instanceof HTMLVideoElement) && !editableBackground && element.children.length > 0) return;
         element.dataset.visualEditable = "true";
       });
       content.querySelectorAll<HTMLImageElement>("img[data-visual-editable='true']").forEach((image) => {
@@ -172,12 +220,7 @@ export function VisualEditingBridge() {
               activePatches[patchKey] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
-              try {
-                await websiteApi.saveVisualDraft(pagePath, locale, activePatches);
-                changeButton.textContent = "Saved to draft";
-              } catch {
-                changeButton.textContent = "Uploaded — click Save draft";
-              }
+              changeButton.textContent = "Uploaded — click Save draft";
               window.setTimeout(() => { changeButton.textContent = "Change picture"; }, 1400);
             } catch (error) {
               if (previousPatch) activePatches[patchKey] = previousPatch;
@@ -250,7 +293,7 @@ export function VisualEditingBridge() {
               activePatches[`${patch.selector}::${patch.type}`] = patch;
               applyPatch(patch);
               window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
-              uploadButton.textContent = "Video uploaded";
+              uploadButton.textContent = "Uploaded — click Save draft";
               window.setTimeout(() => { uploadButton.textContent = "Change video"; }, 1400);
             } catch (error) {
               uploadButton.textContent = error instanceof Error ? error.message : "Upload failed — try again";
@@ -276,7 +319,11 @@ export function VisualEditingBridge() {
     cleanups.push(() => observer.disconnect());
 
     const select = (event: MouseEvent) => {
-      const target = (event.target as HTMLElement).closest<HTMLElement>(editableSelector);
+      const clicked = (event.target as HTMLElement).closest<HTMLElement>(editableSelector);
+      const backgroundTarget = event.altKey
+        ? (event.target as HTMLElement).closest<HTMLElement>("[style*='background-image']")
+        : null;
+      const target = backgroundTarget ?? clicked;
       if (!target || !content.contains(target) || target.closest("[data-visual-editor-ignore]") || target.closest(interactiveSelector)) return;
       event.preventDefault(); event.stopPropagation();
       root.querySelectorAll("[data-visual-selected]").forEach((item) => item.removeAttribute("data-visual-selected"));
@@ -287,7 +334,7 @@ export function VisualEditingBridge() {
       const type: VisualPatchType = isImage ? "image" : background && event.altKey ? "background" : "text";
       const value = isImage ? target.currentSrc || target.src : type === "background" ? getComputedStyle(target).backgroundImage.replace(/^url\(["']?|["']?\)$/g, "") : target.textContent ?? "";
       window.parent.postMessage({ source: "sharehope-preview", session, action: "select", selection: { selector, type, value, href: target instanceof HTMLAnchorElement ? target.getAttribute("href") ?? "" : "", tag: target.tagName.toLowerCase() } }, window.location.origin);
-      if (type === "text") { target.contentEditable = "true"; target.focus(); }
+      if (type === "text") { target.contentEditable = "plaintext-only"; target.focus(); }
     };
     const input = (event: Event) => {
       const target = event.target as HTMLElement;
@@ -314,7 +361,7 @@ export function VisualEditingBridge() {
     cleanups.push(() => { root.removeEventListener("click", navigateFromLockedLink, true); content.removeEventListener("click", select, true); content.removeEventListener("input", input, true); document.removeEventListener("keydown", keydown); });
 
     const receive = (event: MessageEvent<EditorMessage>) => {
-      if (event.origin !== window.location.origin || event.data?.source !== "sharehope-editor" || (event.data.session ?? "") !== session) return;
+      if (event.origin !== window.location.origin || event.source !== window.parent || event.data?.source !== "sharehope-editor" || (event.data.session ?? "") !== session) return;
       if (event.data.action === "hydrate") { activePatches = event.data.patches; applyAll(activePatches); }
       if (event.data.action === "apply") { activePatches[`${event.data.patch.selector}::${event.data.patch.type}`] = event.data.patch; applyPatch(event.data.patch); }
     };
@@ -337,6 +384,7 @@ export function VisualEditingBridge() {
   }, [pathname]);
 
   return <style>{`
+    [data-visual-content-loading="true"] { visibility: hidden; }
     html[data-visual-editing="true"] [data-visual-editable="true"] { cursor: pointer; }
     html[data-visual-editing="true"] [data-visual-editable="true"]:hover { outline: 2px dashed #13306b; outline-offset: 3px; }
     html[data-visual-editing="true"] [data-visual-selected="true"] { outline: 3px solid #ff5917 !important; outline-offset: 3px; }

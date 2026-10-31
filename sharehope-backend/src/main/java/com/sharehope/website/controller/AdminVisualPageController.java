@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminVisualPageController {
     private final VisualPageContentService service;
     @GetMapping public VisualPageContentResponse get(@RequestParam String path, @RequestParam(defaultValue = "en") String locale) { return service.getAdmin(path, locale); }
-    @PutMapping("/draft") public VisualPageContentResponse saveDraft(@RequestParam String path, @RequestParam(defaultValue = "en") String locale, @Valid @RequestBody VisualPageContentRequest request) { return service.saveDraft(path, locale, request.content()); }
-    @PostMapping("/publish") @PreAuthorize("hasRole('SUPER_ADMIN')") public VisualPageContentResponse publish(@RequestParam String path, @RequestParam(defaultValue = "en") String locale) { return service.publish(path, locale); }
-    @PostMapping("/discard") public VisualPageContentResponse discard(@RequestParam String path, @RequestParam(defaultValue = "en") String locale) { return service.discard(path, locale); }
+    @PutMapping("/draft") public VisualPageContentResponse saveDraft(@RequestParam String path, @RequestParam(defaultValue = "en") String locale, @Valid @RequestBody VisualPageContentRequest request) { return service.saveDraft(path, locale, request.content(), request.expectedVersion()); }
+    @PostMapping("/publish") @PreAuthorize("hasRole('SUPER_ADMIN')") public VisualPageContentResponse publish(@RequestParam String path, @RequestParam(defaultValue = "en") String locale, @RequestParam(required = false) Long expectedVersion) { return service.publish(path, locale, expectedVersion); }
+    @PostMapping("/discard") public VisualPageContentResponse discard(@RequestParam String path, @RequestParam(defaultValue = "en") String locale, @RequestParam(required = false) Long expectedVersion) { return service.discard(path, locale, expectedVersion); }
 }
