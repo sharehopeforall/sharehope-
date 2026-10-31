@@ -146,13 +146,20 @@ export function VisualEditingBridge() {
           picker.addEventListener("change", async () => {
             const file = picker.files?.[0];
             if (!file) { picker.remove(); return; }
+            const selector = changeButton.dataset.visualTarget ?? targetSelector;
+            const currentImage = document.querySelector<HTMLImageElement>(selector);
+            if (!currentImage) { picker.remove(); return; }
+            const previousSrc = currentImage.src;
+            const previousSrcSet = currentImage.srcset;
+            const previewUrl = URL.createObjectURL(file);
+            currentImage.srcset = "";
+            currentImage.src = previewUrl;
             changeButton.disabled = true;
-            changeButton.textContent = "Uploading…";
+            changeButton.textContent = "Uploading 0%";
             try {
-              const result = await uploadFile(file);
-              const selector = changeButton.dataset.visualTarget ?? targetSelector;
-              const currentImage = document.querySelector<HTMLImageElement>(selector);
-              if (!currentImage) throw new Error("The picture is no longer available.");
+              const result = await uploadFile(file, {
+                onProgress: (percentage) => { changeButton.textContent = `Uploading ${percentage}%`; },
+              });
               const patch: VisualPatch = { selector, type: "image", value: result.url };
               activePatches[`${patch.selector}::${patch.type}`] = patch;
               applyPatch(patch);
@@ -160,8 +167,11 @@ export function VisualEditingBridge() {
               changeButton.textContent = "Picture changed";
               window.setTimeout(() => { changeButton.textContent = "Change picture"; }, 1400);
             } catch {
+              currentImage.src = previousSrc;
+              currentImage.srcset = previousSrcSet;
               changeButton.textContent = "Upload failed — try again";
             } finally {
+              URL.revokeObjectURL(previewUrl);
               changeButton.disabled = false;
               picker.remove();
             }

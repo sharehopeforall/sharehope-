@@ -6,11 +6,13 @@ import { isAuthorizedAdmin } from "@/lib/server/admin-auth";
 // then notifies once the upload completes so metadata can be persisted
 // via the Spring Boot API.
 export async function POST(request: Request): Promise<NextResponse> {
-  if (!(await isAuthorizedAdmin(request))) {
+  const body = (await request.json()) as HandleUploadBody;
+
+  // Token requests come from the admin browser and require its JWT. Completion
+  // callbacks come from Vercel Blob and are signature-verified by handleUpload.
+  if (body.type === "blob.generate-client-token" && !(await isAuthorizedAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-
-  const body = (await request.json()) as HandleUploadBody;
 
   try {
     const jsonResponse = await handleUpload({
@@ -23,16 +25,17 @@ export async function POST(request: Request): Promise<NextResponse> {
             "image/png",
             "image/webp",
             "image/gif",
-            "application/pdf",
+            "video/mp4",
+            "video/webm",
+            "video/quicktime",
           ],
+          maximumSizeInBytes: 250 * 1024 * 1024,
           addRandomSuffix: true,
           tokenPayload: JSON.stringify({ pathname }),
         };
       },
       onUploadCompleted: async ({ blob }) => {
-        // TODO: call the Spring Boot API to persist blob.url + metadata
-        // (pathname, contentType, uploadedAt, uploadedBy) in PostgreSQL.
-        console.log("Blob upload completed:", blob.url);
+        console.info("Blob upload completed:", blob.pathname);
       },
     });
 
