@@ -84,12 +84,13 @@ export function VisualSiteEditor() {
 
   const saveDraft = async () => {
     setSaving(true);
+    setStatus("Translating English and French…");
     try {
       const result = await websiteApi.saveVisualDraft(path, locale, patchesRef.current);
       patchesRef.current = result.draftContent;
       setPatches(result.draftContent);
       setSaved(result.draftContent);
-      setStatus("Draft saved");
+      setStatus("English and French synchronized");
       return true;
     } catch {
       setStatus("Draft save failed — nothing was published");
@@ -101,13 +102,14 @@ export function VisualSiteEditor() {
   const publish = async () => {
     if (dirty && !(await saveDraft())) return;
     setPublishing(true);
+    setStatus("Publishing English and French…");
     try {
       const result = await websiteApi.publishVisualContent(path, locale);
       patchesRef.current = result.publishedContent;
       setPatches(result.publishedContent);
       setSaved(result.publishedContent);
       send({ action: "hydrate", patches: result.publishedContent });
-      setStatus("Published successfully");
+      setStatus("English and French published successfully");
     } catch {
       setStatus(isPublisher ? "Publish failed" : "Only a super admin can publish");
     } finally {

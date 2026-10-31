@@ -7,6 +7,7 @@ import com.sharehope.blog.dto.PublicBlogPostResponse;
 import com.sharehope.blog.dto.PublicBlogPostSummaryResponse;
 import com.sharehope.blog.model.BlogPost;
 import com.sharehope.blog.repository.BlogPostRepository;
+import com.sharehope.website.service.TranslationService;
 import com.sharehope.exception.ResourceAlreadyExistsException;
 import com.sharehope.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class BlogPostService {
     private static final String PUBLISHED = "PUBLISHED";
     private final BlogPostRepository repository;
+    private final TranslationService translationService;
 
     @Transactional(readOnly = true)
     public List<BlogPostResponse> adminList() {
@@ -131,8 +133,9 @@ public class BlogPostService {
         }
 
         Map<String, Object> translations = new LinkedHashMap<>();
-        translations.put("en", translationMap(request.en()));
-        if (request.fr() != null) translations.put("fr", translationMap(request.fr()));
+        Map<String, Object> english = translationMap(request.en());
+        translations.put("en", english);
+        translations.put("fr", translationService.translateContent(english, "EN", "FR"));
         post.setTranslations(translations);
     }
 

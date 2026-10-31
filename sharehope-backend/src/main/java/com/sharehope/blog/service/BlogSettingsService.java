@@ -3,6 +3,7 @@ package com.sharehope.blog.service;
 import com.sharehope.blog.dto.BlogSettingsRequest;
 import com.sharehope.blog.model.BlogSettings;
 import com.sharehope.blog.repository.BlogSettingsRepository;
+import com.sharehope.website.service.TranslationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.Map;
 @Service @RequiredArgsConstructor
 public class BlogSettingsService {
     private final BlogSettingsRepository repository;
+    private final TranslationService translationService;
 
     @Transactional(readOnly = true)
     public Map<String, Object> get(String locale) {
@@ -28,7 +30,9 @@ public class BlogSettingsService {
         BlogSettings settings = repository.findById(1).orElseGet(BlogSettings::new);
         settings.setId(1);
         Map<String, Object> translations = new LinkedHashMap<>(settings.getTranslations());
-        translations.put("en", map(request));
+        Map<String, Object> english = map(request);
+        translations.put("en", english);
+        translations.put("fr", translationService.translateContent(english, "EN", "FR"));
         settings.setTranslations(translations);
         repository.save(settings);
         return map(request);

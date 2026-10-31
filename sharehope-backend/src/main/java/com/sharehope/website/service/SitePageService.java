@@ -40,6 +40,7 @@ public class SitePageService {
     private final PageRepository pageRepository;
     private final PageSectionRepository sectionRepository;
     private final PageSectionTranslationRepository translationRepository;
+    private final TranslationService translationService;
 
     @Transactional(readOnly = true)
     public HomepageResponse getPage(String pageKey, String locale, boolean publicOnly) {
@@ -66,7 +67,7 @@ public class SitePageService {
         }
         sectionRepository.save(section);
         updateTranslation(section, "en", request.en());
-        updateTranslation(section, "fr", request.fr());
+        updateTranslation(section, "fr", translated(request.en()));
         return toResponse(section, "en");
     }
 
@@ -84,6 +85,22 @@ public class SitePageService {
         PageSectionTranslation translation = translationRepository.findByPageSectionIdAndLocale(section.getId(), locale).orElse(null);
         return new HomepageSectionResponse(section.getSectionKey(), section.getSectionType().name(), section.getDisplayOrder(), section.getEnabled(), translation == null ? null : translation.getTitle(), translation == null ? null : translation.getSubtitle(), translation == null ? null : translation.getBody(), translation == null ? null : translation.getButtonText(), section.getSettings());
     }
+
+    private SectionTranslationRequest translated(SectionTranslationRequest source) {
+        if (source == null) return null;
+        Map<String, Object> fields = new java.util.LinkedHashMap<>();
+        fields.put("title", source.title());
+        fields.put("subtitle", source.subtitle());
+        fields.put("body", source.body());
+        fields.put("buttonText", source.buttonText());
+        Map<String, Object> result = translationService.translateContent(fields, "EN", "FR");
+        return new SectionTranslationRequest(
+                string(result.get("title")), string(result.get("subtitle")),
+                string(result.get("body")), string(result.get("buttonText"))
+        );
+    }
+
+    private String string(Object value) { return value == null ? null : String.valueOf(value); }
 
     private String resolveSlug(String pageKey) {
         String slug = PAGE_SLUGS.get(pageKey);

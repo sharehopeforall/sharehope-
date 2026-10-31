@@ -18,6 +18,7 @@ public class HomepageService {
     private final PageRepository pageRepository;
     private final PageSectionRepository pageSectionRepository;
     private final PageSectionTranslationRepository translationRepository;
+    private final TranslationService translationService;
 
     @Transactional(readOnly = true)
     public HomepageResponse getPublicHomepage(String locale) {
@@ -122,11 +123,7 @@ public class HomepageService {
             request.en()
         );
 
-        updateTranslation(
-            section,
-            "fr",
-            request.fr()
-        );
+        updateTranslation(section, "fr", translated(request.en()));
 
         return toResponse(section, "en");
     }
@@ -223,6 +220,22 @@ public class HomepageService {
             section.getSettings()
         );
     }
+
+    private SectionTranslationRequest translated(SectionTranslationRequest source) {
+        if (source == null) return null;
+        Map<String, Object> fields = new LinkedHashMap<>();
+        fields.put("title", source.title());
+        fields.put("subtitle", source.subtitle());
+        fields.put("body", source.body());
+        fields.put("buttonText", source.buttonText());
+        Map<String, Object> result = translationService.translateContent(fields, "EN", "FR");
+        return new SectionTranslationRequest(
+                string(result.get("title")), string(result.get("subtitle")),
+                string(result.get("body")), string(result.get("buttonText"))
+        );
+    }
+
+    private String string(Object value) { return value == null ? null : String.valueOf(value); }
 
     private Page getHomepage() {
         return pageRepository
