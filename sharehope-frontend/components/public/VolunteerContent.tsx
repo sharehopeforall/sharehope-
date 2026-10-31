@@ -125,6 +125,8 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
   const t = { ...base, title: managed?.title || base.title, eyebrow: managed?.subtitle || base.eyebrow, lead: managed?.body || base.lead, cta: managed?.buttonText || base.cta };
   const [selectedRole, setSelectedRole] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
 
   const goToForm = () => {
@@ -236,18 +238,25 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
               <p className="mt-2 text-sm text-slate-600">{t.formLead}</p>
               <form
                 className="mt-6 space-y-4"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  setSubmitted(true);
+                  setSubmitting(true); setSubmitError(false);
+                  const data = new FormData(e.currentTarget);
+                  const names = String(data.get("fullName") || "").trim().split(/\s+/);
+                  const firstName = names.shift() || ""; const lastName = names.join(" ") || firstName;
+                  try {
+                    const response = await fetch("/api/submissions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ submissionType: "VOLUNTEER", firstName, lastName, email: data.get("email"), phone: data.get("phone"), subject: data.get("role"), details: `Availability: ${data.get("availability")}\n${data.get("message") || ""}`, locale: locale === "fr" ? "fr" : "en" }) });
+                    if (!response.ok) throw new Error(); setSubmitted(true);
+                  } catch { setSubmitError(true); } finally { setSubmitting(false); }
                 }}
               >
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.name}</label>
-                  <input required type="text" placeholder={t.namePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <input required name="fullName" autoComplete="name" type="text" placeholder={t.namePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.email}</label>
-                  <input required type="email" autoComplete="email" placeholder={t.emailPlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <input required name="email" type="email" autoComplete="email" placeholder={t.emailPlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.phone}</label>
@@ -256,7 +265,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.role}</label>
-                    <select
+                    <select name="role"
                       value={selectedRole}
                       onChange={(e) => setSelectedRole(Number(e.target.value))}
                       className="w-full rounded border border-[#E5E0D8] bg-white p-3 text-sm focus:border-brand-navy focus:outline-none"
@@ -268,7 +277,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                   </div>
                   <div>
                     <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.availability}</label>
-                    <select className="w-full rounded border border-[#E5E0D8] bg-white p-3 text-sm focus:border-brand-navy focus:outline-none">
+                    <select name="availability" className="w-full rounded border border-[#E5E0D8] bg-white p-3 text-sm focus:border-brand-navy focus:outline-none">
                       {t.availabilityOptions.map((opt) => (
                         <option key={opt}>{opt}</option>
                       ))}
@@ -277,14 +286,15 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.message}</label>
-                  <textarea rows={3} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <textarea name="message" rows={3} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
                 <button
-                  type="submit"
+                  type="submit" disabled={submitting}
                   className="font-mono-spaced w-full rounded-lg bg-[#FFC72C] py-4 text-xs font-bold uppercase tracking-widest text-[#121212] shadow-md transition-all hover:bg-[#E2AD17] active:scale-[0.99]"
                 >
-                  {t.submit}
+                  {submitting ? (locale === "fr" ? "Envoi…" : "Submitting…") : t.submit}
                 </button>
+                {submitError && <p role="alert" className="text-sm font-semibold text-red-700">{locale === "fr" ? "Impossible d’envoyer la candidature. Réessayez." : "We couldn't submit your application. Please try again."}</p>}
               </form>
             </>
           )}

@@ -72,7 +72,8 @@ public class SecurityConfig {
                                 "/api/admin/events/**",
                                 "/api/admin/gallery/**",
                                 "/api/admin/testimonials/**",
-                                "/api/admin/blog/**"
+                                "/api/admin/blog/**",
+                                "/api/admin/submissions/**"
                         ).hasAnyRole(
                                 "SUPER_ADMIN",
                                 "CONTENT_EDITOR"

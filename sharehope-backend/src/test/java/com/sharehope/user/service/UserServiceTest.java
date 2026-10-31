@@ -3,20 +3,26 @@ package com.sharehope.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sharehope.role.model.AdminRole;
+import com.sharehope.role.model.Role;
+import com.sharehope.role.repository.RoleRepository;
 import com.sharehope.user.dto.InviteUserRequest;
 import com.sharehope.user.model.User;
 import com.sharehope.user.model.UserStatus;
 import com.sharehope.user.repository.UserRepository;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.HexFormat;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class UserServiceTest {
 
     @Autowired
@@ -24,6 +30,17 @@ class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @BeforeEach
+    void seedRole() {
+        if (roleRepository.findByName("CONTENT_EDITOR").isEmpty()) {
+            LocalDateTime now = LocalDateTime.now();
+            roleRepository.save(Role.builder().name("CONTENT_EDITOR").description("Content editor").createdAt(now).updatedAt(now).build());
+        }
+    }
 
     @Test
     void inviteUser_createsInvitedUserWithHashedTokenAndAssignedRole() throws Exception {

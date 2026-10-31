@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { fetchBackend } from "@/lib/server/backend-fetch";
+const schema=z.object({submissionType:z.enum(["VOLUNTEER","PARTNERSHIP"]),firstName:z.string().trim().min(1).max(100),lastName:z.string().trim().min(1).max(100),email:z.email().max(320),phone:z.string().trim().max(40).optional(),organization:z.string().trim().max(200).optional(),subject:z.string().trim().max(200).optional(),details:z.string().trim().min(1).max(5000),locale:z.enum(["en","fr"])});
+export async function POST(request:Request){const parsed=schema.safeParse(await request.json().catch(()=>null));if(!parsed.success)return NextResponse.json({error:"Invalid submission."},{status:400});try{const response=await fetchBackend(`${process.env.BACKEND_URL??"http://localhost:8080"}/api/public/submissions`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(parsed.data),cache:"no-store"},8_000);return NextResponse.json(await response.json().catch(()=>({})),{status:response.status});}catch{return NextResponse.json({error:"Submission service unavailable."},{status:502});}}

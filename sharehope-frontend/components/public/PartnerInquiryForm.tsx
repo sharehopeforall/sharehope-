@@ -12,9 +12,9 @@ const interests = {
 
 export default function PartnerInquiryForm({ locale, contactEmail }: Props) {
   const french = locale === "fr";
-  const [status, setStatus] = useState<"idle" | "opening">("idle");
+  const [status, setStatus] = useState<"idle" | "opening" | "success" | "error">("idle");
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const selected = form.getAll("interest").join(", ");
@@ -35,8 +35,11 @@ export default function PartnerInquiryForm({ locale, contactEmail }: Props) {
       String(form.get("message")),
     ].join("\n");
     setStatus("opening");
-    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.setTimeout(() => setStatus("idle"), 1200);
+    try {
+      const response = await fetch("/api/submissions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ submissionType: "PARTNERSHIP", firstName: form.get("firstName"), lastName: form.get("lastName"), email: form.get("email"), phone: form.get("phone") || undefined, organization: form.get("organization"), subject, details: body, locale: french ? "fr" : "en" }) });
+      if (!response.ok) throw new Error();
+      setStatus("success"); event.currentTarget.reset();
+    } catch { setStatus("error"); }
   }
 
   const input = "mt-2 w-full border border-slate-300 bg-white px-4 py-3.5 text-base text-brand-navy outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-1 focus:ring-brand-navy";
@@ -78,7 +81,8 @@ export default function PartnerInquiryForm({ locale, contactEmail }: Props) {
       <div className="border-t border-slate-200 pt-8">
         <label className="flex items-start gap-3 text-sm leading-6 text-slate-600"><input type="checkbox" required className="mt-1 size-4 accent-brand-navy" /><span>{french ? "J’accepte que ShareHope utilise ces renseignements pour répondre à ma demande de partenariat." : "I agree that ShareHope may use this information to respond to my partnership inquiry."}</span></label>
         <button disabled={status === "opening"} className="mt-6 inline-flex w-full items-center justify-center gap-3 bg-brand-navy px-7 py-4 text-sm font-bold uppercase tracking-[.12em] text-white transition hover:bg-[#13306B] disabled:cursor-wait disabled:opacity-70 sm:w-auto">{status === "opening" ? <LoaderCircle className="size-4 animate-spin" /> : null}{french ? "Envoyer la demande" : "Send partnership inquiry"}<ArrowRight className="size-4" /></button>
-        <p className="mt-4 max-w-xl text-xs leading-5 text-slate-500">{french ? "Votre application de courriel s’ouvrira avec les renseignements complétés. Vérifiez-les, puis envoyez le message." : "Your email application will open with the completed details. Review them, then send the message."}</p>
+        {status === "success" && <p role="status" className="mt-4 text-sm font-semibold text-blue-800">{french ? "Votre demande a été envoyée." : "Your partnership inquiry has been sent."}</p>}
+        {status === "error" && <p role="alert" className="mt-4 text-sm font-semibold text-red-700">{french ? "Impossible d’envoyer la demande. Réessayez ou écrivez-nous." : `We couldn't send your inquiry. Try again or email ${contactEmail}.`}</p>}
       </div>
     </form>
   );
