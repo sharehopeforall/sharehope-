@@ -138,7 +138,7 @@ export default function HealthContent({ locale }: { locale: string }) {
           </div>
         </div>
         <div className="relative min-h-[320px] lg:min-h-[640px]">
-          <Image src={images.hero} alt="Community members receiving care at a mobile clinic" fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          <Image data-visual-key="health-hero-image" src={images.hero} alt="Community members receiving care at a mobile clinic" fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
         </div>
       </section>
 
@@ -168,7 +168,7 @@ export default function HealthContent({ locale }: { locale: string }) {
               return (
                 <article key={feature.title} className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
                   <div className={`relative aspect-[4/3] overflow-hidden rounded-sm shadow-xl lg:col-span-5 ${reversed ? "lg:order-2" : ""}`}>
-                    <Image src={feature.image} alt={feature.title} fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-cover" />
+                    <Image data-visual-key={`health-feature-image-${index + 1}`} src={feature.image} alt={feature.title} fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-cover" />
                   </div>
                   <div className={`lg:col-span-7 ${reversed ? "lg:order-1" : ""}`}>
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-green/10 text-brand-green">
@@ -186,7 +186,7 @@ export default function HealthContent({ locale }: { locale: string }) {
 
       {/* Quote */}
       <section className="relative isolate overflow-hidden px-6 py-24 text-white sm:py-32">
-        <Image src={images.wide} alt="Children playing near a clean water source" fill sizes="100vw" className="-z-20 object-cover" />
+        <Image data-visual-key="health-quote-image" src={images.wide} alt="Children playing near a clean water source" fill sizes="100vw" className="-z-20 object-cover" />
         <div className="absolute inset-0 -z-10 bg-brand-green/80" />
         <blockquote className="mx-auto max-w-4xl text-center">
           <p className="text-balance font-serif text-3xl font-semibold leading-snug sm:text-4xl lg:text-5xl">“{t.quoteText}”</p>

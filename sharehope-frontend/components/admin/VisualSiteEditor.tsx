@@ -57,7 +57,11 @@ export function VisualSiteEditor() {
     const receive = (event: MessageEvent<PreviewMessage>) => {
       if (event.origin !== window.location.origin || event.data?.source !== "sharehope-preview" || event.data.session !== previewSession) return;
       if (event.data.action === "ready") send({ action: "hydrate", patches });
-      if (event.data.action === "patch" && event.data.patch) setPatches((current) => ({ ...current, [`${event.data.patch!.selector}::${event.data.patch!.type}`]: event.data.patch! }));
+      if (event.data.action === "patch" && event.data.patch) {
+        const patch = event.data.patch;
+        setPatches((current) => ({ ...current, [`${patch.selector}::${patch.type}`]: patch }));
+        send({ action: "apply", patch });
+      }
       if (event.data.action === "navigate" && event.data.path) {
         setPath(event.data.path);
         setCustomPath("");
