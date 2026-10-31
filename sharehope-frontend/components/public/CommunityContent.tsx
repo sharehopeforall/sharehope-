@@ -57,14 +57,6 @@ const copy = {
         cta: "Support a widow",
       },
     ],
-    numbersEyebrow: "Community impact",
-    numbersTitle: "Change you can count.",
-    numbers: [
-      { value: "250+", label: "families supported with food and essentials" },
-      { value: "80", label: "widows receiving regular financial assistance" },
-      { value: "400+", label: "children kept in school through fee support" },
-      { value: "35", label: "small businesses started by widows" },
-    ],
     bandTitle: "Help a family stand again.",
     bandCta: "Give to community",
   },
@@ -106,14 +98,6 @@ const copy = {
         ],
         cta: "Soutenir une veuve",
       },
-    ],
-    numbersEyebrow: "Impact communautaire",
-    numbersTitle: "Un changement qui se compte.",
-    numbers: [
-      { value: "250+", label: "familles soutenues en nourriture et produits essentiels" },
-      { value: "80", label: "veuves recevant une aide financière régulière" },
-      { value: "400+", label: "enfants maintenus à l'école grâce à l'aide aux frais" },
-      { value: "35", label: "petites entreprises lancées par des veuves" },
     ],
     bandTitle: "Aidez une famille à se relever.",
     bandCta: "Donner pour la communauté",
@@ -206,25 +190,6 @@ export default function CommunityContent({ locale }: { locale: string }) {
                 </article>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-brand-green px-6 py-20 text-white sm:px-10 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
-            <div>
-              <p className="type-eyebrow text-[#F6C54B]">{t.numbersEyebrow}</p>
-              <h2 className="mt-5 max-w-sm font-serif text-4xl font-semibold leading-tight sm:text-5xl">{t.numbersTitle}</h2>
-            </div>
-            <dl className="grid grid-cols-2 border-l border-t border-white/20 sm:grid-cols-4">
-              {t.numbers.map((num) => (
-                <div key={num.value} className="border-b border-r border-white/20 p-5 sm:p-7">
-                  <dd className="font-serif text-4xl font-semibold text-[#F6C54B] sm:text-5xl">{num.value}</dd>
-                  <dt className="mt-3 text-xs leading-5 text-white/72 sm:text-sm">{num.label}</dt>
-                </div>
-              ))}
-            </dl>
           </div>
         </div>
       </section>

@@ -7,7 +7,7 @@ import { getManagedPage } from "@/lib/server/site-page";
 const content = {
   en: {
     eyebrow: "PARTNER WITH SHAREHOPE", title: "Build lasting change, together.", intro: "We collaborate with companies, foundations, community groups, and institutions that want to turn shared values into measurable impact.", primary: "Start a partnership",
-    whyEyebrow: "WHY PARTNER WITH US", whyTitle: "A partnership designed around real outcomes.", whyBody: "Your organization brings unique resources, expertise, and reach. ShareHope connects those strengths with locally informed programs in education, health, clean water, and family support.",
+    whyEyebrow: "WHY PARTNER WITH US", whyTitle: "A partnership designed around real outcomes.", whyBody: "Your organization brings unique resources, expertise, and reach. ShareHope connects those strengths with locally informed programs in education, health, and family support.",
     typesTitle: "Ways to partner", types: [
       ["Corporate partnerships", "Align your company’s purpose, employees, and resources with a program or community initiative.", Building2],
       ["Foundation support", "Fund defined outcomes through grants, multi-year commitments, or strategic program investment.", Globe2],
@@ -19,7 +19,7 @@ const content = {
   },
   fr: {
     eyebrow: "DEVENIR PARTENAIRE DE SHAREHOPE", title: "Créons un changement durable, ensemble.", intro: "Nous collaborons avec des entreprises, fondations, groupes communautaires et institutions qui souhaitent transformer des valeurs communes en impact mesurable.", primary: "Démarrer un partenariat",
-    whyEyebrow: "POURQUOI NOUS CHOISIR", whyTitle: "Un partenariat axé sur des résultats concrets.", whyBody: "Votre organisation apporte des ressources, une expertise et une portée uniques. ShareHope relie ces forces à des programmes locaux en éducation, santé, eau potable et soutien familial.",
+    whyEyebrow: "POURQUOI NOUS CHOISIR", whyTitle: "Un partenariat axé sur des résultats concrets.", whyBody: "Votre organisation apporte des ressources, une expertise et une portée uniques. ShareHope relie ces forces à des programmes locaux en éducation, santé et soutien familial.",
     typesTitle: "Façons de collaborer", types: [
       ["Partenariats d’entreprise", "Associez la mission, les employés et les ressources de votre entreprise à un programme communautaire.", Building2],
       ["Soutien des fondations", "Financez des résultats précis grâce à des subventions ou à des engagements pluriannuels.", Globe2],
