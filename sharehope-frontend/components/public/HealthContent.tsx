@@ -1,12 +1,12 @@
 import Image from "next/image";
-import { ArrowRight, Droplets, HeartPulse, Stethoscope } from "lucide-react";
+import { ArrowRight, Baby, HandHeart, HeartPulse } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 const images = {
   hero: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=85",
-  clinic: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1000&q=85",
-  water: "https://images.unsplash.com/photo-1541257710737-06d667133a53?auto=format&fit=crop&w=1000&q=85",
-  nutrition: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&w=1000&q=85",
+  visits: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=85",
+  mothers: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=1000&q=85",
+  families: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1000&q=85",
   wide: "https://images.unsplash.com/photo-1531983412531-1f49a365ffed?auto=format&fit=crop&w=1800&q=85",
 };
 
@@ -27,22 +27,22 @@ const copy = {
     featuresTitle: "Three ways care reaches the field.",
     features: [
       {
-        icon: Stethoscope,
-        title: "Mobile clinics",
-        body: "Vaccinations, checkups, and maternal care delivered directly to remote villages by traveling medical teams.",
-        image: images.clinic,
-      },
-      {
-        icon: Droplets,
-        title: "Clean water",
-        body: "Solar-powered wells, filtration systems, and hygiene education that stop disease before it starts.",
-        image: images.water,
-      },
-      {
         icon: HeartPulse,
-        title: "Nutrition programs",
-        body: "Meal programs, supplements, and maternal nutrition that fight malnutrition in its earliest stages.",
-        image: images.nutrition,
+        title: "Visiting the sick",
+        body: "We visit people who are ill at home and in hospital, bringing comfort, prayer, and a listening ear.",
+        image: images.visits,
+      },
+      {
+        icon: Baby,
+        title: "Support for expectant mothers",
+        body: "Visits, encouragement, and practical help for pregnant women, so no mother walks through pregnancy alone.",
+        image: images.mothers,
+      },
+      {
+        icon: HandHeart,
+        title: "Standing with families",
+        body: "When illness strikes, we bring care packages, prayer, and help with medical bills, so families don't face it alone.",
+        image: images.families,
       },
     ],
     quoteText:
@@ -75,22 +75,22 @@ const copy = {
     featuresTitle: "Trois façons d'apporter des soins sur le terrain.",
     features: [
       {
-        icon: Stethoscope,
-        title: "Cliniques mobiles",
-        body: "Vaccins, examens et soins maternels livrés directement dans les villages éloignés par des équipes médicales itinérantes.",
-        image: images.clinic,
-      },
-      {
-        icon: Droplets,
-        title: "Eau potable",
-        body: "Puits solaires, systèmes de filtration et éducation à l'hygiène qui arrêtent la maladie avant qu'elle ne commence.",
-        image: images.water,
-      },
-      {
         icon: HeartPulse,
-        title: "Programmes de nutrition",
-        body: "Repas, suppléments et nutrition maternelle qui combattent la malnutrition dès ses débuts.",
-        image: images.nutrition,
+        title: "Visiter les malades",
+        body: "Nous rendons visite aux personnes malades, chez elles et à l'hôpital, pour leur apporter réconfort, prière et écoute.",
+        image: images.visits,
+      },
+      {
+        icon: Baby,
+        title: "Soutien aux futures mamans",
+        body: "Des visites, des encouragements et une aide concrète pour les femmes enceintes, afin qu'aucune mère ne vive sa grossesse seule.",
+        image: images.mothers,
+      },
+      {
+        icon: HandHeart,
+        title: "Aux côtés des familles",
+        body: "Quand la maladie frappe, nous apportons des colis de soins, la prière et une aide pour les frais médicaux, afin que les familles ne l'affrontent pas seules.",
+        image: images.families,
       },
     ],
     quoteText:
