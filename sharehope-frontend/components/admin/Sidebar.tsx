@@ -12,6 +12,7 @@ import {
   Newspaper,
   Inbox,
   Mail,
+  Images,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -27,6 +28,7 @@ export function Sidebar() {
     { href: "/admin/donations", label: "Donations", icon: CircleDollarSign },
     { href: "/admin/submissions", label: "Applications", icon: Inbox },
     { href: "/admin/subscribers", label: "Newsletter", icon: Mail },
+    { href: "/admin/gallery", label: "Gallery", icon: Images },
     { href: "/admin/programs", label: t("programs"), icon: HeartHandshake },
     { href: "/admin/events", label: t("events"), icon: CalendarDays },
     ...(user?.role === "SUPER_ADMIN" ? [{ href: "/admin/team", label: t("team"), icon: Users2 }] : []),
