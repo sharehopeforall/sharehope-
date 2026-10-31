@@ -1,1 +1,0 @@
-package com.sharehope.gallery.repository;import com.sharehope.gallery.model.GalleryItem;import org.springframework.data.jpa.repository.JpaRepository;import java.util.*;public interface GalleryRepository extends JpaRepository<GalleryItem,UUID>{List<GalleryItem> findAllByOrderByDisplayOrderAscCreatedAtDesc();}
