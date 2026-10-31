@@ -24,6 +24,7 @@ export function VisualSiteEditor() {
   const [locale, setLocale] = useState<"en" | "fr">("en");
   const [viewport, setViewport] = useState<keyof typeof widths>("desktop");
   const [patches, setPatches] = useState<VisualPatchMap>({});
+  const patchesRef = useRef<VisualPatchMap>({});
   const [saved, setSaved] = useState<VisualPatchMap>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,6 +43,7 @@ export function VisualSiteEditor() {
       const result = await websiteApi.getVisualContent(path, locale);
       if (version !== loadVersion.current) return;
       const content = Object.keys(result.draftContent).length ? result.draftContent : result.publishedContent;
+      patchesRef.current = content;
       setPatches(content); setSaved(content); setStatus(result.publishedAt ? `Published ${new Date(result.publishedAt).toLocaleString()}` : "Not published yet");
       send({ action: "hydrate", patches: content });
     } catch { if (version === loadVersion.current) setStatus("Draft could not be loaded"); }
@@ -56,10 +58,12 @@ export function VisualSiteEditor() {
   useEffect(() => {
     const receive = (event: MessageEvent<PreviewMessage>) => {
       if (event.origin !== window.location.origin || event.data?.source !== "sharehope-preview" || event.data.session !== previewSession) return;
-      if (event.data.action === "ready") send({ action: "hydrate", patches });
+      if (event.data.action === "ready") send({ action: "hydrate", patches: patchesRef.current });
       if (event.data.action === "patch" && event.data.patch) {
         const patch = event.data.patch;
-        setPatches((current) => ({ ...current, [`${patch.selector}::${patch.type}`]: patch }));
+        const next = { ...patchesRef.current, [`${patch.selector}::${patch.type}`]: patch };
+        patchesRef.current = next;
+        setPatches(next);
         send({ action: "apply", patch });
       }
       if (event.data.action === "navigate" && event.data.path) {
@@ -69,7 +73,7 @@ export function VisualSiteEditor() {
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
-  }, [patches, previewSession, send]);
+  }, [previewSession, send]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -78,9 +82,47 @@ export function VisualSiteEditor() {
     return () => window.removeEventListener("beforeunload", warning);
   }, [dirty]);
 
-  const saveDraft = async () => { setSaving(true); try { const result = await websiteApi.saveVisualDraft(path, locale, patches); setSaved(result.draftContent); setStatus("Draft saved"); } catch { setStatus("Draft save failed"); } finally { setSaving(false); } };
-  const publish = async () => { if (dirty) await saveDraft(); setPublishing(true); try { const result = await websiteApi.publishVisualContent(path, locale); setPatches(result.publishedContent); setSaved(result.publishedContent); setStatus("Published successfully"); } catch { setStatus(isPublisher ? "Publish failed" : "Only a super admin can publish"); } finally { setPublishing(false); } };
-  const discard = async () => { if (!window.confirm("Discard this draft and restore the published page?")) return; const result = await websiteApi.discardVisualDraft(path, locale); setPatches(result.draftContent); setSaved(result.draftContent); iframe.current?.contentWindow?.location.reload(); setStatus("Draft discarded"); };
+  const saveDraft = async () => {
+    setSaving(true);
+    try {
+      const result = await websiteApi.saveVisualDraft(path, locale, patchesRef.current);
+      patchesRef.current = result.draftContent;
+      setPatches(result.draftContent);
+      setSaved(result.draftContent);
+      setStatus("Draft saved");
+      return true;
+    } catch {
+      setStatus("Draft save failed — nothing was published");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+  const publish = async () => {
+    if (dirty && !(await saveDraft())) return;
+    setPublishing(true);
+    try {
+      const result = await websiteApi.publishVisualContent(path, locale);
+      patchesRef.current = result.publishedContent;
+      setPatches(result.publishedContent);
+      setSaved(result.publishedContent);
+      send({ action: "hydrate", patches: result.publishedContent });
+      setStatus("Published successfully");
+    } catch {
+      setStatus(isPublisher ? "Publish failed" : "Only a super admin can publish");
+    } finally {
+      setPublishing(false);
+    }
+  };
+  const discard = async () => {
+    if (!window.confirm("Discard this draft and restore the published page?")) return;
+    const result = await websiteApi.discardVisualDraft(path, locale);
+    patchesRef.current = result.draftContent;
+    setPatches(result.draftContent);
+    setSaved(result.draftContent);
+    iframe.current?.contentWindow?.location.reload();
+    setStatus("Draft discarded");
+  };
 
   return <div className="flex h-full min-h-0 flex-col bg-[#E9EDF1]">
     <div className="flex flex-wrap items-center gap-3 border-b bg-white px-4 py-3">
@@ -102,7 +144,7 @@ export function VisualSiteEditor() {
             ref={iframe}
             title={`${path} visual editor`}
             src={frameUrl}
-            onLoad={() => send({ action: "hydrate", patches })}
+            onLoad={() => send({ action: "hydrate", patches: patchesRef.current })}
             className="h-full w-full border-0"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
           />
