@@ -1,0 +1,1 @@
+package com.sharehope.donation.repository;import com.sharehope.donation.model.Donation;import org.springframework.data.jpa.repository.JpaRepository;import java.util.*;public interface DonationRepository extends JpaRepository<Donation,UUID>{Optional<Donation> findByProviderReference(String reference);List<Donation> findAllByOrderByCreatedAtDesc();}

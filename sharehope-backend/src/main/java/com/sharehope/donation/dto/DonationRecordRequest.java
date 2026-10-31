@@ -1,0 +1,1 @@
+package com.sharehope.donation.dto;import jakarta.validation.constraints.*;public record DonationRecordRequest(@NotBlank String provider,@NotBlank String providerReference,String donorName,@Email String donorEmail,String donorPhone,@NotNull @Positive Long amountCents,@NotBlank String currency,@NotBlank String frequency,String designation,@NotBlank String status){}

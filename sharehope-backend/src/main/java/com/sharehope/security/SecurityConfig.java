@@ -51,7 +51,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/auth/login",
-                                "/api/auth/activate"
+                                "/api/auth/activate",
+                                "/api/public/payment-events"
                         ).permitAll()
 
                         .requestMatchers(
@@ -73,7 +74,8 @@ public class SecurityConfig {
                                 "/api/admin/gallery/**",
                                 "/api/admin/testimonials/**",
                                 "/api/admin/blog/**",
-                                "/api/admin/submissions/**"
+                                "/api/admin/submissions/**",
+                                "/api/admin/donations/**"
                         ).hasAnyRole(
                                 "SUPER_ADMIN",
                                 "CONTENT_EDITOR"

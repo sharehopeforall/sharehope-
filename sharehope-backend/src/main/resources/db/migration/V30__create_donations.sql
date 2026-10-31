@@ -1,0 +1,2 @@
+CREATE TABLE donations (id UUID PRIMARY KEY, provider VARCHAR(20) NOT NULL, provider_reference VARCHAR(200) NOT NULL UNIQUE, donor_name VARCHAR(200), donor_email VARCHAR(320), donor_phone VARCHAR(40), amount_cents BIGINT NOT NULL, currency VARCHAR(3) NOT NULL, frequency VARCHAR(20) NOT NULL, designation VARCHAR(120), status VARCHAR(30) NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE INDEX idx_donations_created ON donations(created_at DESC);

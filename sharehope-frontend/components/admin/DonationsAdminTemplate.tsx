@@ -1,18 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getAccessToken } from "@/lib/auth/token";
 import { CalendarDays, CheckCircle2, ChevronDown, CircleDollarSign, Download, ExternalLink, HeartHandshake, MoreHorizontal, RefreshCcw, Search, UsersRound } from "lucide-react";
 
 type DonationStatus = "Succeeded" | "Pending" | "Refunded" | "Failed";
 type Donation = { id: string; donor: string; email: string; amount: number; frequency: "One-time" | "Monthly"; designation: string; date: string; status: DonationStatus; anonymous?: boolean };
-
-const previewDonations: Donation[] = [
-  { id: "SH-1048", donor: "Maya Thompson", email: "maya@example.org", amount: 100, frequency: "Monthly", designation: "Where needed most", date: "2026-10-10T17:42:00Z", status: "Succeeded" },
-  { id: "SH-1047", donor: "Anonymous donor", email: "hidden@example.org", amount: 250, frequency: "One-time", designation: "Education Access", date: "2026-10-09T20:15:00Z", status: "Succeeded", anonymous: true },
-  { id: "SH-1046", donor: "David Lee", email: "david@example.org", amount: 50, frequency: "One-time", designation: "Annual Hope Gala", date: "2026-10-09T15:08:00Z", status: "Pending" },
-  { id: "SH-1045", donor: "Amara Johnson", email: "amara@example.org", amount: 75, frequency: "Monthly", designation: "Health & Wellness", date: "2026-10-08T18:31:00Z", status: "Succeeded" },
-  { id: "SH-1044", donor: "Noah Williams", email: "noah@example.org", amount: 40, frequency: "One-time", designation: "Community Development", date: "2026-10-07T13:20:00Z", status: "Refunded" },
-];
 
 const statusStyle: Record<DonationStatus, string> = {
   Succeeded: "bg-blue-100 text-blue-800",
@@ -25,8 +18,9 @@ export function DonationsAdminTemplate() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"All" | DonationStatus>("All");
   const [frequency, setFrequency] = useState<"All" | Donation["frequency"]>("All");
-  const [showPreview, setShowPreview] = useState(true);
-  const donations = useMemo(() => showPreview ? previewDonations : [], [showPreview]);
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { fetch("/backend-api/admin/donations", { headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` }, cache: "no-store" }).then(async response => { if (!response.ok) throw new Error(); const rows = await response.json() as Array<{id:string;providerReference:string;donorName?:string;donorEmail?:string;amountCents:number;frequency:string;designation?:string;createdAt:string;status:string}>; setDonations(rows.map(row => ({ id: row.providerReference || row.id, donor: row.donorName || "Anonymous donor", email: row.donorEmail || "Not provided", amount: row.amountCents / 100, frequency: row.frequency === "Monthly" ? "Monthly" : "One-time", designation: row.designation || "Where needed most", date: row.createdAt, status: (["Succeeded","Pending","Refunded","Failed"].includes(row.status) ? row.status : "Pending") as DonationStatus }))); }).finally(() => setLoading(false)); }, []);
   const filtered = useMemo(() => donations.filter((donation) => {
     const matchesStatus = status === "All" || donation.status === status;
     const matchesFrequency = frequency === "All" || donation.frequency === frequency;
@@ -44,14 +38,14 @@ export function DonationsAdminTemplate() {
         <button type="button" disabled className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white/70"><Download size={17} />Export CSV</button>
       </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950"><div><strong>Template preview</strong><span className="ml-2 text-amber-800">These example transactions are not real donations. Live records will appear after a payment provider is connected.</span></div><label className="flex shrink-0 items-center gap-2 font-bold"><input type="checkbox" checked={showPreview} onChange={(event) => setShowPreview(event.target.checked)} />Show sample data</label></div>
+      {loading && <div className="rounded-2xl border bg-white p-5 text-sm text-slate-500">Loading verified donations…</div>}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Total received", value: `$${total.toLocaleString()}`, detail: "Successful preview gifts", icon: CircleDollarSign },
+          { label: "Total received", value: `$${total.toLocaleString()}`, detail: "Verified successful gifts", icon: CircleDollarSign },
           { label: "This month", value: `$${total.toLocaleString()}`, detail: `${succeeded.length} successful donations`, icon: CalendarDays },
           { label: "Monthly support", value: `$${monthly.reduce((sum, donation) => sum + donation.amount, 0).toLocaleString()}`, detail: "Estimated recurring amount", icon: RefreshCcw },
-          { label: "Monthly donors", value: monthly.length, detail: "Active preview supporters", icon: UsersRound },
+          { label: "Monthly donors", value: monthly.length, detail: "Active recurring supporters", icon: UsersRound },
         ].map(({ label, value, detail, icon: Icon }) => <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><p className="text-sm font-semibold text-slate-500">{label}</p><Icon className="text-brand-green" size={19} /></div><p className="mt-3 text-3xl font-bold text-brand-navy">{value}</p><p className="mt-1 text-xs text-slate-400">{detail}</p></div>)}
       </section>
 
