@@ -64,13 +64,13 @@ const content = {
       monthly: {
         15: "Gives 2 families durable aid and clean water every year.",
         30: "Gives 4 families durable aid and clean water every year.",
-        60: "Gives 8 families durable aid and clean water every year.",
+        60: "Supports year-round community programs.",
         120: "Gives 16 families durable aid and schooling support every year.",
       } as Record<number, string>,
       once: {
         15: "Provides essential clean water filtration for 1 child.",
         30: "Provides emergency clean water kits for 2 households.",
-        60: "Funds school supplies and clean water for 3 students.",
+        60: "Supports student learning and well-being.",
         120: "Sponsors vocational training tools and healthcare kits for a family.",
       } as Record<number, string>,
     },
@@ -144,13 +144,13 @@ const content = {
       monthly: {
         15: "Offre une aide durable et de l'eau potable à 2 familles chaque année.",
         30: "Offre une aide durable et de l'eau potable à 4 familles chaque année.",
-        60: "Offre une aide durable et de l'eau potable à 8 familles chaque année.",
+        60: "Soutient les programmes communautaires toute l’année.",
         120: "Offre une aide durable et un soutien scolaire à 16 familles chaque année.",
       } as Record<number, string>,
       once: {
         15: "Fournit une filtration d'eau potable essentielle pour 1 enfant.",
         30: "Fournit des trousses d'eau potable d'urgence pour 2 foyers.",
-        60: "Finance des fournitures scolaires et de l'eau potable pour 3 élèves.",
+        60: "Soutient l’apprentissage et le bien-être des élèves.",
         120: "Parraine des outils de formation professionnelle et des trousses de santé pour une famille.",
       } as Record<number, string>,
     },

@@ -51,6 +51,8 @@ const copy = {
     namePlaceholder: "Jane Doe",
     email: "Email address",
     emailPlaceholder: "jane@example.com",
+    phone: "Phone number",
+    phonePlaceholder: "+1 (555) 123-4567",
     role: "Role of interest",
     availability: "Availability",
     availabilityOptions: ["Weekdays", "Evenings", "Weekends", "Flexible"],
@@ -105,6 +107,8 @@ const copy = {
     namePlaceholder: "Jeanne Dupont",
     email: "Adresse courriel",
     emailPlaceholder: "jeanne@exemple.com",
+    phone: "Numéro de téléphone",
+    phonePlaceholder: "+1 (555) 123-4567",
     role: "Rôle souhaité",
     availability: "Disponibilité",
     availabilityOptions: ["En semaine", "En soirée", "Fins de semaine", "Flexible"],
@@ -243,7 +247,11 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.email}</label>
-                  <input required type="email" placeholder={t.emailPlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <input required type="email" autoComplete="email" placeholder={t.emailPlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                </div>
+                <div>
+                  <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.phone}</label>
+                  <input required type="tel" name="phone" autoComplete="tel" inputMode="tel" placeholder={t.phonePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>

@@ -32,6 +32,16 @@ async function stripeCheckout(request: Request, donation: ReturnType<typeof pars
     "metadata[frequency]": donation.frequency,
     "payment_intent_data[metadata][program]": donation.program,
   });
+  if (donation.donor) {
+    const donorName = `${donation.donor.firstName} ${donation.donor.lastName}`;
+    params.set("customer_email", donation.donor.email);
+    params.set("metadata[donor_name]", donorName);
+    params.set("metadata[donor_email]", donation.donor.email);
+    if (donation.donor.phone) params.set("metadata[donor_phone]", donation.donor.phone);
+    params.set("payment_intent_data[metadata][donor_name]", donorName);
+    params.set("payment_intent_data[metadata][donor_email]", donation.donor.email);
+    if (donation.donor.phone) params.set("payment_intent_data[metadata][donor_phone]", donation.donor.phone);
+  }
   if (embedded) {
     params.set("ui_mode", "embedded");
     params.set("return_url", successUrl);
@@ -47,7 +57,15 @@ async function stripeCheckout(request: Request, donation: ReturnType<typeof pars
     params.set("line_items[0][price_data][recurring][interval]", "month");
     params.delete("payment_intent_data[metadata][program]");
     params.delete("payment_intent_data[metadata][event]");
+    params.delete("payment_intent_data[metadata][donor_name]");
+    params.delete("payment_intent_data[metadata][donor_email]");
+    params.delete("payment_intent_data[metadata][donor_phone]");
     params.set("subscription_data[metadata][program]", donation.program);
+    if (donation.donor) {
+      params.set("subscription_data[metadata][donor_name]", `${donation.donor.firstName} ${donation.donor.lastName}`);
+      params.set("subscription_data[metadata][donor_email]", donation.donor.email);
+      if (donation.donor.phone) params.set("subscription_data[metadata][donor_phone]", donation.donor.phone);
+    }
     if (donation.event) params.set("subscription_data[metadata][event]", donation.event);
   }
 

@@ -54,7 +54,7 @@ export default async function PartnerPage({ params }: { params: Promise<{ locale
             <p className="text-xs font-bold uppercase tracking-[.18em] text-brand-navy sm:text-sm">{t.eyebrow}</p>
             <h1 className="mt-5 text-balance font-serif text-[3rem] font-normal leading-[1.08] tracking-[-0.01em] text-brand-navy sm:text-[3.5rem] xl:text-[4.25rem]">{t.title}</h1>
             <p className="mt-6 text-lg leading-relaxed text-slate-700 md:text-xl">{t.intro}</p>
-            <Link href="/contact?topic=partnership" className="mt-10 inline-flex items-center rounded-sm bg-brand-navy px-8 py-4 text-sm font-bold uppercase tracking-[.14em] text-white transition hover:bg-[#13306B]">{t.primary}</Link>
+            <Link href="/partner/form" className="mt-10 inline-flex items-center rounded-sm bg-brand-navy px-8 py-4 text-sm font-bold uppercase tracking-[.14em] text-white transition hover:bg-[#13306B]">{t.primary}</Link>
           </div>
         </div>
         <div className="relative min-h-[380px] sm:min-h-[460px] lg:min-h-0">
@@ -131,7 +131,7 @@ export default async function PartnerPage({ params }: { params: Promise<{ locale
             <p className="mt-5 text-lg leading-relaxed text-white/75">{t.ctaBody}</p>
           </div>
           <div className="shrink-0">
-            <Link href="/contact?topic=partnership" className="inline-flex items-center gap-2 rounded-md bg-white px-7 py-4 text-sm font-bold uppercase tracking-[.1em] text-brand-navy transition hover:bg-[#E6EEFB]">
+            <Link href="/partner/form" className="inline-flex items-center gap-2 rounded-md bg-white px-7 py-4 text-sm font-bold uppercase tracking-[.1em] text-brand-navy transition hover:bg-[#E6EEFB]">
               {t.ctaButton}<ArrowRight className="size-4" />
             </Link>
             <p className="mt-4 max-w-xs text-sm text-white/60">{t.ctaNote}</p>

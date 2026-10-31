@@ -9,6 +9,12 @@ export type DonationCheckout = {
   program: DonationProgram;
   event?: string;
   locale: "en" | "fr";
+  donor?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  };
 };
 
 const programs = new Set<DonationProgram>(["general", "education", "health", "community", "families", "widows"]);
@@ -20,12 +26,23 @@ export function parseDonationCheckout(value: unknown): DonationCheckout {
   const provider = input.provider;
   const frequency = input.frequency;
   const program = input.program;
+  const donorInput = input.donor && typeof input.donor === "object" ? input.donor as Record<string, unknown> : null;
 
   if (provider !== "stripe" && provider !== "paypal") throw new Error("Select a payment provider.");
   if (frequency !== "once" && frequency !== "monthly") throw new Error("Invalid donation frequency.");
   if (typeof program !== "string" || !programs.has(program as DonationProgram)) throw new Error("Invalid program.");
   if (!Number.isFinite(amount) || amount < 5 || amount > 100_000 || Math.round(amount * 100) !== amount * 100) {
     throw new Error("Donation amount must be between $5 and $100,000 USD.");
+  }
+
+  let donor: DonationCheckout["donor"];
+  if (donorInput) {
+    const firstName = typeof donorInput.firstName === "string" ? donorInput.firstName.trim().slice(0, 100) : "";
+    const lastName = typeof donorInput.lastName === "string" ? donorInput.lastName.trim().slice(0, 100) : "";
+    const email = typeof donorInput.email === "string" ? donorInput.email.trim().toLowerCase().slice(0, 320) : "";
+    const phone = typeof donorInput.phone === "string" ? donorInput.phone.trim().slice(0, 40) : "";
+    if (!firstName || !lastName || !/^\S+@\S+\.\S+$/.test(email)) throw new Error("Enter valid donor details.");
+    donor = { firstName, lastName, email, phone: phone || undefined };
   }
 
   return {
@@ -35,6 +52,7 @@ export function parseDonationCheckout(value: unknown): DonationCheckout {
     program: program as DonationProgram,
     event: typeof input.event === "string" && input.event.trim() ? input.event.trim().slice(0, 100) : undefined,
     locale: input.locale === "fr" ? "fr" : "en",
+    donor,
   };
 }
 

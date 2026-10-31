@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Heart, Lock, ShieldCheck } from "lucide-react";
+import { Heart, LockKeyhole, ShieldCheck } from "lucide-react";
 import type { ManagedPageContent } from "@/lib/server/site-page";
 import DonationPaymentModal from "@/components/public/DonationPaymentModal";
 
@@ -15,10 +15,16 @@ const copy = {
     eyebrow: "Make a difference today",
     title: "Your generosity builds brighter futures.",
     lead: "Every gift goes directly to the programs and communities that need it most. Choose an amount, pick a program, and see the impact you create.",
-    monthly: "Monthly",
+    formTitle: "Make your gift",
+    formLead: "Choose the giving option that works best for you.",
+    monthly: "Give monthly",
     once: "Give once",
-    chooseAmount: "Choose or enter an amount to give",
-    customPlaceholder: "Custom amount",
+    monthlyNote: "Most impactful",
+    onceNote: "One-time gift",
+    chooseAmount: "Choose your gift amount",
+    customPlaceholder: "Enter a different amount",
+    perMonth: "per month",
+    oneTime: "one time",
     programLabel: "Direct my gift to",
     programs: {
       general: "Where it's needed most",
@@ -45,11 +51,12 @@ const copy = {
     processing: "Opening secure checkout…",
     cancelled: "Checkout was cancelled. No payment was made.",
     paymentError: "We couldn't confirm that payment. Please try again or choose another payment method.",
-    secure: "Secure donation • Tax-deductible",
+    secure: "Secure checkout",
+    encrypted: "Encrypted payment",
     trustTitle: "Why give with ShareHope?",
     trust: [
-      { title: "100% to the field", body: "Public donations go directly to programs — operations are funded separately." },
-      { title: "Full transparency", body: "Quarterly field reports show exactly where every dollar went." },
+      { title: "Secure giving", body: "Your payment is processed through a protected, encrypted checkout." },
+      { title: "Your choice matters", body: "Direct your gift to a program or let ShareHope apply it where it is needed most." },
       { title: "Local leadership", body: "Programs are designed and run by the communities they serve." },
     ],
     unavailable: "Online checkout is temporarily unavailable. Please contact us to arrange your gift.",
@@ -58,10 +65,16 @@ const copy = {
     eyebrow: "Faites une différence aujourd'hui",
     title: "Votre générosité bâtit un avenir meilleur.",
     lead: "Chaque don va directement aux programmes et aux communautés qui en ont le plus besoin. Choisissez un montant, un programme, et voyez l'impact que vous créez.",
-    monthly: "Mensuel",
+    formTitle: "Faites votre don",
+    formLead: "Choisissez la formule de don qui vous convient.",
+    monthly: "Don mensuel",
     once: "Don unique",
-    chooseAmount: "Choisissez ou entrez un montant",
-    customPlaceholder: "Montant personnalisé",
+    monthlyNote: "Le plus porteur",
+    onceNote: "Une seule fois",
+    chooseAmount: "Choisissez le montant de votre don",
+    customPlaceholder: "Entrer un autre montant",
+    perMonth: "par mois",
+    oneTime: "une seule fois",
     programLabel: "Diriger mon don vers",
     programs: {
       general: "Là où c'est le plus nécessaire",
@@ -88,11 +101,12 @@ const copy = {
     processing: "Ouverture du paiement sécurisé…",
     cancelled: "Le paiement a été annulé. Aucun prélèvement n'a été effectué.",
     paymentError: "Nous n'avons pas pu confirmer ce paiement. Réessayez ou choisissez un autre mode de paiement.",
-    secure: "Don sécurisé • Déductible d'impôt",
+    secure: "Paiement sécurisé",
+    encrypted: "Transaction chiffrée",
     trustTitle: "Pourquoi donner avec ShareHope ?",
     trust: [
-      { title: "100 % sur le terrain", body: "Les dons publics financent directement les programmes — les opérations sont financées séparément." },
-      { title: "Transparence totale", body: "Des rapports trimestriels montrent exactement où chaque dollar est allé." },
+      { title: "Don sécurisé", body: "Votre paiement est traité par une plateforme protégée et chiffrée." },
+      { title: "Votre choix compte", body: "Dirigez votre don vers un programme ou confiez-le à ShareHope là où les besoins sont les plus grands." },
       { title: "Leadership local", body: "Les programmes sont conçus et menés par les communautés qu'ils servent." },
     ],
     unavailable: "Le paiement en ligne est temporairement indisponible. Contactez-nous pour organiser votre don.",
@@ -140,28 +154,39 @@ export default function DonateContent({ locale, managed }: { locale: string; man
           <p className="max-w-lg text-base leading-relaxed text-slate-700 sm:text-lg">{t.lead}</p>
         </div>
 
-        <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-lg border border-[#E5E0D8] bg-white shadow-xl">
+        <div className="relative mx-auto w-full max-w-lg overflow-hidden border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,42,68,.14)]">
+          <div className="border-b border-slate-200 px-5 py-5 sm:px-6">
+            <h2 className="font-serif text-2xl font-semibold text-brand-navy">{t.formTitle}</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">{t.formLead}</p>
+          </div>
+
           {/* Frequency toggle */}
-          <div className="grid grid-cols-2 border-b border-[#E5E0D8] bg-[#F3EFEA] p-1">
+          <div className="grid grid-cols-2 gap-2 border-b border-slate-200 bg-slate-50 p-2">
             <button
+              type="button"
               onClick={() => setFrequency("monthly")}
-              className={`font-mono-spaced flex items-center justify-center gap-1.5 py-3 text-xs font-bold uppercase transition-all ${
-                frequency === "monthly" ? "bg-[#121212] text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
+              aria-pressed={frequency === "monthly"}
+              className={`flex min-h-16 flex-col items-center justify-center px-3 py-2 text-sm font-bold transition-all ${
+                frequency === "monthly" ? "bg-brand-navy text-white shadow-sm" : "bg-white text-brand-navy hover:bg-blue-50"
               }`}
             >
-              {t.monthly} <Heart size={13} className={frequency === "monthly" ? "fill-[#FFC72C] text-[#FFC72C]" : ""} />
+              <span className="flex items-center gap-2"><Heart className="size-4" fill={frequency === "monthly" ? "currentColor" : "none"} />{t.monthly}</span>
+              <span className={`mt-1 text-[10px] font-semibold uppercase tracking-[.12em] ${frequency === "monthly" ? "text-white/65" : "text-slate-400"}`}>{t.monthlyNote}</span>
             </button>
             <button
+              type="button"
               onClick={() => setFrequency("once")}
-              className={`font-mono-spaced py-3 text-xs font-bold uppercase transition-all ${
-                frequency === "once" ? "bg-[#121212] text-white shadow-sm" : "text-slate-600 hover:text-slate-900"
+              aria-pressed={frequency === "once"}
+              className={`flex min-h-16 flex-col items-center justify-center px-3 py-2 text-sm font-bold transition-all ${
+                frequency === "once" ? "bg-brand-navy text-white shadow-sm" : "bg-white text-brand-navy hover:bg-blue-50"
               }`}
             >
-              {t.once}
+              <span>{t.once}</span>
+              <span className={`mt-1 text-[10px] font-semibold uppercase tracking-[.12em] ${frequency === "once" ? "text-white/65" : "text-slate-400"}`}>{t.onceNote}</span>
             </button>
           </div>
 
-          <div className="space-y-4 p-5 sm:p-6">
+          <div className="space-y-5 p-5 sm:p-6">
             {(cancelled || paymentError) && (
               <p role="status" className="rounded border border-amber-200 bg-amber-50 p-3 text-sm font-medium text-amber-900">
                 {paymentError ? t.paymentError : t.cancelled}
@@ -169,13 +194,13 @@ export default function DonateContent({ locale, managed }: { locale: string; man
             )}
             {/* Program selector */}
             <div>
-              <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-[#64748B]">
+              <label className="mb-2 block text-sm font-bold text-brand-navy">
                 {t.programLabel}
               </label>
               <select
                 value={program}
                 onChange={(e) => setProgram(e.target.value as ProgramKey)}
-                className="w-full rounded border border-[#E5E0D8] bg-white p-3 text-sm focus:border-[#121212] focus:outline-none"
+                className="w-full border border-slate-300 bg-white px-4 py-3 text-sm text-brand-navy outline-none focus:border-brand-navy focus:ring-1 focus:ring-brand-navy"
               >
                 {PROGRAM_KEYS.map((key) => (
                   <option key={key} value={key}>{t.programs[key]}</option>
@@ -184,39 +209,40 @@ export default function DonateContent({ locale, managed }: { locale: string; man
             </div>
 
             {/* Amounts */}
-            <label className="font-mono-spaced block text-[10px] font-bold uppercase text-[#64748B]">
+            <label className="block text-sm font-bold text-brand-navy">
               {t.chooseAmount}
             </label>
             <div className="grid grid-cols-2 gap-2.5">
               {PRESETS.map((preset) => (
                 <button
                   key={preset}
+                  type="button"
                   onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                  className={`rounded border px-3 py-3 text-sm font-bold transition-all ${
+                  aria-pressed={!customAmount && amount === preset}
+                  className={`min-h-[74px] border px-3 py-3 text-left transition-all ${
                     !customAmount && amount === preset
-                      ? "border-[#121212] bg-[#121212] text-white shadow-sm"
-                      : "border-transparent bg-[#FAF7F2] text-slate-800 hover:bg-[#EAE5DD]"
+                      ? "border-brand-navy bg-blue-50 text-brand-navy ring-1 ring-brand-navy"
+                      : "border-slate-200 bg-white text-brand-navy hover:border-slate-400"
                   }`}
                 >
-                  ${preset}
-                  <span className={`text-[10px] font-normal ${!customAmount && amount === preset ? "text-white/70" : "text-[#64748B]"}`}>
-                    {" "}{frequency === "monthly" ? "USD/mo" : "USD"}
-                  </span>
+                  <span className="block font-serif text-2xl font-semibold">${preset}</span>
+                  <span className="mt-1 block text-[11px] font-medium text-slate-500">{frequency === "monthly" ? t.perMonth : t.oneTime}</span>
                 </button>
               ))}
             </div>
             <input
               type="number"
               min={5}
+              step={1}
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder={t.customPlaceholder}
-              className="w-full rounded border border-[#E5E0D8] bg-white p-3 text-sm focus:border-[#121212] focus:outline-none"
+              className="w-full border border-slate-300 bg-white px-4 py-3 text-base font-semibold text-brand-navy outline-none placeholder:font-normal focus:border-brand-navy focus:ring-1 focus:ring-brand-navy"
             />
 
             {/* Impact */}
-            <div className="flex items-start gap-2 rounded border border-[#F0E4C0] bg-[#FFF8E1] p-3 text-xs font-medium leading-snug text-slate-800">
-              <Heart size={14} className="mt-0.5 shrink-0 fill-[#FFC72C] text-[#FFC72C]" />
+            <div className="flex min-h-[70px] items-start gap-3 border-l-4 border-[#FFC72C] bg-[#F1F5FB] p-4 text-sm font-medium leading-6 text-brand-navy">
+              <Heart className="mt-0.5 size-5 shrink-0 text-[#13306B]" />
               <div>
                 <span className="font-bold">{t.impactTitle}: </span>
                 {impact}
@@ -228,14 +254,12 @@ export default function DonateContent({ locale, managed }: { locale: string; man
               type="button"
               disabled={effectiveAmount < 5}
               onClick={() => setPaymentModalOpen(true)}
-              className="font-mono-spaced w-full rounded bg-[#FFC72C] py-4 text-xs font-bold uppercase tracking-widest text-[#121212] shadow-md transition-all hover:bg-[#E2AD17] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full bg-[#FFC72C] py-4 text-sm font-black uppercase tracking-[.12em] text-[#121212] shadow-md transition-all hover:bg-[#E2AD17] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t.cta} — ${effectiveAmount || 0} →
             </button>
-            <p className="font-mono-spaced flex items-center justify-center gap-1.5 text-center text-[10px] text-slate-400">
-              <Lock size={11} /> {t.secure}
-            </p>
           </div>
+          <div className="grid grid-cols-2 border-t border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600"><span className="flex items-center gap-2 border-r border-slate-200 px-4 py-3"><LockKeyhole className="size-4 text-brand-navy" />{t.secure}</span><span className="flex items-center justify-end gap-2 px-4 py-3 text-right"><ShieldCheck className="size-4 shrink-0 text-brand-navy" />{t.encrypted}</span></div>
         </div>
       </section>
 
