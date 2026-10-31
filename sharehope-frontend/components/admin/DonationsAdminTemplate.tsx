@@ -27,6 +27,7 @@ type Donation = {
   designation: string;
   date: string;
   status: DonationStatus;
+  receiptUrl?: string;
   anonymous?: boolean;
 };
 
@@ -64,6 +65,7 @@ export function DonationsAdminTemplate() {
           designation?: string;
           createdAt: string;
           status: string;
+          receiptUrl?: string;
         }>;
         setDonations(
           rows.map((row) => ({
@@ -80,6 +82,7 @@ export function DonationsAdminTemplate() {
             )
               ? row.status
               : "Pending") as DonationStatus,
+            receiptUrl: row.receiptUrl,
           })),
         );
       })
@@ -453,6 +456,16 @@ export function DonationsAdminTemplate() {
                   <dd className="break-all font-mono text-xs">{selected.id}</dd>
                 </div>
               </dl>
+              {selected.receiptUrl && (
+                <a
+                  href={selected.receiptUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-7 inline-flex items-center gap-2 rounded-lg bg-brand-navy px-5 py-3 text-sm font-bold text-white"
+                >
+                  View provider receipt <ExternalLink size={15} />
+                </a>
+              )}
               {selected.status === "Succeeded" &&
                 selected.frequency === "One-time" && (
                   <button
