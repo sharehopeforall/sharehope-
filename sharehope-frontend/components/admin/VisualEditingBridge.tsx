@@ -338,8 +338,12 @@ export function VisualEditingBridge() {
     };
     const input = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (target.contentEditable !== "true") return;
+      // Chromium reports elements configured as `plaintext-only` literally as
+      // "plaintext-only", not "true". `isContentEditable` correctly handles
+      // both modes and prevents typed text from being silently discarded.
+      if (!target.isContentEditable) return;
       const patch: VisualPatch = { selector: selectorFor(target, root), type: "text", value: target.textContent ?? "" };
+      activePatches[`${patch.selector}::${patch.type}`] = patch;
       window.parent.postMessage({ source: "sharehope-preview", session, action: "patch", patch }, window.location.origin);
     };
     const keydown = (event: KeyboardEvent) => { if (event.key === "Escape" && document.activeElement instanceof HTMLElement) document.activeElement.blur(); };
