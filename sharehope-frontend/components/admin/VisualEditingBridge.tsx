@@ -68,19 +68,21 @@ function stableHash(value: string) {
 
 function assignStableKeys(content: HTMLElement) {
   const selector = "h1,h2,h3,h4,h5,h6,p,li,figcaption,a,span,img,video,[style*='background-image']";
-  const occurrences = new Map<string, number>();
   content.querySelectorAll<HTMLElement>(selector).forEach((element) => {
     if (element.dataset.visualKey || element.id) return;
-    const signature = [
-      element.tagName.toLowerCase(),
-      element.getAttribute("alt") ?? "",
-      element.getAttribute("aria-label") ?? "",
-      element instanceof HTMLImageElement ? element.getAttribute("src") ?? "" : "",
-      element.textContent?.replace(/\s+/g, " ").trim().slice(0, 160) ?? "",
-    ].join("|");
-    const occurrence = occurrences.get(signature) ?? 0;
-    occurrences.set(signature, occurrence + 1);
-    element.dataset.visualKey = `auto-${stableHash(signature)}-${occurrence}`;
+    const parts: string[] = [];
+    let current: Element | null = element;
+    while (current && current !== content) {
+      const tag = current.tagName.toLowerCase();
+      const siblings = current.parentElement
+        ? [...current.parentElement.children].filter((item) => item.tagName === current?.tagName)
+        : [];
+      parts.unshift(`${tag}:${Math.max(1, siblings.indexOf(current) + 1)}`);
+      current = current.parentElement;
+    }
+    // The key must be identical on English and French versions of the same
+    // layout. Never derive it from visible text, alt text, or image URLs.
+    element.dataset.visualKey = `auto-${stableHash(parts.join("/"))}`;
   });
 }
 
