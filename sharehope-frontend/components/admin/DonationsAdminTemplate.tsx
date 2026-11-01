@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { getAccessToken } from "@/lib/auth/token";
 import {
   CalendarDays,
@@ -13,7 +14,9 @@ import {
   MoreHorizontal,
   RefreshCcw,
   Search,
+  SlidersHorizontal,
   UsersRound,
+  X,
 } from "lucide-react";
 
 type DonationStatus = "Succeeded" | "Pending" | "Refunded" | "Failed";
@@ -30,6 +33,7 @@ type Donation = {
   receiptUrl?: string;
   anonymous?: boolean;
 };
+type SortOption = "Newest" | "Oldest" | "Amount high" | "Amount low";
 
 const statusStyle: Record<DonationStatus, string> = {
   Succeeded: "bg-blue-100 text-blue-800",
@@ -38,12 +42,46 @@ const statusStyle: Record<DonationStatus, string> = {
   Failed: "bg-red-100 text-red-700",
 };
 
+function FilterSelect({
+  value,
+  onChange,
+  label,
+  children,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className="relative">
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="max-w-48 appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-3 pr-9 text-xs font-semibold text-slate-700 outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
+        aria-label={label}
+      >
+        {label !== "Sort" && <option>All</option>}
+        {children}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+        size={14}
+      />
+    </label>
+  );
+}
+
 export function DonationsAdminTemplate() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"All" | DonationStatus>("All");
   const [frequency, setFrequency] = useState<"All" | Donation["frequency"]>(
     "All",
   );
+  const [provider, setProvider] = useState("All");
+  const [designation, setDesignation] = useState("All");
+  const [sort, setSort] = useState<SortOption>("Newest");
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Donation | null>(null);
@@ -88,29 +126,73 @@ export function DonationsAdminTemplate() {
       })
       .finally(() => setLoading(false));
   }, []);
-  const filtered = useMemo(
+  const providers = useMemo(
+    () => [...new Set(donations.map((donation) => donation.provider))].sort(),
+    [donations],
+  );
+  const designations = useMemo(
     () =>
-      donations.filter((donation) => {
+      [...new Set(donations.map((donation) => donation.designation))].sort(),
+    [donations],
+  );
+  const filtered = useMemo(() => {
+    const rows = donations.filter((donation) => {
         const matchesStatus = status === "All" || donation.status === status;
         const matchesFrequency =
           frequency === "All" || donation.frequency === frequency;
+        const matchesProvider =
+          provider === "All" || donation.provider === provider;
+        const matchesDesignation =
+          designation === "All" || donation.designation === designation;
         const text =
-          `${donation.donor} ${donation.email} ${donation.id} ${donation.designation}`.toLowerCase();
+          `${donation.donor} ${donation.email} ${donation.id} ${donation.designation} ${donation.provider}`.toLowerCase();
         return (
           matchesStatus &&
           matchesFrequency &&
+          matchesProvider &&
+          matchesDesignation &&
           text.includes(query.toLowerCase())
         );
-      }),
-    [donations, frequency, query, status],
-  );
+      });
+    return rows.sort((a, b) => {
+      if (sort === "Amount high") return b.amount - a.amount;
+      if (sort === "Amount low") return a.amount - b.amount;
+      const dates = new Date(b.date).getTime() - new Date(a.date).getTime();
+      return sort === "Oldest" ? -dates : dates;
+    });
+  }, [designation, donations, frequency, provider, query, sort, status]);
   const succeeded = donations.filter(
     (donation) => donation.status === "Succeeded",
   );
   const total = succeeded.reduce((sum, donation) => sum + donation.amount, 0);
+  const now = new Date();
+  const thisMonth = succeeded.filter((donation) => {
+    const date = new Date(donation.date);
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
+  });
+  const thisMonthTotal = thisMonth.reduce(
+    (sum, donation) => sum + donation.amount,
+    0,
+  );
   const monthly = succeeded.filter(
     (donation) => donation.frequency === "Monthly",
   );
+  const hasFilters =
+    query ||
+    status !== "All" ||
+    frequency !== "All" ||
+    provider !== "All" ||
+    designation !== "All";
+  const clearFilters = () => {
+    setQuery("");
+    setStatus("All");
+    setFrequency("All");
+    setProvider("All");
+    setDesignation("All");
+  };
   const exportCsv = () => {
     const rows = [
       [
@@ -222,8 +304,8 @@ export function DonationsAdminTemplate() {
             },
             {
               label: "This month",
-              value: `$${total.toLocaleString()}`,
-              detail: `${succeeded.length} successful donations`,
+              value: `$${thisMonthTotal.toLocaleString()}`,
+              detail: `${thisMonth.length} successful donation${thisMonth.length === 1 ? "" : "s"}`,
               icon: CalendarDays,
             },
             {
@@ -245,7 +327,9 @@ export function DonationsAdminTemplate() {
             >
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-slate-500">{label}</p>
-                <Icon className="text-brand-green" size={19} />
+                <span className="grid size-9 place-items-center rounded-xl bg-[#FFF4CC]">
+                  <Icon className="text-[#9A6A00]" size={19} />
+                </span>
               </div>
               <p className="mt-3 text-3xl font-bold text-brand-navy">{value}</p>
               <p className="mt-1 text-xs text-slate-400">{detail}</p>
@@ -273,7 +357,7 @@ export function DonationsAdminTemplate() {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Search donations"
-                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-brand-green"
+                    className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
                   />
                 </label>
                 <label className="relative">
@@ -313,8 +397,35 @@ export function DonationsAdminTemplate() {
                   />
                 </label>
               </div>
+              <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4 lg:justify-end">
+                <span className="mr-auto inline-flex items-center gap-2 text-xs font-semibold text-slate-500 lg:mr-2">
+                  <SlidersHorizontal size={14} /> More filters
+                </span>
+                <FilterSelect value={provider} onChange={setProvider} label="Provider">
+                  {providers.map((item) => <option key={item}>{item}</option>)}
+                </FilterSelect>
+                <FilterSelect value={designation} onChange={setDesignation} label="Designation">
+                  {designations.map((item) => <option key={item}>{item}</option>)}
+                </FilterSelect>
+                <FilterSelect value={sort} onChange={(value) => setSort(value as SortOption)} label="Sort">
+                  <option>Newest</option>
+                  <option>Oldest</option>
+                  <option>Amount high</option>
+                  <option>Amount low</option>
+                </FilterSelect>
+                {hasFilters && (
+                  <button type="button" onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-brand-navy hover:bg-slate-100">
+                    <X size={14} /> Clear
+                  </button>
+                )}
+              </div>
             </div>
           </header>
+
+          <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/60 px-5 py-3 text-xs text-slate-500">
+            <span><strong className="text-brand-navy">{filtered.length}</strong> of {donations.length} transactions</span>
+            <span>Showing verified provider records</span>
+          </div>
 
           {filtered.length ? (
             <div className="overflow-x-auto">
@@ -353,10 +464,7 @@ export function DonationsAdminTemplate() {
                       </td>
                       <td className="px-4 py-4">
                         <span className="inline-flex items-center gap-1.5 text-sm text-slate-600">
-                          <HeartHandshake
-                            size={14}
-                            className="text-brand-green"
-                          />
+                          <HeartHandshake size={14} className="text-[#B77900]" />
                           {donation.designation}
                         </span>
                       </td>
@@ -377,8 +485,9 @@ export function DonationsAdminTemplate() {
                           {donation.status}
                         </span>
                       </td>
-                      <td className="px-4 py-4 font-mono text-xs text-slate-500">
-                        {donation.id}
+                      <td className="px-4 py-4">
+                        <p className="text-xs font-bold capitalize text-slate-600">{donation.provider}</p>
+                        <p className="mt-1 max-w-32 truncate font-mono text-[10px] text-slate-400" title={donation.id}>{donation.id}</p>
                       </td>
                       <td className="px-5 py-4 text-right">
                         <button
@@ -445,7 +554,7 @@ export function DonationsAdminTemplate() {
                 </div>
                 <div>
                   <dt className="text-slate-500">Status</dt>
-                  <dd>{selected.status}</dd>
+                  <dd><span className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${statusStyle[selected.status]}`}>{selected.status}</span></dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">Designation</dt>
@@ -454,6 +563,14 @@ export function DonationsAdminTemplate() {
                 <div>
                   <dt className="text-slate-500">Reference</dt>
                   <dd className="break-all font-mono text-xs">{selected.id}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Frequency</dt>
+                  <dd>{selected.frequency}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Date</dt>
+                  <dd>{new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(selected.date))}</dd>
                 </div>
               </dl>
               {selected.receiptUrl && (
