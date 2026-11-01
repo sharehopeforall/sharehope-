@@ -109,7 +109,9 @@ export function VisualSiteEditor() {
       patchesRef.current = result.draftContent;
       setPatches(result.draftContent);
       setSaved(result.draftContent);
-      setStatus("Draft saved — translation runs automatically when available");
+      setStatus(result.translationSucceeded === false
+        ? "Draft saved, but automatic translation failed — check Render logs"
+        : "Draft saved and translated automatically");
       return true;
     } catch (error) {
       if (identityRef.current === identity) {

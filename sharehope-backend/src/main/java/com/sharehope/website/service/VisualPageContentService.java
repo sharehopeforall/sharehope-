@@ -24,7 +24,7 @@ public class VisualPageContentService {
     @Transactional(readOnly = true)
     public VisualPageContentResponse getAdmin(String path, String locale) {
         validate(path, locale);
-        return repository.findByPagePathAndLocale(path, locale).map(this::response).orElse(new VisualPageContentResponse(path, locale, Map.of(), Map.of(), null, null, 0L));
+        return repository.findByPagePathAndLocale(path, locale).map(this::response).orElse(new VisualPageContentResponse(path, locale, Map.of(), Map.of(), null, null, 0L, null));
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +45,7 @@ public class VisualPageContentService {
         repository.save(page);
 
         String targetLocale = opposite(locale);
+        boolean translationSucceeded = false;
         try {
             Map<String, Object> translated = translationService.translateContent(
                     content,
@@ -54,6 +55,7 @@ public class VisualPageContentService {
             VisualPageContent target = page(path, targetLocale);
             target.setDraftContent(new HashMap<>(translated));
             repository.save(target);
+            translationSucceeded = true;
         } catch (RuntimeException exception) {
             // The editor's source-language work is authoritative. A temporary
             // translation-provider failure must never roll back or erase it.
@@ -61,7 +63,7 @@ public class VisualPageContentService {
                     path, locale, targetLocale, exception.getMessage());
         }
         repository.flush();
-        return response(page);
+        return response(page, translationSucceeded);
     }
 
     @Transactional
@@ -114,7 +116,8 @@ public class VisualPageContentService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This page was changed by another editor. Reload before continuing.");
         }
     }
-    private VisualPageContentResponse response(VisualPageContent page) { return new VisualPageContentResponse(page.getPagePath(), page.getLocale(), page.getDraftContent(), page.getPublishedContent(), page.getUpdatedAt(), page.getPublishedAt(), page.getVersion()); }
+    private VisualPageContentResponse response(VisualPageContent page) { return response(page, null); }
+    private VisualPageContentResponse response(VisualPageContent page, Boolean translationSucceeded) { return new VisualPageContentResponse(page.getPagePath(), page.getLocale(), page.getDraftContent(), page.getPublishedContent(), page.getUpdatedAt(), page.getPublishedAt(), page.getVersion(), translationSucceeded); }
     private void validate(String path, String locale) {
         if (path == null || !path.startsWith("/") || path.contains("..") || path.length() > 255) throw new IllegalArgumentException("Invalid page path.");
         if (!"en".equals(locale) && !"fr".equals(locale)) throw new IllegalArgumentException("Unsupported locale.");

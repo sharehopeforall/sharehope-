@@ -30,14 +30,24 @@ public class TranslationService {
     public TranslationService(
             ObjectMapper objectMapper,
             @Value("${app.translation.deepl-auth-key:}") String authKey,
-            @Value("${app.translation.deepl-api-url:https://api-free.deepl.com/v2/translate}") String apiUrl
+            @Value("${app.translation.deepl-api-url:}") String apiUrl
     ) {
         this.objectMapper = objectMapper;
-        this.authKey = authKey;
-        this.apiUrl = apiUrl;
+        this.authKey = authKey == null ? "" : authKey.trim();
+        this.apiUrl = apiUrl == null || apiUrl.isBlank()
+                ? defaultApiUrl(this.authKey)
+                : apiUrl.trim();
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
+    }
+
+    private String defaultApiUrl(String key) {
+        // Legacy API Free keys end in ":fx" and use api-free. Current API
+        // Developer/Growth keys use the standard api.deepl.com endpoint.
+        return key.endsWith(":fx")
+                ? "https://api-free.deepl.com/v2/translate"
+                : "https://api.deepl.com/v2/translate";
     }
 
     public TranslateContentResponse translateEnglishToFrench(Map<String, String> fields) {

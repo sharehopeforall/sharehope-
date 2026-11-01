@@ -93,4 +93,5 @@ export interface VisualPageContentResponse {
   updatedAt: string | null;
   publishedAt: string | null;
   version: number;
+  translationSucceeded: boolean | null;
 }
