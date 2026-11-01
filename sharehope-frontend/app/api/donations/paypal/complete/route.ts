@@ -17,7 +17,9 @@ export async function GET(request: Request) {
     const unit = Array.isArray(capture.purchase_units) ? capture.purchase_units[0] as Record<string, unknown> : {};
     const payments = unit?.payments as { captures?: Array<Record<string, unknown>> } | undefined;
     const paid = payments?.captures?.[0]; const amount = paid?.amount as { value?: string; currency_code?: string } | undefined;
-    await fetch(`${process.env.BACKEND_URL}/api/public/payment-events`, { method: "POST", headers: { "Content-Type": "application/json", "X-Payment-Secret": process.env.PAYMENT_INTERNAL_SECRET ?? "" }, body: JSON.stringify({ provider: "paypal", providerReference: orderId, donorName: undefined, donorEmail: undefined, amountCents: Math.round(Number(amount?.value) * 100), currency: amount?.currency_code ?? "USD", frequency: "One-time", designation: unit.custom_id ?? "general", status: "Succeeded" }) });
+    const payer = capture.payer as { email_address?: string; name?: { given_name?: string; surname?: string }; phone?: { phone_number?: { national_number?: string } } } | undefined;
+    const donorName = payer?.name ? `${payer.name.given_name ?? ""} ${payer.name.surname ?? ""}`.trim() : undefined;
+    await fetch(`${process.env.BACKEND_URL}/api/public/payment-events`, { method: "POST", headers: { "Content-Type": "application/json", "X-Payment-Secret": process.env.PAYMENT_INTERNAL_SECRET ?? "" }, body: JSON.stringify({ provider: "paypal", providerReference: orderId, donorName, donorEmail: payer?.email_address, donorPhone: payer?.phone?.phone_number?.national_number, amountCents: Math.round(Number(amount?.value) * 100), currency: amount?.currency_code ?? "USD", frequency: "One-time", designation: unit.custom_id ?? "general", status: "Succeeded" }) });
     return NextResponse.redirect(absoluteAppUrl(request, `/${locale}/donate/success?provider=paypal&reference=${encodeURIComponent(orderId)}`));
   } catch {
     return NextResponse.redirect(absoluteAppUrl(request, `/${locale}/donate?payment_error=1`));
