@@ -25,6 +25,7 @@ public class Donation {
     @Column(length = 120) private String designation;
     @Column(nullable = false, length = 30) private String status;
     @Column(name = "receipt_url", columnDefinition = "text") private String receiptUrl;
+    @Column(name = "confirmation_sent_at") private OffsetDateTime confirmationSentAt;
     @Column(name = "created_at", nullable = false) private OffsetDateTime createdAt;
     @Column(name = "updated_at", nullable = false) private OffsetDateTime updatedAt;
 

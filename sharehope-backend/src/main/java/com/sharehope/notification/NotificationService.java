@@ -5,11 +5,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Locale;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class NotificationService {
     @Value("${app.brevo.api-key:}") String key;
     @Value("${app.notifications.admin-email:}") String admin;
@@ -22,8 +25,8 @@ public class NotificationService {
         send(admin, subject, null, text);
     }
 
-    public void sendDonationConfirmation(Donation donation) {
-        if (donation.getDonorEmail() == null || donation.getDonorEmail().isBlank()) return;
+    public boolean sendDonationConfirmation(Donation donation) {
+        if (donation.getDonorEmail() == null || donation.getDonorEmail().isBlank()) return false;
         String name = donation.getDonorName() == null || donation.getDonorName().isBlank() ? "Friend" : donation.getDonorName().trim();
         String currency = donation.getCurrency() == null ? "USD" : donation.getCurrency().toUpperCase(Locale.ROOT);
         String amount = String.format(Locale.US, "%.2f %s", donation.getAmountCents() / 100.0, currency);
@@ -46,11 +49,14 @@ public class NotificationService {
                 + "<hr style=\"border:0;border-top:1px solid #E2E8F0;margin:28px 0\">"
                 + "<p style=\"font-size:12px;color:#64748B;line-height:1.5\">This transactional email confirms a donation made using this email address. Questions? Contact info@sharehopeforall.org.</p>"
                 + "</div></div>";
-        send(donation.getDonorEmail(), "Thank you for your donation to ShareHope", body, null);
+        return send(donation.getDonorEmail(), "Thank you for your donation to ShareHope", body, null);
     }
 
-    private void send(String recipient, String subject, String htmlContent, String textContent) {
-        if (key.isBlank() || sender.isBlank() || recipient == null || recipient.isBlank()) return;
+    private boolean send(String recipient, String subject, String htmlContent, String textContent) {
+        if (key.isBlank() || sender.isBlank() || recipient == null || recipient.isBlank()) {
+            log.warn("Email not sent because Brevo or sender configuration is missing");
+            return false;
+        }
         try {
             String content = htmlContent != null ? ",\"htmlContent\":\"" + json(htmlContent) + "\""
                     : ",\"textContent\":\"" + json(textContent) + "\"";
@@ -59,11 +65,15 @@ public class NotificationService {
                     + json(subject) + "\"" + content + "}";
             HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.brevo.com/v3/smtp/email"))
                     .header("api-key", key).header("Content-Type", "application/json")
+                    .timeout(Duration.ofSeconds(15))
                     .POST(HttpRequest.BodyPublishers.ofString(payload)).build();
-            HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.discarding());
-        } catch (Exception ignored) {
-            // Payment recording must never fail because an email provider is unavailable.
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) return true;
+            log.error("Brevo email rejected with status {}: {}", response.statusCode(), response.body());
+        } catch (Exception error) {
+            log.error("Brevo email request failed", error);
         }
+        return false;
     }
 
     private String json(String value) {
