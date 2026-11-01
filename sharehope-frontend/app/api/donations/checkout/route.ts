@@ -44,7 +44,7 @@ async function stripeCheckout(request: Request, donation: ReturnType<typeof pars
     if (donation.donor.phone) params.set("payment_intent_data[metadata][donor_phone]", donation.donor.phone);
   }
   if (embedded) {
-    params.set("ui_mode", "embedded");
+    params.set("ui_mode", "embedded_page");
     params.set("return_url", successUrl);
   } else {
     params.set("success_url", successUrl);
