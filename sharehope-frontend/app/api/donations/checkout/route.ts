@@ -29,6 +29,7 @@ async function stripeCheckout(request: Request, donation: ReturnType<typeof pars
     "line_items[0][price_data][unit_amount]": String(Math.round(donation.amount * 100)),
     "line_items[0][price_data][product_data][name]": "ShareHope donation",
     "line_items[0][price_data][product_data][description]": description,
+    "payment_method_types[0]": "card",
     "metadata[program]": donation.program,
     "metadata[frequency]": donation.frequency,
     "payment_intent_data[metadata][program]": donation.program,

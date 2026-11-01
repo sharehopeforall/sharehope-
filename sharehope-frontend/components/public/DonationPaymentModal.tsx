@@ -32,7 +32,7 @@ export default function DonationPaymentModal({
 }) {
   const french = locale === "fr";
   const router = useRouter();
-  const [loadingProvider, setLoadingProvider] = useState<"stripe" | "paypal" | null>(null);
+  const [loadingProvider, setLoadingProvider] = useState<"stripe" | null>(null);
   const [error, setError] = useState("");
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
   const [donor, setDonor] = useState<{ firstName: string; lastName: string; email: string; country: Country; phone: string }>({ firstName: "", lastName: "", email: "", country: "US", phone: "" });
@@ -61,7 +61,8 @@ export default function DonationPaymentModal({
 
   if (!open) return null;
 
-  async function startCheckout(provider: "stripe" | "paypal", includeDonor = false) {
+  async function startCheckout(includeDonor = false) {
+    const provider = "stripe" as const;
     setError("");
     setLoadingProvider(provider);
     try {
@@ -80,15 +81,10 @@ export default function DonationPaymentModal({
       });
       const data = await response.json() as { url?: string; clientSecret?: string; error?: string };
       if (!response.ok) throw new Error(data.error || (french ? "Impossible d’ouvrir le paiement." : "Unable to open checkout."));
-      if (provider === "stripe") {
-        if (!stripePromise) throw new Error(french ? "La clé publique Stripe n’est pas configurée." : "Stripe publishable key is not configured.");
-        if (!data.clientSecret) throw new Error(data.error || (french ? "Impossible d’afficher le formulaire de carte." : "Unable to display the card form."));
-        setStripeClientSecret(data.clientSecret);
-        setLoadingProvider(null);
-        return;
-      }
-      if (!data.url) throw new Error(data.error || (french ? "Impossible d’ouvrir PayPal." : "Unable to open PayPal."));
-      window.location.assign(data.url);
+      if (!stripePromise) throw new Error(french ? "La clé publique Stripe n’est pas configurée." : "Stripe publishable key is not configured.");
+      if (!data.clientSecret) throw new Error(data.error || (french ? "Impossible d’afficher le formulaire de carte." : "Unable to display the card form."));
+      setStripeClientSecret(data.clientSecret);
+      setLoadingProvider(null);
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : (french ? "Impossible d’ouvrir le paiement." : "Unable to open checkout."));
       setLoadingProvider(null);
@@ -101,7 +97,7 @@ export default function DonationPaymentModal({
       setError(french ? "Entrez un numéro de téléphone valide ou laissez ce champ vide." : "Enter a valid phone number or leave this field blank.");
       return;
     }
-    void startCheckout("stripe", true);
+    void startCheckout(true);
   }
 
   return (
@@ -129,10 +125,7 @@ export default function DonationPaymentModal({
             </EmbeddedCheckoutProvider>
           </div>
         ) : <div className="mt-7">
-          <p className="text-center text-xs font-bold uppercase tracking-[.16em] text-slate-500">{french ? "Don express" : "Express checkout"}</p>
-          <button type="button" autoFocus disabled={Boolean(loadingProvider)} onClick={() => startCheckout("paypal")} className="mt-3 w-full bg-[#FFC439] py-4 text-sm font-bold text-[#003087] transition hover:bg-[#F2BA36] disabled:cursor-wait disabled:opacity-60">{loadingProvider === "paypal" ? (french ? "Ouverture du paiement sécurisé…" : "Opening secure checkout…") : "PayPal"}</button>
-
-          <div className="my-7 flex items-center gap-4"><span className="h-px flex-1 bg-slate-200" /><span className="text-center text-xs font-medium text-slate-500">{french ? "ou saisissez vos coordonnées ci-dessous" : "or enter your details manually below"}</span><span className="h-px flex-1 bg-slate-200" /></div>
+          <p className="mb-6 text-center text-xs font-bold uppercase tracking-[.16em] text-slate-500">{french ? "Paiement par carte" : "Pay by card"}</p>
 
           <form onSubmit={continueWithCard} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
