@@ -26,6 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final String dummyPasswordHash;
 
     public AuthService(
             UserRepository userRepository,
@@ -35,6 +36,7 @@ public class AuthService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.dummyPasswordHash = passwordEncoder.encode("not-a-real-password");
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -43,13 +45,11 @@ public class AuthService {
                 .trim()
                 .toLowerCase();
 
-        User user = userRepository
-                .findByEmailIgnoreCase(email)
-                .orElseThrow(() ->
-                        new InvalidCredentialsException(
-                                "Invalid email or password."
-                        )
-                );
+        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (user == null) {
+            passwordEncoder.matches(request.password(), dummyPasswordHash);
+            throw new InvalidCredentialsException("Invalid email or password.");
+        }
 
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw new InvalidCredentialsException(

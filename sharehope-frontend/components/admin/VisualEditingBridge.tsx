@@ -3,7 +3,6 @@
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import { uploadFile } from "@/lib/blob/upload";
-import { getAccessToken } from "@/lib/auth/token";
 import type { VisualPatch, VisualPatchMap, VisualPatchType } from "@/types/website";
 
 type EditorMessage =
@@ -98,8 +97,7 @@ export function VisualEditingBridge() {
     let trustedAdminFrame = false;
     try {
       trustedAdminFrame = window.parent !== window
-        && window.parent.location.pathname.includes("/admin/website")
-        && Boolean(getAccessToken());
+        && window.parent.location.pathname.includes("/admin/website");
     } catch {
       trustedAdminFrame = false;
     }

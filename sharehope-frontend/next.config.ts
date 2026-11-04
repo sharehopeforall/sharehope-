@@ -3,8 +3,6 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
-
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -33,14 +31,6 @@ const nextConfig: NextConfig = {
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
       ],
     }];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/backend-api/:path*",
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
   },
   images: {
     remotePatterns: [

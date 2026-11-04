@@ -56,6 +56,11 @@ public class SecurityConfig {
                         ).permitAll()
 
                         .requestMatchers(
+                                "/api/auth/me",
+                                "/api/auth/logout"
+                        ).authenticated()
+
+                        .requestMatchers(
                                 "/api/public/**"
                         ).permitAll()
 
@@ -74,13 +79,14 @@ public class SecurityConfig {
                                 "/api/admin/testimonials/**",
                                 "/api/admin/blog/**",
                                 "/api/admin/submissions/**",
-                                "/api/admin/donations/**"
+                                "/api/admin/donations/**",
+                                "/api/admin/newsletter/**"
                         ).hasAnyRole(
                                 "SUPER_ADMIN",
                                 "CONTENT_EDITOR"
                         )
 
-                        .anyRequest().authenticated()
+                        .anyRequest().denyAll()
                 )
 
                 .oauth2ResourceServer(oauth2 -> oauth2

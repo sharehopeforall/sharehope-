@@ -1,7 +1,4 @@
-import { clearSession, getAccessToken } from "@/lib/auth/token";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/backend-api";
+const API_BASE_URL = "/backend-api";
 
 export class ApiError extends Error {
   status: number;
@@ -26,11 +23,6 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const finalHeaders = new Headers(headers);
   finalHeaders.set("Content-Type", "application/json");
 
-  if (auth) {
-    const token = getAccessToken();
-    if (token) finalHeaders.set("Authorization", `Bearer ${token}`);
-  }
-
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers: finalHeaders,
@@ -45,7 +37,6 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       errorBody = undefined;
     }
     if (auth && response.status === 401 && typeof window !== "undefined") {
-      clearSession();
       const locale = window.location.pathname.split("/")[1];
       const loginPath = locale === "fr" ? "/fr/admin/login" : "/en/admin/login";
       window.location.assign(loginPath);

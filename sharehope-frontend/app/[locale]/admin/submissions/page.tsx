@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-import { getAccessToken } from "@/lib/auth/token";
 type Row = {
   id: string;
   submissionType: string;
@@ -15,16 +14,12 @@ type Row = {
   status: string;
   createdAt: string;
 };
-const auth = () => ({ Authorization: `Bearer ${getAccessToken() ?? ""}` });
 export default function Page() {
   const [rows, setRows] = useState<Row[]>([]),
     [filter, setFilter] = useState("ALL"),
     [error, setError] = useState(false);
   useEffect(() => {
-    fetch("/backend-api/admin/submissions", {
-      headers: auth(),
-      cache: "no-store",
-    })
+    fetch("/backend-api/admin/submissions", { cache: "no-store" })
       .then((r) => {
         if (!r.ok) throw new Error();
         return r.json();
@@ -35,7 +30,7 @@ export default function Page() {
   async function update(id: string, status: string) {
     const r = await fetch(`/backend-api/admin/submissions/${id}/status`, {
       method: "PATCH",
-      headers: { ...auth(), "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
     if (r.ok)

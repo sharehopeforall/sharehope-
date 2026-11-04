@@ -1,5 +1,4 @@
 import type { UploadMediaResult } from "@/types/media";
-import { getAccessToken } from "@/lib/auth/token";
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 250 * 1024 * 1024;
@@ -17,12 +16,11 @@ interface UploadFileOptions {
   onProgress?: (percentage: number) => void;
 }
 
-async function uploadThroughServer(file: File, token: string): Promise<UploadMediaResult> {
+async function uploadThroughServer(file: File): Promise<UploadMediaResult> {
   const formData = new FormData();
   formData.set("file", file);
   const response = await fetch("/api/media/upload", {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
   if (!response.ok) {
@@ -40,9 +38,8 @@ export async function uploadFile(file: File, options: UploadFileOptions = {}): P
     throw new Error(isVideo ? "Video must be smaller than 250 MB." : "Image must be smaller than 10 MB.");
   }
 
-  const token = getAccessToken() ?? "";
   options.onProgress?.(0);
-  const result = await uploadThroughServer(file, token);
+  const result = await uploadThroughServer(file);
   options.onProgress?.(100);
   return result;
 }

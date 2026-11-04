@@ -18,7 +18,7 @@ Create a `.env.local` file with:
 
 ```bash
 # Spring Boot API base URL
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api
+BACKEND_URL=http://localhost:8080
 
 # Vercel Blob (from Vercel project settings > Storage)
 BLOB_READ_WRITE_TOKEN=

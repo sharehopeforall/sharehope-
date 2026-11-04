@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-import { getAccessToken } from "@/lib/auth/token";
 import { Download } from "lucide-react";
 type S = {
   id: string;
@@ -14,9 +13,7 @@ type S = {
 export default function Page() {
   const [rows, setRows] = useState<S[]>([]);
   useEffect(() => {
-    fetch("/backend-api/admin/newsletter/subscribers", {
-      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-    })
+    fetch("/backend-api/admin/newsletter/subscribers")
       .then((r) => (r.ok ? r.json() : []))
       .then(setRows);
   }, []);

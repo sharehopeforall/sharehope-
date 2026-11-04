@@ -2,22 +2,24 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/lib/api/auth";
-import { clearSession, getCurrentUser, sessionToUser, setSession } from "@/lib/auth/token";
 import type { User } from "@/types/user";
 
 const CURRENT_USER_KEY = ["auth", "currentUser"];
 
 /**
- * There is no GET /me endpoint on the backend - identity comes entirely
- * from what POST /api/auth/login returned, cached in localStorage. This
- * query never hits the network; it just gives every component a reactive,
- * shared view of that cached session via the react-query cache.
+ * Identity is verified by the backend from the HttpOnly session cookie.
  */
 export function useCurrentUser() {
   return useQuery<User | null>({
     queryKey: CURRENT_USER_KEY,
-    queryFn: () => getCurrentUser(),
-    staleTime: Infinity,
+    queryFn: async () => {
+      try {
+        return await authApi.currentUser();
+      } catch {
+        return null;
+      }
+    },
+    staleTime: 60_000,
   });
 }
 
@@ -27,9 +29,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       authApi.login(email, password),
-    onSuccess: (session) => {
-      setSession(session);
-      queryClient.setQueryData<User>(CURRENT_USER_KEY, sessionToUser(session));
+    onSuccess: (user) => {
+      queryClient.setQueryData<User>(CURRENT_USER_KEY, user);
     },
   });
 }
@@ -37,8 +38,8 @@ export function useLogin() {
 export function useLogout() {
   const queryClient = useQueryClient();
 
-  return () => {
-    clearSession();
+  return async () => {
+    await authApi.logout().catch(() => undefined);
     queryClient.setQueryData(CURRENT_USER_KEY, null);
   };
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { getAccessToken } from "@/lib/auth/token";
 import {
   CalendarDays,
   ChevronDown,
@@ -77,10 +76,7 @@ export function DonationsAdminTemplate() {
   const [loadError, setLoadError] = useState(false);
   const [selected, setSelected] = useState<Donation | null>(null);
   useEffect(() => {
-    fetch("/backend-api/admin/donations", {
-      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-      cache: "no-store",
-    })
+    fetch("/backend-api/admin/donations", { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error();
         const rows = (await response.json()) as Array<{

@@ -12,7 +12,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
-  password: z.string().min(8, "Password must contain at least 8 characters."),
+  password: z.string().min(1, "Enter your password.").max(128, "Password is too long."),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
