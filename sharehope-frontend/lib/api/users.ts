@@ -14,7 +14,6 @@ export interface InviteUserResult {
   email: string;
   status: string;
   role: string;
-  invitationToken: string;
 }
 
 /**

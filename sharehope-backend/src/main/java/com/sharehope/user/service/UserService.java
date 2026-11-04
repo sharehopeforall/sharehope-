@@ -10,6 +10,7 @@ import com.sharehope.user.model.UserStatus;
 import com.sharehope.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sharehope.notification.NotificationService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -28,15 +29,18 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final NotificationService notifications;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
     public UserService(
             UserRepository userRepository,
-            RoleRepository roleRepository
+            RoleRepository roleRepository,
+            NotificationService notifications
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.notifications = notifications;
     }
 
     @Transactional
@@ -87,6 +91,7 @@ public class UserService {
         user.getRoles().add(role);
 
         User savedUser = userRepository.save(user);
+        notifications.sendAdminInvitation(savedUser, rawToken);
 
         return new InviteUserResult(
                 savedUser,

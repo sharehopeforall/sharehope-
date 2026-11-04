@@ -6,6 +6,9 @@ import com.sharehope.exception.InvalidCredentialsException;
 import com.sharehope.exception.InvalidInvitationException;
 import com.sharehope.role.model.Role;
 import com.sharehope.security.JwtService;
+import com.sharehope.notification.NotificationService;
+import com.sharehope.auth.dto.ChangePasswordRequest;
+import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.user.dto.ActivateUserRequest;
 import com.sharehope.user.model.User;
 import com.sharehope.user.model.UserStatus;
@@ -18,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.UUID;
 import java.util.HexFormat;
 
 @Service
@@ -27,16 +33,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final String dummyPasswordHash;
+    private final NotificationService notifications;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService
+            JwtService jwtService,
+            NotificationService notifications
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.dummyPasswordHash = passwordEncoder.encode("not-a-real-password");
+        this.notifications = notifications;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -123,8 +133,65 @@ public class AuthService {
         user.setUpdatedAt(now);
         user.setInvitationTokenHash(null);
         user.setInvitationExpiresAt(null);
+        user.setPasswordChangedAt(now);
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void requestPasswordReset(String rawEmail) {
+        String email = rawEmail.trim().toLowerCase();
+        userRepository.findByEmailIgnoreCase(email)
+                .filter(user -> user.getStatus() == UserStatus.ACTIVE)
+                .ifPresent(user -> {
+                    String token = generateSecureToken();
+                    user.setPasswordResetTokenHash(hashToken(token));
+                    user.setPasswordResetExpiresAt(OffsetDateTime.now().plusMinutes(30));
+                    user.setUpdatedAt(OffsetDateTime.now());
+                    userRepository.save(user);
+                    notifications.sendPasswordReset(user, token);
+                });
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByPasswordResetTokenHash(hashToken(request.token()))
+                .filter(candidate -> candidate.getStatus() == UserStatus.ACTIVE)
+                .filter(candidate -> candidate.getPasswordResetExpiresAt() != null
+                        && candidate.getPasswordResetExpiresAt().isAfter(OffsetDateTime.now()))
+                .orElseThrow(() -> new InvalidInvitationException("Invalid or expired password reset link."));
+        applyNewPassword(user, request.password());
+    }
+
+    @Transactional
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .filter(candidate -> candidate.getStatus() == UserStatus.ACTIVE)
+                .orElseThrow(() -> new InvalidCredentialsException("Authenticated user not found."));
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Current password is incorrect.");
+        }
+        applyNewPassword(user, request.newPassword());
+    }
+
+    private void applyNewPassword(User user, String password) {
+        if (passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new IllegalArgumentException("New password must be different from the current password.");
+        }
+        OffsetDateTime now = OffsetDateTime.now();
+        user.setPasswordHash(passwordEncoder.encode(password));
+        user.setPasswordResetTokenHash(null);
+        user.setPasswordResetExpiresAt(null);
+        user.setPasswordChangedAt(now);
+        user.setSessionVersion(user.getSessionVersion() + 1);
+        user.setUpdatedAt(now);
+        userRepository.save(user);
+    }
+
+    private String generateSecureToken() {
+        byte[] bytes = new byte[32];
+        secureRandom.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     private String hashToken(String rawToken) {

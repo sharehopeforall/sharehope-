@@ -2,6 +2,9 @@ package com.sharehope.auth.controller;
 
 import com.sharehope.auth.dto.LoginRequest;
 import com.sharehope.auth.dto.LoginResponse;
+import com.sharehope.auth.dto.ForgotPasswordRequest;
+import com.sharehope.auth.dto.ResetPasswordRequest;
+import com.sharehope.auth.dto.ChangePasswordRequest;
 import com.sharehope.auth.service.AuthService;
 import com.sharehope.auth.service.LoginAttemptService;
 import com.sharehope.user.dto.ActivateUserRequest;
@@ -67,6 +70,29 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request, HttpServletRequest httpRequest) {
+        String key = "recovery:" + httpRequest.getRemoteAddr() + ":" + request.email().trim().toLowerCase();
+        loginAttemptService.checkAllowed(key);
+        loginAttemptService.recordFailure(key);
+        authService.requestPasswordReset(request.email());
+        return ResponseEntity.ok(Map.of("message", "If an active account exists, a reset link has been sent."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(Map.of("message", "Password reset successfully."));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ChangePasswordRequest request) {
+        authService.changePassword(java.util.UUID.fromString(jwt.getSubject()), request);
         return ResponseEntity.noContent().build();
     }
 

@@ -15,6 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import com.sharehope.user.repository.UserRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -52,12 +56,15 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/activate",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
                                 "/api/public/payment-events"
                         ).permitAll()
 
                         .requestMatchers(
                                 "/api/auth/me",
-                                "/api/auth/logout"
+                                "/api/auth/logout",
+                                "/api/auth/change-password"
                         ).authenticated()
 
                         .requestMatchers(
@@ -123,16 +130,31 @@ public class SecurityConfig {
      * from that secret rather than from issuer metadata.
      */
     @Bean
-    public JwtDecoder jwtDecoder() {
+    public JwtDecoder jwtDecoder(UserRepository users) {
         SecretKeySpec secretKey = new SecretKeySpec(
                 jwtSecret.getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256"
         );
 
-        return NimbusJwtDecoder
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
                 .withSecretKey(secretKey)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithValidators(jwt -> {
+            try {
+                java.util.UUID userId = java.util.UUID.fromString(jwt.getSubject());
+                Number claimVersion = jwt.getClaim("sessionVersion");
+                boolean valid = claimVersion != null && users.findById(userId)
+                        .filter(user -> user.getStatus() == com.sharehope.user.model.UserStatus.ACTIVE)
+                        .map(user -> user.getSessionVersion().intValue() == claimVersion.intValue())
+                        .orElse(false);
+                return valid ? OAuth2TokenValidatorResult.success()
+                        : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "Session is no longer valid", null));
+            } catch (RuntimeException error) {
+                return OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "Session is no longer valid", null));
+            }
+        }));
+        return decoder;
     }
 
     /**

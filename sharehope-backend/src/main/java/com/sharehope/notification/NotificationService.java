@@ -1,6 +1,9 @@
 package com.sharehope.notification;
 
 import com.sharehope.donation.model.Donation;
+import com.sharehope.user.model.User;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -50,6 +53,20 @@ public class NotificationService {
                 + "<p style=\"font-size:12px;color:#64748B;line-height:1.5\">This transactional email confirms a donation made using this email address. Questions? Contact info@sharehopeforall.org.</p>"
                 + "</div></div>";
         return send(donation.getDonorEmail(), "Thank you for your donation to ShareHope", body, null);
+    }
+
+    @org.springframework.scheduling.annotation.Async
+    public void sendAdminInvitation(User user, String token) {
+        String url = site + "/en/admin/activate?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+        String text = "Hello " + user.getFirstName() + ",\n\nYou were invited to the ShareHope administration portal. Create your password within 48 hours:\n" + url + "\n\nIf you were not expecting this invitation, ignore this email.";
+        send(user.getEmail(), "Your ShareHope administrator invitation", null, text);
+    }
+
+    @org.springframework.scheduling.annotation.Async
+    public void sendPasswordReset(User user, String token) {
+        String url = site + "/en/admin/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+        String text = "Hello " + user.getFirstName() + ",\n\nUse this link to reset your ShareHope administrator password. It expires in 30 minutes:\n" + url + "\n\nIf you did not request this, ignore this email.";
+        send(user.getEmail(), "Reset your ShareHope password", null, text);
     }
 
     private boolean send(String recipient, String subject, String htmlContent, String textContent) {

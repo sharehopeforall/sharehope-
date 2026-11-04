@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmailIgnoreCase(String email);
 
     Optional<User> findByInvitationTokenHash(String invitationTokenHash);
+
+    Optional<User> findByPasswordResetTokenHash(String passwordResetTokenHash);
 }

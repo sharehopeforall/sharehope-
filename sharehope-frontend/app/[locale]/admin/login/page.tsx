@@ -120,6 +120,8 @@ export default function AdminLoginPage() {
               {errors.password && <p id="password-error" className="mt-2 text-sm font-medium text-red-700">{errors.password.message}</p>}
             </div>
 
+            <div className="text-right"><Link href="/admin/forgot-password" className="text-sm font-semibold text-brand-navy underline">Forgot password?</Link></div>
+
             {error && (
               <div role="alert" aria-live="polite" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
                 We couldn’t sign you in. Check your email and password and try again.

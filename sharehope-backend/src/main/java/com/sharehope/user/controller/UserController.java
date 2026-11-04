@@ -46,8 +46,7 @@ public class UserController {
                         "userId", result.user().getId(),
                         "email", result.user().getEmail(),
                         "status", result.user().getStatus().name(),
-                        "role", request.role().name(),
-                        "invitationToken", result.rawToken()
+                        "role", request.role().name()
                 ));
     }
 

@@ -1,6 +1,7 @@
 import { ArrowRight, UsersRound } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Link } from "@/i18n/navigation";
+import { ChangePasswordCard } from "@/components/admin/ChangePasswordCard";
 
 export default function AdminSettingsPage() {
   return (
@@ -21,6 +22,7 @@ export default function AdminSettingsPage() {
             <Link href="/admin/users" className="inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition hover:text-brand-green">Manage <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
         </section>
+        <ChangePasswordCard />
       </main>
     </>
   );

@@ -50,6 +50,19 @@ public class User {
     @Column(name = "activated_at")
     private OffsetDateTime activatedAt;
 
+    @Column(name = "password_reset_token_hash", length = 64)
+    private String passwordResetTokenHash;
+
+    @Column(name = "password_reset_expires_at")
+    private OffsetDateTime passwordResetExpiresAt;
+
+    @Column(name = "password_changed_at")
+    private OffsetDateTime passwordChangedAt;
+
+    @Column(name = "session_version", nullable = false)
+    @Builder.Default
+    private Integer sessionVersion = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invited_by")
     private User invitedBy;

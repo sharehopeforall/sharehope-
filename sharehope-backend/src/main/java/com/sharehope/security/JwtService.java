@@ -46,6 +46,7 @@ public class JwtService {
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("role", role)
+                .claim("sessionVersion", user.getSessionVersion())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(expiresAt))
                 .build();

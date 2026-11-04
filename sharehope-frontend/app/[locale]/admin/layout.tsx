@@ -6,7 +6,7 @@ import { AuthGuard } from "@/components/admin/AuthGuard";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/admin/login";
+  const isLoginPage = ["/admin/login", "/admin/forgot-password", "/admin/reset-password", "/admin/activate"].includes(pathname);
 
   if (isLoginPage) {
     return <div className="flex min-h-full flex-1">{children}</div>;
