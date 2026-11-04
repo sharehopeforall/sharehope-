@@ -12,12 +12,12 @@ const subscriptionSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  if (rateLimited(request, "newsletter", 5)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  if (await rateLimited(request, "newsletter", 5)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   const parsed = subscriptionSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid subscription details." }, { status: 400 });
 
   try {
-    const response = await fetchBackend(`${backendUrl}/api/public/newsletter/subscribe`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(parsed.data), cache: "no-store" }, 8_000);
+    const response = await fetchBackend(`${backendUrl}/api/public/newsletter/subscribe`, { method: "POST", headers: { "Content-Type": "application/json", "X-Public-Form-Secret": process.env.PUBLIC_FORM_INTERNAL_SECRET ?? "" }, body: JSON.stringify(parsed.data), cache: "no-store" }, 8_000);
     const data = await response.json().catch(() => ({}));
     return NextResponse.json(data, { status: response.status });
   } catch {

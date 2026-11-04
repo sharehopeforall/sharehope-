@@ -64,7 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/me",
                                 "/api/auth/logout",
-                                "/api/auth/change-password"
+                                "/api/auth/change-password",
+                                "/api/auth/mfa/**"
                         ).authenticated()
 
                         .requestMatchers(
@@ -77,7 +78,10 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/admin/team/**",
-                                "/api/admin/submissions/**"
+                                "/api/admin/submissions/**",
+                                "/api/admin/donations/**",
+                                "/api/admin/newsletter/**",
+                                "/api/admin/events/*/registrations/**"
                         ).hasRole("SUPER_ADMIN")
 
                         .requestMatchers(
@@ -85,9 +89,7 @@ public class SecurityConfig {
                                 "/api/admin/programs/**",
                                 "/api/admin/events/**",
                                 "/api/admin/testimonials/**",
-                                "/api/admin/blog/**",
-                                "/api/admin/donations/**",
-                                "/api/admin/newsletter/**"
+                                "/api/admin/blog/**"
                         ).hasAnyRole(
                                 "SUPER_ADMIN",
                                 "CONTENT_EDITOR"

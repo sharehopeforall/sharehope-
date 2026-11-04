@@ -24,4 +24,6 @@ export interface InviteUserResult {
 export const usersApi = {
   invite: (data: InviteUserInput) =>
     apiClient.post<InviteUserResult>("/admin/users/invite", data),
+  resendInvitation: (userId: string) =>
+    apiClient.post<{ message: string }>(`/admin/users/${userId}/resend-invitation`),
 };

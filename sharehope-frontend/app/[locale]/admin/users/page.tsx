@@ -15,6 +15,7 @@ export default function AdminUsersPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<InviteUserResult | null>(null);
+  const [resendMessage, setResendMessage] = useState("");
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +62,7 @@ export default function AdminUsersPage() {
             </fieldset>
 
             {error && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">{error}</p>}
-            {result && <div role="status" className="flex gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"><CheckCircle2 size={19} className="mt-0.5 shrink-0" aria-hidden="true" /><div><p className="font-bold">Invitation created</p><p className="mt-0.5">{result.email} was added as {result.role === "SUPER_ADMIN" ? "a Super Administrator" : "a Content Editor"}.</p></div></div>}
+            {result && <div role="status" className="flex gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"><CheckCircle2 size={19} className="mt-0.5 shrink-0" aria-hidden="true" /><div><p className="font-bold">Invitation created</p><p className="mt-0.5">{result.email} was added as {result.role === "SUPER_ADMIN" ? "a Super Administrator" : "a Content Editor"}.</p><button type="button" className="mt-2 font-bold underline" onClick={async()=>{try{await usersApi.resendInvitation(result.userId);setResendMessage("A fresh invitation was sent.");}catch{setResendMessage("The invitation could not be resent.");}}}>Resend invitation</button>{resendMessage&&<p className="mt-1">{resendMessage}</p>}</div></div>}
 
             <button type="submit" disabled={pending} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-[#173A59] disabled:cursor-wait disabled:opacity-60">{pending ? <Loader2 className="animate-spin" size={17} aria-hidden="true" /> : <MailPlus size={17} aria-hidden="true" />}{pending ? "Creating invitation…" : "Invite administrator"}</button>
           </form>

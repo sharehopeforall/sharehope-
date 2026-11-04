@@ -17,7 +17,7 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
-  if (publicFormRateLimited(request, "event-registration")) {
+  if (await publicFormRateLimited(request, "event-registration")) {
     return NextResponse.json({ error: "Too many registrations. Please try again later." }, { status: 429 });
   }
   const { slug } = await params;
@@ -25,7 +25,7 @@ export async function POST(
   if (!parsed.success) return NextResponse.json({ error: "Invalid registration details." }, { status: 400 });
 
   try {
-    const response = await fetchBackend(`${backendUrl}/api/public/events/${encodeURIComponent(slug)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(parsed.data), cache: "no-store" }, 8_000);
+    const response = await fetchBackend(`${backendUrl}/api/public/events/${encodeURIComponent(slug)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json", "X-Public-Form-Secret": process.env.PUBLIC_FORM_INTERNAL_SECRET ?? "" }, body: JSON.stringify(parsed.data), cache: "no-store" }, 8_000);
     const data = await response.json().catch(() => ({}));
     return NextResponse.json(data, { status: response.status });
   } catch {

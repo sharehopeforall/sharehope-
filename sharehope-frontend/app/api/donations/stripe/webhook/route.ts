@@ -1,7 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHmac, timingSafeEqual } from "node:crypto";import { NextResponse } from "next/server";import { fetchBackend } from "@/lib/server/backend-fetch";
 export const runtime="nodejs";
-function valid(body:string,header:string,secret:string){const parts=Object.fromEntries(header.split(",").map(v=>v.split("=")));if(!parts.t||!parts.v1)return false;const expected=createHmac("sha256",secret).update(`${parts.t}.${body}`).digest("hex");try{return timingSafeEqual(Buffer.from(expected),Buffer.from(parts.v1));}catch{return false;}}
+function valid(body:string,header:string,secret:string){
+  const values = header.split(",").map((value) => value.trim());
+  const timestamp = values.find((value) => value.startsWith("t="))?.slice(2);
+  const signatures = values.filter((value) => value.startsWith("v1=")).map((value) => value.slice(3));
+  if (!timestamp || signatures.length === 0 || !/^\d+$/.test(timestamp)) return false;
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
+  const expected=createHmac("sha256",secret).update(`${timestamp}.${body}`).digest("hex");
+  return signatures.some((signature) => {
+    try{return timingSafeEqual(Buffer.from(expected,"hex"),Buffer.from(signature,"hex"));}catch{return false;}
+  });
+}
 async function receiptUrl(o:any){
   if(o.receipt_url)return o.receipt_url as string;
   if(o.hosted_invoice_url)return o.hosted_invoice_url as string;

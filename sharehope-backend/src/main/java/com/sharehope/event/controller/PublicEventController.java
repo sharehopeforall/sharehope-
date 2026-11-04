@@ -18,6 +18,7 @@ import java.util.List;
 public class PublicEventController {
     private final EventService service;
     private final EventRegistrationService registrationService;
+    private final com.sharehope.security.PublicFormGuard publicFormGuard;
 
     @GetMapping
     public List<PublicEventResponse> list(@RequestParam(defaultValue = "en") String locale) {
@@ -31,7 +32,8 @@ public class PublicEventController {
 
     @PostMapping("/{slug}/rsvp")
     @ResponseStatus(HttpStatus.CREATED)
-    public EventRsvpResponse rsvp(@PathVariable String slug, @Valid @RequestBody EventRsvpRequest request) {
+    public EventRsvpResponse rsvp(@PathVariable String slug, @RequestHeader(value="X-Public-Form-Secret",required=false) String formSecret, @Valid @RequestBody EventRsvpRequest request) {
+        publicFormGuard.requireValid(formSecret);
         return registrationService.register(slug, request);
     }
 }

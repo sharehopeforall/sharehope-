@@ -12,6 +12,9 @@ public record LoginRequest(
 
         @NotBlank
         @Size(max = 128)
-        String password
+        String password,
+
+        @jakarta.validation.constraints.Pattern(regexp = "^$|^[0-9]{6}$", message = "Authenticator code must contain six digits")
+        String mfaCode
 
 ) {}

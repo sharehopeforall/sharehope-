@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.*;
 public class PublicNewsletterController {
 
     private final NewsletterService newsletterService;
+    private final com.sharehope.security.PublicFormGuard publicFormGuard;
 
     @PostMapping("/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public NewsletterSubscribeResponse subscribe(
+            @RequestHeader(value="X-Public-Form-Secret",required=false) String formSecret,
             @Valid @RequestBody NewsletterSubscribeRequest request
     ) {
+        publicFormGuard.requireValid(formSecret);
         return newsletterService.subscribe(request);
     }
 }

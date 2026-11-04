@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.HexFormat;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -97,6 +98,21 @@ public class UserService {
                 savedUser,
                 rawToken
         );
+    }
+
+    @Transactional
+    public void resendInvitation(UUID userId) {
+        User user = userRepository.findById(userId)
+                .filter(candidate -> candidate.getStatus() == UserStatus.INVITED)
+                .orElseThrow(() -> new ResourceNotFoundException("Pending invitation not found."));
+        String rawToken = generateSecureToken();
+        OffsetDateTime now = OffsetDateTime.now();
+        user.setInvitationTokenHash(hashToken(rawToken));
+        user.setInvitationExpiresAt(now.plusHours(INVITATION_EXPIRATION_HOURS));
+        user.setInvitedAt(now);
+        user.setUpdatedAt(now);
+        userRepository.save(user);
+        notifications.sendAdminInvitation(user, rawToken);
     }
 
     private String generateSecureToken() {

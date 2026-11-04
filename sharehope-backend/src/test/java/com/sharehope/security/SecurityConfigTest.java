@@ -20,13 +20,13 @@ class SecurityConfigTest {
     private MockMvc mockMvc;
 
     @Test
-    void newsletterRequiresAnAdminRole() throws Exception {
+    void newsletterRequiresSuperAdminBecauseItContainsPersonalData() throws Exception {
         mockMvc.perform(get("/api/admin/newsletter/subscribers"))
                 .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/api/admin/newsletter/subscribers")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CONTENT_EDITOR"))))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
     @Test

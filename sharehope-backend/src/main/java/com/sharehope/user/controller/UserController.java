@@ -50,6 +50,12 @@ public class UserController {
                 ));
     }
 
+    @PostMapping("/{userId}/resend-invitation")
+    public ResponseEntity<Map<String, String>> resendInvitation(@PathVariable UUID userId) {
+        userService.resendInvitation(userId);
+        return ResponseEntity.ok(Map.of("message", "Invitation resent."));
+    }
+
     private User currentUser(Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());
 

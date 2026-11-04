@@ -27,7 +27,8 @@ class AuthServiceRecoveryTest {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         AuthService service = new AuthService(users, encoder,
                 new JwtService("test-only-secret-that-is-at-least-thirty-two-characters-long", 30),
-                mock(NotificationService.class));
+                mock(NotificationService.class),
+                new TotpService("test-only-secret-that-is-at-least-thirty-two-characters-long"));
         String token = "secure-one-time-reset-token";
         User user = User.builder().id(UUID.randomUUID()).email("admin@sharehope.org")
                 .status(UserStatus.ACTIVE).passwordHash(encoder.encode("Previous-password-123"))
