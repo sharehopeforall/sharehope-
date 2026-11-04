@@ -9,6 +9,7 @@ import com.sharehope.event.repository.EventRegistrationRepository;
 import com.sharehope.event.repository.EventRepository;
 import com.sharehope.exception.ResourceAlreadyExistsException;
 import com.sharehope.exception.ResourceNotFoundException;
+import com.sharehope.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class EventRegistrationService {
     private final EventRepository eventRepository;
     private final EventRegistrationRepository registrationRepository;
+    private final NotificationService notifications;
 
     @Transactional(readOnly = true)
     public List<EventRegistrationResponse> listForEvent(UUID eventId) {
@@ -63,6 +65,27 @@ public class EventRegistrationService {
             throw new IllegalArgumentException("RSVP is not enabled for this event.");
         }
 
+        if (volunteer) {
+            if (request.email() == null || request.email().isBlank()) {
+                throw new IllegalArgumentException("Email is required for volunteer registration.");
+            }
+            if (!request.passType().startsWith("Volunteer — ")) {
+                throw new IllegalArgumentException("Select a valid volunteer role for this event.");
+            }
+            String selectedRole = request.passType().replaceFirst("^Volunteer — ", "").trim();
+            boolean validRole = event.getTranslations().values().stream()
+                    .flatMap(translationValue -> {
+                        if (!(translationValue instanceof java.util.Map<?, ?> translation)) return java.util.stream.Stream.empty();
+                        Object rolesValue = translation.get("roles");
+                        if (!(rolesValue instanceof java.util.List<?> roles)) return java.util.stream.Stream.empty();
+                        return roles.stream().map(String::valueOf);
+                    })
+                    .anyMatch(selectedRole::equals);
+            if (!validRole) {
+                throw new IllegalArgumentException("Select a valid volunteer role for this event.");
+            }
+        }
+
         String email = request.email() == null || request.email().isBlank()
                 ? null
                 : request.email().trim().toLowerCase(Locale.ROOT);
@@ -86,6 +109,8 @@ public class EventRegistrationService {
                 .registrationType(request.registrationType() == null ? "RSVP" : request.registrationType())
                 .locale(request.locale() == null ? "en" : request.locale())
                 .build());
+
+        if (volunteer) notifications.sendAdminAlert("New event volunteer registration", "/en/admin/events");
 
         return new EventRsvpResponse(registration.getId(), true);
     }

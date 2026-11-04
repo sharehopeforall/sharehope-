@@ -69,7 +69,8 @@ public class SecurityConfig {
                         ).hasRole("SUPER_ADMIN")
 
                         .requestMatchers(
-                                "/api/admin/team/**"
+                                "/api/admin/team/**",
+                                "/api/admin/submissions/**"
                         ).hasRole("SUPER_ADMIN")
 
                         .requestMatchers(
@@ -78,7 +79,6 @@ public class SecurityConfig {
                                 "/api/admin/events/**",
                                 "/api/admin/testimonials/**",
                                 "/api/admin/blog/**",
-                                "/api/admin/submissions/**",
                                 "/api/admin/donations/**",
                                 "/api/admin/newsletter/**"
                         ).hasAnyRole(

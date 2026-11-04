@@ -242,17 +242,17 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                   e.preventDefault();
                   setSubmitting(true); setSubmitError(false);
                   const data = new FormData(e.currentTarget);
-                  const names = String(data.get("fullName") || "").trim().split(/\s+/);
-                  const firstName = names.shift() || ""; const lastName = names.join(" ") || firstName;
+                  const firstName = String(data.get("firstName") || "").trim();
+                  const lastName = String(data.get("lastName") || "").trim();
                   try {
-                    const response = await fetch("/api/submissions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ submissionType: "VOLUNTEER", firstName, lastName, email: data.get("email"), phone: data.get("phone"), subject: data.get("role"), details: `Availability: ${data.get("availability")}\n${data.get("message") || ""}`, locale: locale === "fr" ? "fr" : "en" }) });
+                    const response = await fetch("/api/submissions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ submissionType: "VOLUNTEER", firstName, lastName, email: data.get("email"), phone: data.get("phone"), subject: t.roles[selectedRole]?.title, details: `Availability: ${data.get("availability")}\n${data.get("message") || ""}`, locale: locale === "fr" ? "fr" : "en", website: data.get("website") }) });
                     if (!response.ok) throw new Error(); setSubmitted(true);
                   } catch { setSubmitError(true); } finally { setSubmitting(false); }
                 }}
               >
-                <div>
-                  <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.name}</label>
-                  <input required name="fullName" autoComplete="name" type="text" placeholder={t.namePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="font-mono-spaced block text-[10px] font-bold uppercase text-slate-500">{locale === "fr" ? "Prénom" : "First name"}<input required name="firstName" maxLength={100} autoComplete="given-name" type="text" className="mt-1.5 w-full rounded border border-[#E5E0D8] p-3 text-sm normal-case focus:border-brand-navy focus:outline-none" /></label>
+                  <label className="font-mono-spaced block text-[10px] font-bold uppercase text-slate-500">{locale === "fr" ? "Nom" : "Last name"}<input required name="lastName" maxLength={100} autoComplete="family-name" type="text" className="mt-1.5 w-full rounded border border-[#E5E0D8] p-3 text-sm normal-case focus:border-brand-navy focus:outline-none" /></label>
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.email}</label>
@@ -260,7 +260,7 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.phone}</label>
-                  <input required type="tel" name="phone" autoComplete="tel" inputMode="tel" placeholder={t.phonePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <input required type="tel" name="phone" maxLength={40} autoComplete="tel" inputMode="tel" placeholder={t.phonePlaceholder} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
@@ -286,8 +286,10 @@ export default function VolunteerContent({ locale, managed }: { locale: string; 
                 </div>
                 <div>
                   <label className="font-mono-spaced mb-1.5 block text-[10px] font-bold uppercase text-slate-500">{t.message}</label>
-                  <textarea name="message" rows={3} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
+                  <textarea name="message" maxLength={4800} rows={3} className="w-full rounded border border-[#E5E0D8] p-3 text-sm focus:border-brand-navy focus:outline-none" />
                 </div>
+                <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[10000px] h-px w-px opacity-0" />
+                <p className="text-xs leading-5 text-slate-500">{locale === "fr" ? "En soumettant ce formulaire, vous acceptez que ShareHope utilise vos coordonnées pour répondre à votre candidature, conformément à notre politique de confidentialité." : "By submitting, you agree that ShareHope may use your contact details to respond to this application under our privacy policy."}</p>
                 <button
                   type="submit" disabled={submitting}
                   className="font-mono-spaced w-full rounded-lg bg-[#FFC72C] py-4 text-xs font-bold uppercase tracking-widest text-[#121212] shadow-md transition-all hover:bg-[#E2AD17] active:scale-[0.99]"

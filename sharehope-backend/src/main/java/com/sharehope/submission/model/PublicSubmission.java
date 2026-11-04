@@ -11,5 +11,7 @@ public class PublicSubmission {
  @Column(nullable=false,columnDefinition="text") private String details;
  @Column(nullable=false,length=5) private String locale; @Column(nullable=false,length=20) private String status;
  @Column(name="created_at",nullable=false) private OffsetDateTime createdAt;
+ @Column(name="status_updated_at") private OffsetDateTime statusUpdatedAt;
+ @Column(name="status_updated_by") private UUID statusUpdatedBy;
  @PrePersist void create(){if(id==null)id=UUID.randomUUID();if(createdAt==null)createdAt=OffsetDateTime.now();if(status==null)status="NEW";}
 }

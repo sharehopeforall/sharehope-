@@ -25,7 +25,7 @@ export function Sidebar() {
 
   const managementLinks = [
     { href: "/admin/donations", label: "Donations", icon: CircleDollarSign },
-    { href: "/admin/submissions", label: "Applications", icon: Inbox },
+    ...(user?.role === "SUPER_ADMIN" ? [{ href: "/admin/submissions", label: "Applications", icon: Inbox }] : []),
     { href: "/admin/subscribers", label: "Newsletter", icon: Mail },
     { href: "/admin/programs", label: t("programs"), icon: HeartHandshake },
     { href: "/admin/events", label: t("events"), icon: CalendarDays },

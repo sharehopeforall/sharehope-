@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { fetchBackend } from "@/lib/server/backend-fetch";
+import { publicFormRateLimited } from "@/lib/server/public-form-rate-limit";
 
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
 const rsvpSchema = z.object({
   fullName: z.string().trim().min(1).max(160),
   email: z.union([z.email().max(320), z.literal(""), z.null()]).optional(),
   guestCount: z.number().int().min(1).max(10),
-  passType: z.string().trim().min(1).max(160),
+  passType: z.string().trim().min(1).max(80),
   registrationType: z.enum(["RSVP", "VOLUNTEER"]).optional(),
   locale: z.enum(["en", "fr"]),
 });
@@ -16,6 +17,9 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
+  if (publicFormRateLimited(request, "event-registration")) {
+    return NextResponse.json({ error: "Too many registrations. Please try again later." }, { status: 429 });
+  }
   const { slug } = await params;
   const parsed = rsvpSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid registration details." }, { status: 400 });

@@ -35,4 +35,15 @@ class SecurityConfigTest {
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"))))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void volunteerApplicationsRequireSuperAdmin() throws Exception {
+        mockMvc.perform(get("/api/admin/submissions")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_CONTENT_EDITOR"))))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/admin/submissions")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"))))
+                .andExpect(status().isOk());
+    }
 }

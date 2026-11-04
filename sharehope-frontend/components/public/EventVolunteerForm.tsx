@@ -28,7 +28,7 @@ export function EventVolunteerForm({ event, locale }: { event: PublicEvent; loca
 
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      setMessage(result.message ?? (isFrench ? "L’inscription n’a pas pu être enregistrée." : "Your volunteer registration could not be saved."));
+      setMessage(result.error ?? result.message ?? (isFrench ? "L’inscription n’a pas pu être enregistrée." : "Your volunteer registration could not be saved."));
       setStatus("error");
       return;
     }
@@ -47,7 +47,7 @@ export function EventVolunteerForm({ event, locale }: { event: PublicEvent; loca
       </div>
       <label className="block space-y-1.5 text-sm font-bold text-brand-navy"><span>{isFrench ? "Rôle" : "Volunteer role"}</span><select name="role" required className="w-full border border-slate-300 bg-white px-3 py-3 font-normal">{event.roles.map((role) => <option key={role}>{role}</option>)}</select></label>
       <label className="block space-y-1.5 text-sm font-bold text-brand-navy"><span>{isFrench ? "Nom complet" : "Full name"}</span><input name="fullName" required maxLength={160} autoComplete="name" className="w-full border border-slate-300 px-3 py-3 font-normal" /></label>
-      <label className="block space-y-1.5 text-sm font-bold text-brand-navy"><span>{isFrench ? "Adresse courriel (facultatif)" : "Email address (optional)"}</span><input name="email" type="email" maxLength={320} autoComplete="email" className="w-full border border-slate-300 px-3 py-3 font-normal" /></label>
+      <label className="block space-y-1.5 text-sm font-bold text-brand-navy"><span>{isFrench ? "Adresse courriel" : "Email address"}</span><input name="email" required type="email" maxLength={320} autoComplete="email" className="w-full border border-slate-300 px-3 py-3 font-normal" /></label>
       {status === "error" && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-800">{message}</p>}
       <button disabled={status === "submitting" || event.soldOut} className="w-full bg-brand-navy px-5 py-4 text-sm font-bold uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-60">{event.soldOut ? (isFrench ? "Complet" : "Event is full") : status === "submitting" ? (isFrench ? "Inscription…" : "Registering…") : (isFrench ? "Confirmer mon bénévolat" : "Confirm volunteer registration")}</button>
     </form>

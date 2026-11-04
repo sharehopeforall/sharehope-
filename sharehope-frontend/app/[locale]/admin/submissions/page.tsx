@@ -13,6 +13,7 @@ type Row = {
   details: string;
   status: string;
   createdAt: string;
+  statusUpdatedAt?: string;
 };
 export default function Page() {
   const [rows, setRows] = useState<Row[]>([]),
@@ -33,8 +34,15 @@ export default function Page() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    if (r.ok)
-      setRows((v) => v.map((x) => (x.id === id ? { ...x, status } : x)));
+    if (r.ok) {
+      const updated = (await r.json()) as Row;
+      setRows((v) => v.map((x) => (x.id === id ? updated : x)));
+    }
+  }
+  async function remove(id: string) {
+    if (!window.confirm("Permanently delete this application and its personal information?")) return;
+    const response = await fetch(`/backend-api/admin/submissions/${id}`, { method: "DELETE" });
+    if (response.ok) setRows((current) => current.filter((row) => row.id !== id));
   }
   const shown =
     filter === "ALL" ? rows : rows.filter((r) => r.submissionType === filter);
@@ -95,6 +103,7 @@ export default function Page() {
                         <option key={s}>{s}</option>
                       ))}
                     </select>
+                    {r.statusUpdatedAt && <p className="mt-1 text-[11px] text-slate-400">Status updated {new Date(r.statusUpdatedAt).toLocaleString()}</p>}
                   </div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-4 text-sm">
@@ -109,6 +118,7 @@ export default function Page() {
                 <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-6 text-slate-700">
                   {r.details}
                 </pre>
+                <button type="button" onClick={() => remove(r.id)} className="mt-5 text-xs font-bold text-red-700 underline">Delete personal data</button>
               </article>
             ))}
             {!error && !shown.length && (
