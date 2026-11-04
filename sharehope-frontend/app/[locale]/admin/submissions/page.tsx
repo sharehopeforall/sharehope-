@@ -1,134 +1,47 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
+import { Download, Mail, Phone, Search, Trash2, X } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-type Row = {
-  id: string;
-  submissionType: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  organization?: string;
-  subject?: string;
-  details: string;
-  status: string;
-  createdAt: string;
-  statusUpdatedAt?: string;
-};
-export default function Page() {
-  const [rows, setRows] = useState<Row[]>([]),
-    [filter, setFilter] = useState("ALL"),
-    [error, setError] = useState(false);
-  useEffect(() => {
-    fetch("/backend-api/admin/submissions", { cache: "no-store" })
-      .then((r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
-      .then(setRows)
-      .catch(() => setError(true));
-  }, []);
-  async function update(id: string, status: string) {
-    const r = await fetch(`/backend-api/admin/submissions/${id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    if (r.ok) {
-      const updated = (await r.json()) as Row;
-      setRows((v) => v.map((x) => (x.id === id ? updated : x)));
-    }
-  }
-  async function remove(id: string) {
-    if (!window.confirm("Permanently delete this application and its personal information?")) return;
-    const response = await fetch(`/backend-api/admin/submissions/${id}`, { method: "DELETE" });
-    if (response.ok) setRows((current) => current.filter((row) => row.id !== id));
-  }
-  const shown =
-    filter === "ALL" ? rows : rows.filter((r) => r.submissionType === filter);
-  return (
-    <>
-      <AdminHeader title="Applications" />
-      <main className="bg-slate-50 p-6 lg:p-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 flex gap-2">
-            {["ALL", "VOLUNTEER", "PARTNERSHIP"].map((v) => (
-              <button
-                key={v}
-                onClick={() => setFilter(v)}
-                className={`rounded-lg px-4 py-2 text-sm font-bold ${filter === v ? "bg-brand-navy text-white" : "border bg-white"}`}
-              >
-                {v === "ALL"
-                  ? "All"
-                  : v === "VOLUNTEER"
-                    ? "Volunteers"
-                    : "Partners"}
-              </button>
-            ))}
-          </div>
-          {error && (
-            <p className="rounded-lg bg-red-50 p-4 text-red-700">
-              Applications could not be loaded.
-            </p>
-          )}
-          <div className="grid gap-4">
-            {shown.map((r) => (
-              <article
-                key={r.id}
-                className="rounded-2xl border bg-white p-6 shadow-sm"
-              >
-                <div className="flex flex-wrap justify-between gap-3">
-                  <div>
-                    <span className="text-xs font-bold uppercase text-blue-700">
-                      {r.submissionType}
-                    </span>
-                    <h2 className="mt-1 font-serif text-2xl font-bold text-brand-navy">
-                      {r.firstName} {r.lastName}
-                    </h2>
-                    <p className="text-sm text-slate-500">
-                      {r.organization || r.subject}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <time className="block text-xs text-slate-500">
-                      {new Date(r.createdAt).toLocaleString()}
-                    </time>
-                    <select
-                      aria-label="Application status"
-                      value={r.status}
-                      onChange={(e) => update(r.id, e.target.value)}
-                      className="mt-3 rounded-lg border bg-white px-3 py-2 text-sm font-bold"
-                    >
-                      {["NEW", "CONTACTED", "ACCEPTED", "CLOSED"].map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
-                    </select>
-                    {r.statusUpdatedAt && <p className="mt-1 text-[11px] text-slate-400">Status updated {new Date(r.statusUpdatedAt).toLocaleString()}</p>}
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-4 text-sm">
-                  <a
-                    className="font-bold text-blue-800 underline"
-                    href={`mailto:${r.email}`}
-                  >
-                    {r.email}
-                  </a>
-                  {r.phone && <a href={`tel:${r.phone}`}>{r.phone}</a>}
-                </div>
-                <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-6 text-slate-700">
-                  {r.details}
-                </pre>
-                <button type="button" onClick={() => remove(r.id)} className="mt-5 text-xs font-bold text-red-700 underline">Delete personal data</button>
-              </article>
-            ))}
-            {!error && !shown.length && (
-              <p className="rounded-2xl border bg-white p-10 text-center text-slate-500">
-                No applications yet.
-              </p>
-            )}
-          </div>
-        </div>
-      </main>
-    </>
-  );
+
+type Status = "NEW" | "CONTACTED" | "ACCEPTED" | "CLOSED";
+type Row = { id:string; submissionType:"VOLUNTEER"|"PARTNERSHIP"; firstName:string; lastName:string; email:string; phone?:string; organization?:string; subject?:string; details:string; locale:string; status:Status; createdAt:string; statusUpdatedAt?:string; assignedCoordinator?:string; internalNotes?:string };
+const statuses:Status[]=["NEW","CONTACTED","ACCEPTED","CLOSED"];
+const badge:Record<Status,string>={NEW:"bg-blue-50 text-blue-800 ring-blue-200",CONTACTED:"bg-amber-50 text-amber-800 ring-amber-200",ACCEPTED:"bg-emerald-50 text-emerald-800 ring-emerald-200",CLOSED:"bg-slate-100 text-slate-600 ring-slate-200"};
+const availability=(row:Row)=>row.details.match(/^Availability:\s*([^\n]+)/i)?.[1]||"—";
+const applicantMessage=(row:Row)=>row.details.replace(/^Availability:[^\n]*\n?/i,"").trim();
+
+export default function ApplicationsPage(){
+ const [rows,setRows]=useState<Row[]>([]),[selected,setSelected]=useState<Row|null>(null),[type,setType]=useState<"ALL"|Row["submissionType"]>("ALL"),[status,setStatus]=useState<"ALL"|Status>("ALL"),[role,setRole]=useState("ALL"),[sort,setSort]=useState("NEWEST"),[query,setQuery]=useState(""),[error,setError]=useState(false);
+ useEffect(()=>{fetch("/backend-api/admin/submissions",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error();return r.json();}).then(setRows).catch(()=>setError(true));},[]);
+ const roles=useMemo(()=>[...new Set(rows.map(r=>r.subject).filter(Boolean) as string[])].sort(),[rows]);
+ const visible=useMemo(()=>{const needle=query.trim().toLowerCase();return rows.filter(r=>(type==="ALL"||r.submissionType===type)&&(status==="ALL"||r.status===status)&&(role==="ALL"||r.subject===role)&&(!needle||`${r.firstName} ${r.lastName} ${r.email} ${r.phone||""} ${r.subject||""}`.toLowerCase().includes(needle))).sort((a,b)=>sort==="OLDEST"?Date.parse(a.createdAt)-Date.parse(b.createdAt):sort==="NAME"?`${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`):sort==="STATUS"?a.status.localeCompare(b.status):Date.parse(b.createdAt)-Date.parse(a.createdAt));},[rows,type,status,role,sort,query]);
+ async function updateStatus(row:Row,next:Status){const response=await fetch(`/backend-api/admin/submissions/${row.id}/status`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({status:next})});if(!response.ok)return;const updated=await response.json() as Row;setRows(v=>v.map(x=>x.id===updated.id?updated:x));setSelected(v=>v?.id===updated.id?updated:v);}
+ async function saveWorkflow(row:Row,assignedCoordinator:string,internalNotes:string){const response=await fetch(`/backend-api/admin/submissions/${row.id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({assignedCoordinator,internalNotes})});if(!response.ok)return false;const updated=await response.json() as Row;setRows(v=>v.map(x=>x.id===updated.id?updated:x));setSelected(updated);return true;}
+ async function remove(row:Row){if(!window.confirm("Permanently delete this application and its personal information?"))return;const response=await fetch(`/backend-api/admin/submissions/${row.id}`,{method:"DELETE"});if(response.ok){setRows(v=>v.filter(x=>x.id!==row.id));setSelected(null);}}
+ function exportCsv(){const data=[["Name","Type","Role","Availability","Email","Phone","Applied","Status"],...visible.map(r=>[`${r.firstName} ${r.lastName}`,r.submissionType,r.subject||"",availability(r),r.email,r.phone||"",r.createdAt,r.status])];const csv=data.map(line=>line.map(value=>`"${String(value).replaceAll('"','""')}"`).join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=`sharehope-applications-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(a.href);}
+ const counts={ALL:rows.length,VOLUNTEER:rows.filter(r=>r.submissionType==="VOLUNTEER").length,PARTNERSHIP:rows.filter(r=>r.submissionType==="PARTNERSHIP").length};
+ return <><AdminHeader title="Applications"/><main className="min-h-full bg-slate-50 p-5 lg:p-8"><div className="mx-auto max-w-7xl space-y-5">
+  <div className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="font-serif text-3xl font-bold text-brand-navy">Applications</h1><p className="mt-1 text-sm text-slate-500">Review volunteer and partnership inquiries.</p></div><button onClick={exportCsv} disabled={!visible.length} className="inline-flex items-center gap-2 rounded-lg border bg-white px-4 py-2.5 text-sm font-bold text-brand-navy shadow-sm disabled:opacity-40"><Download size={16}/>Export CSV</button></div>
+  <div className="flex gap-2 overflow-x-auto pb-1">{(["ALL","VOLUNTEER","PARTNERSHIP"] as const).map(item=><button key={item} onClick={()=>setType(item)} className={`whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-bold ${type===item?"bg-brand-navy text-white":"border bg-white text-slate-700"}`}>{item==="ALL"?"All":item==="VOLUNTEER"?"Volunteers":"Partners"} <span className="ml-1 opacity-70">{counts[item]}</span></button>)}</div>
+  <section className="overflow-hidden rounded-2xl border bg-white shadow-sm"><div className="grid gap-3 border-b p-4 lg:grid-cols-[minmax(260px,1fr)_180px_210px_160px]"><label className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search name, email, phone, or role" className="h-11 w-full rounded-lg border pl-10 pr-3 text-sm outline-none focus:border-brand-navy"/></label><Select value={status} onChange={setStatus} label="Status" options={["ALL",...statuses]}/><Select value={role} onChange={setRole} label="Role" options={["ALL",...roles]}/><Select value={sort} onChange={setSort} label="Sort" options={["NEWEST","OLDEST","NAME","STATUS"]}/></div>
+  {error?<p className="p-10 text-center text-red-700">Applications could not be loaded.</p>:<><div className="hidden overflow-x-auto md:block"><table className="w-full min-w-[980px] text-left text-sm"><thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>{["Applicant","Role","Availability","Contact","Applied","Status",""].map((h,i)=><th key={`${h}-${i}`} className="px-5 py-3">{h}</th>)}</tr></thead><tbody className="divide-y">{visible.map(row=><tr key={row.id} onClick={()=>setSelected(row)} className="cursor-pointer hover:bg-slate-50"><td className="px-5 py-4"><p className="font-bold text-brand-navy">{row.firstName} {row.lastName}</p><p className="text-xs text-slate-500">{row.submissionType==="VOLUNTEER"?"Volunteer":"Partner"}</p></td><td className="px-5 py-4">{row.subject||"—"}</td><td className="px-5 py-4">{availability(row)}</td><td className="px-5 py-4"><p className="max-w-48 truncate">{row.email}</p><p className="text-xs text-slate-500">{row.phone||"No phone"}</p></td><td className="px-5 py-4 text-slate-600">{new Date(row.createdAt).toLocaleDateString()}</td><td className="px-5 py-4"><StatusBadge status={row.status}/></td><td className="px-5 py-4"><button onClick={e=>{e.stopPropagation();setSelected(row);}} className="font-bold text-brand-navy underline">View</button></td></tr>)}</tbody></table></div><div className="divide-y md:hidden">{visible.map(row=><button key={row.id} onClick={()=>setSelected(row)} className="block w-full p-4 text-left"><div className="flex justify-between gap-3"><div><p className="font-bold text-brand-navy">{row.firstName} {row.lastName}</p><p className="mt-1 text-sm text-slate-600">{row.subject||row.submissionType}</p></div><StatusBadge status={row.status}/></div><p className="mt-3 text-xs text-slate-500">{availability(row)} · {new Date(row.createdAt).toLocaleDateString()}</p></button>)}</div>{!visible.length&&<p className="p-12 text-center text-sm text-slate-500">No applications match these filters.</p>}</>}
+  </section></div></main>{selected&&<Drawer row={selected} close={()=>setSelected(null)} updateStatus={updateStatus} saveWorkflow={saveWorkflow} remove={remove}/>}</>;
+}
+
+function Select<T extends string>({value,onChange,label,options}:{value:T;onChange:(value:T)=>void;label:string;options:string[]}){return <label><span className="sr-only">{label}</span><select value={value} onChange={e=>onChange(e.target.value as T)} className="h-11 w-full rounded-lg border bg-white px-3 text-sm font-semibold outline-none focus:border-brand-navy">{options.map(option=><option key={option} value={option}>{option.replaceAll("_"," ").toLowerCase().replace(/^./,x=>x.toUpperCase())}</option>)}</select></label>}
+function StatusBadge({status}:{status:Status}){return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ring-1 ${badge[status]}`}>{status.toLowerCase()}</span>}
+function Info({label,value}:{label:string;value:string}){return <div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p><p className="mt-1 text-sm font-semibold text-slate-700">{value}</p></div>}
+
+function Drawer({row,close,updateStatus,saveWorkflow,remove}:{row:Row;close:()=>void;updateStatus:(row:Row,status:Status)=>void;saveWorkflow:(row:Row,coordinator:string,notes:string)=>Promise<boolean>;remove:(row:Row)=>void}){
+ const [coordinator,setCoordinator]=useState(row.assignedCoordinator||""),[notes,setNotes]=useState(row.internalNotes||""),[saved,setSaved]=useState(false);
+ return <div className="fixed inset-0 z-[100] flex justify-end bg-slate-950/35" onMouseDown={e=>{if(e.target===e.currentTarget)close();}}><aside className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-2xl"><header className="sticky top-0 z-10 flex items-start justify-between border-b bg-white p-5"><div><p className="text-xs font-bold uppercase tracking-widest text-blue-700">{row.submissionType}</p><h2 className="font-serif text-3xl font-bold text-brand-navy">{row.firstName} {row.lastName}</h2></div><button onClick={close} aria-label="Close details" className="rounded-lg p-2 hover:bg-slate-100"><X/></button></header><div className="space-y-7 p-5 sm:p-7">
+  <div className="flex flex-wrap items-center gap-3"><StatusBadge status={row.status}/><select value={row.status} onChange={e=>updateStatus(row,e.target.value as Status)} className="rounded-lg border bg-white px-3 py-2 text-sm font-bold">{statuses.map(item=><option key={item}>{item}</option>)}</select></div>
+  <section className="grid gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2"><Info label="Role" value={row.subject||"Not specified"}/><Info label="Availability" value={availability(row)}/><Info label="Applied" value={new Date(row.createdAt).toLocaleString()}/><Info label="Locale" value={row.locale.toUpperCase()}/></section>
+  <section><h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Contact</h3><div className="mt-3 flex flex-wrap gap-3"><a href={`mailto:${row.email}`} className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-4 py-2.5 text-sm font-bold text-white"><Mail size={16}/>{row.email}</a>{row.phone&&<a href={`tel:${row.phone}`} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-bold text-brand-navy"><Phone size={16}/>{row.phone}</a>}</div></section>
+  <section><h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Applicant message</h3><p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">{applicantMessage(row)||"No additional message."}</p></section>
+  <section className="space-y-4 border-t pt-6"><h3 className="font-bold text-brand-navy">Internal workflow</h3><label className="block text-sm font-semibold">Assigned coordinator<input value={coordinator} onChange={e=>setCoordinator(e.target.value)} maxLength={200} placeholder="Coordinator name" className="mt-1.5 w-full rounded-lg border px-3 py-2.5 font-normal"/></label><label className="block text-sm font-semibold">Internal notes<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={5000} rows={5} placeholder="Add private follow-up notes…" className="mt-1.5 w-full rounded-lg border px-3 py-2.5 font-normal"/></label><button onClick={async()=>{if(await saveWorkflow(row,coordinator,notes)){setSaved(true);setTimeout(()=>setSaved(false),1800);}}} className="rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-bold text-white">{saved?"Saved":"Save workflow"}</button></section>
+  <section className="border-t pt-6"><h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">History</h3><ol className="mt-3 space-y-3 text-sm"><li><b>Application received</b><br/><span className="text-slate-500">{new Date(row.createdAt).toLocaleString()}</span></li>{row.statusUpdatedAt&&<li><b>Status changed to {row.status.toLowerCase()}</b><br/><span className="text-slate-500">{new Date(row.statusUpdatedAt).toLocaleString()}</span></li>}</ol></section>
+  <button onClick={()=>remove(row)} className="inline-flex items-center gap-2 text-sm font-bold text-red-700"><Trash2 size={16}/>Delete personal data</button>
+ </div></aside></div>;
 }
