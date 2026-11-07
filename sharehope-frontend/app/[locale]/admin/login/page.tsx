@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
-import { useCurrentUser, useLogin } from "@/hooks/useAuth";
+import { useLogin } from "@/hooks/useAuth";
 import { Link, useRouter } from "@/i18n/navigation";
 
 const loginSchema = z.object({
@@ -20,7 +20,6 @@ type LoginValues = z.infer<typeof loginSchema>;
 export default function AdminLoginPage() {
   const t = useTranslations("Admin");
   const router = useRouter();
-  const { data: currentUser } = useCurrentUser();
   const { mutate, isPending, error } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -29,12 +28,6 @@ export default function AdminLoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
-
-  useEffect(() => {
-    if (currentUser) {
-      router.replace("/admin/dashboard");
-    }
-  }, [currentUser, router]);
 
   const onSubmit = (values: LoginValues) => {
     mutate(values, {
