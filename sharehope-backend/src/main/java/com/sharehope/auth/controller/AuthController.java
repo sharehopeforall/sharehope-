@@ -5,7 +5,6 @@ import com.sharehope.auth.dto.LoginResponse;
 import com.sharehope.auth.dto.ForgotPasswordRequest;
 import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.auth.dto.ChangePasswordRequest;
-import com.sharehope.auth.dto.MfaCodeRequest;
 import com.sharehope.auth.service.AuthService;
 import com.sharehope.auth.service.LoginAttemptService;
 import com.sharehope.user.dto.ActivateUserRequest;
@@ -94,23 +93,6 @@ public class AuthController {
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(java.util.UUID.fromString(jwt.getSubject()), request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/mfa/setup")
-    public ResponseEntity<Map<String, Object>> setupMfa(@AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.ok(authService.beginMfaSetup(java.util.UUID.fromString(jwt.getSubject())));
-    }
-
-    @PostMapping("/mfa/enable")
-    public ResponseEntity<Void> enableMfa(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody MfaCodeRequest request) {
-        authService.enableMfa(java.util.UUID.fromString(jwt.getSubject()), request.code());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/mfa/disable")
-    public ResponseEntity<Void> disableMfa(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody MfaCodeRequest request) {
-        authService.disableMfa(java.util.UUID.fromString(jwt.getSubject()), request.code());
         return ResponseEntity.noContent().build();
     }
 

@@ -13,7 +13,6 @@ import { Link, useRouter } from "@/i18n/navigation";
 const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
   password: z.string().min(1, "Enter your password.").max(128, "Password is too long."),
-  mfaCode: z.string().trim().refine((value) => value === "" || /^\d{6}$/.test(value), "Enter a six-digit code."),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -29,7 +28,7 @@ export default function AdminLoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema), defaultValues: { mfaCode: "" } });
+  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
 
   useEffect(() => {
     if (currentUser) {
@@ -75,11 +74,6 @@ export default function AdminLoginPage() {
               <LockKeyhole size={22} aria-hidden="true" />
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-brand-navy" htmlFor="mfaCode">Authenticator code <span className="font-normal text-slate-500">(if enabled)</span></label>
-              <input id="mfaCode" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="123456" aria-invalid={Boolean(errors.mfaCode)} className="h-12 w-full rounded-xl border border-[#CCD5D0] bg-white px-4 text-[15px] tracking-[.3em] text-brand-navy shadow-sm outline-none focus:border-brand-navy focus:ring-4 focus:ring-blue-100" {...register("mfaCode")} />
-              {errors.mfaCode && <p className="mt-2 text-sm font-medium text-red-700">{errors.mfaCode.message}</p>}
-            </div>
             <p className="font-mono-spaced text-[11px] font-bold uppercase tracking-[0.2em] text-brand-navy">Admin portal</p>
             <h2 className="font-serif mt-3 text-4xl font-semibold tracking-tight text-brand-navy">Welcome back</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">Sign in with your authorized ShareHope account to continue.</p>

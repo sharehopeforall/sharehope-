@@ -34,22 +34,19 @@ public class AuthService {
     private final JwtService jwtService;
     private final String dummyPasswordHash;
     private final NotificationService notifications;
-    private final TotpService totp;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            NotificationService notifications,
-            TotpService totp
+            NotificationService notifications
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.dummyPasswordHash = passwordEncoder.encode("not-a-real-password");
         this.notifications = notifications;
-        this.totp = totp;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -77,11 +74,6 @@ public class AuthService {
             throw new InvalidCredentialsException(
                     "Invalid email or password."
             );
-        }
-
-        if (Boolean.TRUE.equals(user.getMfaEnabled()) && !totp.verify(
-                totp.decrypt(user.getMfaSecretEncrypted()), request.mfaCode())) {
-            throw new InvalidCredentialsException("A valid authenticator code is required.");
         }
 
         Role role = user.getRoles()
@@ -180,49 +172,6 @@ public class AuthService {
             throw new InvalidCredentialsException("Current password is incorrect.");
         }
         applyNewPassword(user, request.newPassword());
-    }
-
-    @Transactional
-    public java.util.Map<String, Object> beginMfaSetup(UUID userId) {
-        User user = activeUser(userId);
-        String secret = totp.generateSecret();
-        user.setMfaSecretEncrypted(totp.encrypt(secret));
-        user.setMfaEnabled(false);
-        user.setUpdatedAt(OffsetDateTime.now());
-        userRepository.save(user);
-        String label = java.net.URLEncoder.encode("ShareHope:" + user.getEmail(), StandardCharsets.UTF_8);
-        String uri = "otpauth://totp/" + label + "?secret=" + secret + "&issuer=ShareHope&digits=6&period=30";
-        return java.util.Map.of("secret", secret, "otpauthUri", uri);
-    }
-
-    @Transactional
-    public void enableMfa(UUID userId, String code) {
-        User user = activeUser(userId);
-        if (user.getMfaSecretEncrypted() == null || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), code)) {
-            throw new InvalidCredentialsException("Authenticator code is invalid.");
-        }
-        user.setMfaEnabled(true);
-        user.setSessionVersion(user.getSessionVersion() + 1);
-        user.setUpdatedAt(OffsetDateTime.now());
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void disableMfa(UUID userId, String code) {
-        User user = activeUser(userId);
-        if (!Boolean.TRUE.equals(user.getMfaEnabled()) || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), code)) {
-            throw new InvalidCredentialsException("Authenticator code is invalid.");
-        }
-        user.setMfaEnabled(false);
-        user.setMfaSecretEncrypted(null);
-        user.setSessionVersion(user.getSessionVersion() + 1);
-        user.setUpdatedAt(OffsetDateTime.now());
-        userRepository.save(user);
-    }
-
-    private User activeUser(UUID userId) {
-        return userRepository.findById(userId).filter(user -> user.getStatus() == UserStatus.ACTIVE)
-                .orElseThrow(() -> new InvalidCredentialsException("Authenticated user not found."));
     }
 
     private void applyNewPassword(User user, String password) {
