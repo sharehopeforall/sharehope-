@@ -6,40 +6,32 @@ const copy = {
   en: {
     heroEyebrow: "Our story",
     heroTitle: "Hope is a team effort.",
-    heroLead: "ShareHope began with a simple belief: lasting change starts with local communities. Today, we partner with neighborhoods around the world to expand access to education, health, and opportunity.",
+    heroLead: "ShareHope is a non-profit organization born from our founder's own childhood of hardship. We share the little we have to bring a smile to children in need, orphans, widows, single mothers, and the sick.",
     missionEyebrow: "Our mission",
     missionStatement: "To walk alongside communities as they build the futures they imagine — with dignity, partnership, and lasting support.",
     timelineEyebrow: "How we got here",
     timelineTitle: "A few milestones along the way",
     timeline: [
-      { year: "2016", title: "Where it began", body: "A small group of volunteers funded the first classroom supplies for one partner school." },
-      { year: "2019", title: "Growing programs", body: "We expanded into health and community development, guided by what local leaders asked for." },
-      { year: "2023", title: "Community-led model", body: "Every program is now designed and directed by the communities it serves." },
-      { year: "Today", title: "Still growing", body: "Thousands of students, families, and neighbors shape what we do — and where we go next." },
+      { year: "2022", title: "Where it began", body: "It started as People's Care Center, helping children in need with school supplies and food, and placing some in apprenticeships such as sewing." },
+      { year: "2023", title: "Growing", body: "We began visiting sick children in hospital, praying for them and bringing food to their families." },
+      { year: "2026", title: "A new name: ShareHope", body: "People's Care Center became ShareHope, carrying the same promise forward. And the list continues." },
     ],
     valuesEyebrow: "What guides us",
     valuesTitle: "Our values",
     values: [
-      { title: "Community first", body: "Local leaders set the agenda. We follow their expertise." },
-      { title: "Radical transparency", body: "We share where every dollar goes and report honestly on results." },
-      { title: "Long-term commitment", body: "Real change takes time. We stay until communities lead on their own." },
-      { title: "Dignity in everything", body: "The people we serve are partners and protagonists — never props." },
+      { title: "Give now", body: "If we wait until we have more than enough to give, we will never give." },
+      { title: "Be the solution", body: "We look for where the needs are, and work to meet them." },
+      { title: "Little goes far", body: "The little we have can do much more than we think." },
+      { title: "Together", body: "It is a noble but great task. We all need to lend a hand to help our neighbors." },
     ],
     teamEyebrow: "The people behind it",
     teamTitle: "Meet the team",
     teamLead: "A small team, powered by hundreds of volunteers and local partners.",
     team: [
-      { name: "Marie L.", role: "Founder & Director", bio: "Started ShareHope with one classroom and a lot of hope.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Marie L.", role: "Founder & Director", bio: "Founded ShareHope from a childhood promise that no one should live the hardship she knew.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
       { name: "Kwame A.", role: "Programs Lead", bio: "Turns community ideas into programs that last.", photo: "" },
       { name: "Sofia R.", role: "Community Partnerships", bio: "Builds bridges between local leaders and supporters.", photo: "" },
       { name: "Daniel T.", role: "Operations", bio: "Keeps every dollar accountable and every project on track.", photo: "" },
-    ],
-    statsTitle: "By the numbers",
-    stats: [
-      { value: "9", label: "Years of work" },
-      { value: "12", label: "Countries" },
-      { value: "38,000+", label: "People reached" },
-      { value: "100%", label: "Community-led" },
     ],
     ctaTitle: "Be part of the story.",
     ctaBody: "Whether you give, volunteer, or partner with us — there's a place for you here.",
@@ -49,40 +41,32 @@ const copy = {
   fr: {
     heroEyebrow: "Notre histoire",
     heroTitle: "L'espoir est un travail d'équipe.",
-    heroLead: "ShareHope est née d'une conviction simple : le changement durable commence avec les communautés locales. Aujourd'hui, nous collaborons avec des quartiers du monde entier pour élargir l'accès à l'éducation, à la santé et aux opportunités.",
+    heroLead: "ShareHope est une organisation à but non lucratif, née de l'enfance difficile de notre fondatrice. Nous partageons le peu que nous avons pour mettre le sourire aux lèvres des enfants démunis, des orphelins, des veuves, des mères célibataires et des malades.",
     missionEyebrow: "Notre mission",
     missionStatement: "Accompagner les communautés dans la construction de l'avenir qu'elles imaginent — avec dignité, partenariat et soutien durable.",
     timelineEyebrow: "Notre parcours",
     timelineTitle: "Quelques étapes clés",
     timeline: [
-      { year: "2016", title: "Le point de départ", body: "Un petit groupe de bénévoles finance les premières fournitures scolaires d'une école partenaire." },
-      { year: "2019", title: "Des programmes qui grandissent", body: "Nous nous ouvrons à la santé et au développement communautaire, guidés par les demandes des leaders locaux." },
-      { year: "2023", title: "Un modèle communautaire", body: "Chaque programme est désormais conçu et dirigé par les communautés qu'il sert." },
-      { year: "Aujourd'hui", title: "Toujours en croissance", body: "Des milliers d'élèves, de familles et de voisins façonnent ce que nous faisons — et où nous allons." },
+      { year: "2022", title: "Le point de départ", body: "Tout a commencé sous le nom de People's Care Center, en aidant les enfants démunis avec des fournitures scolaires et des vivres, et en plaçant certains en apprentissage, comme la couture." },
+      { year: "2023", title: "La croissance", body: "Nous avons commencé à rendre visite aux enfants malades à l'hôpital, à prier pour eux et à apporter des vivres à leurs familles." },
+      { year: "2026", title: "Un nouveau nom : ShareHope", body: "People's Care Center est devenu ShareHope, en portant la même promesse. Et la liste continue." },
     ],
     valuesEyebrow: "Ce qui nous guide",
     valuesTitle: "Nos valeurs",
     values: [
-      { title: "La communauté d'abord", body: "Les leaders locaux fixent le cap. Nous suivons leur expertise." },
-      { title: "Transparence radicale", body: "Nous montrons où va chaque dollar et rendons compte honnêtement." },
-      { title: "Engagement à long terme", body: "Le vrai changement prend du temps. Nous restons jusqu'à ce que les communautés mènent seules." },
-      { title: "La dignité avant tout", body: "Les personnes que nous servons sont des partenaires et des protagonistes — jamais des accessoires." },
+      { title: "Donner maintenant", body: "S'il faut attendre le superflu pour donner, on ne donnera jamais." },
+      { title: "Être la solution", body: "Nous cherchons où sont les besoins, et nous nous efforçons d'y répondre." },
+      { title: "Le peu va loin", body: "Le peu que nous avons peut faire beaucoup plus qu'on ne le croit." },
+      { title: "Ensemble", body: "C'est une tâche noble mais grande. Nous devons tous mettre la main à la pâte pour aider nos prochains." },
     ],
     teamEyebrow: "L'équipe derrière tout ça",
     teamTitle: "Rencontrez l'équipe",
     teamLead: "Une petite équipe, portée par des centaines de bénévoles et de partenaires locaux.",
     team: [
-      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A lancé ShareHope avec une salle de classe et beaucoup d'espoir.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A fondé ShareHope à partir d'une promesse d'enfance : que personne ne vive les difficultés qu'elle a connues.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
       { name: "Kwame A.", role: "Responsable des programmes", bio: "Transforme les idées des communautés en programmes durables.", photo: "" },
       { name: "Sofia R.", role: "Partenariats communautaires", bio: "Crée des liens entre leaders locaux et soutiens.", photo: "" },
       { name: "Daniel T.", role: "Opérations", bio: "Veille à ce que chaque dollar et chaque projet soient suivis.", photo: "" },
-    ],
-    statsTitle: "En chiffres",
-    stats: [
-      { value: "9", label: "Années d'action" },
-      { value: "12", label: "Pays" },
-      { value: "38 000+", label: "Personnes touchées" },
-      { value: "100 %", label: "Mené par les communautés" },
     ],
     ctaTitle: "Faites partie de l'histoire.",
     ctaBody: "Donner, faire du bénévolat ou devenir partenaire — il y a une place pour vous ici.",
@@ -193,19 +177,6 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="mx-auto max-w-5xl px-6 py-16 text-center">
-        <h2 className="font-mono-spaced text-xs font-bold uppercase text-slate-500">{t.statsTitle}</h2>
-        <div className="mt-10 grid grid-cols-2 gap-8 sm:grid-cols-4">
-          {t.stats.map((stat) => (
-            <div key={stat.label}>
-              <p className="font-serif text-4xl font-bold text-brand-navy sm:text-5xl">{stat.value}</p>
-              <p className="font-mono-spaced mt-2 text-[11px] font-bold uppercase text-slate-500">{stat.label}</p>
-            </div>
-          ))}
         </div>
       </section>
 

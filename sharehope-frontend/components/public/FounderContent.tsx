@@ -5,18 +5,18 @@ import type { ManagedPageContent } from "@/lib/server/site-page";
 const copy = {
   eyebrow: "Meet our founder",
   title: "A promise that became a lasting commitment.",
-  intro: "Marie founded ShareHope after one classroom changed the way she understood service, partnership, and what it means to truly listen.",
+  intro: "Marie founded ShareHope from a promise she made as a child: that no child, no expectant mother, no one would live through the hardship she knew.",
   imageAlt: "Marie L., founder and director of ShareHope",
   role: "Marie L. · Founder & Director",
   letter: [
-    "I did not travel abroad intending to start an organization. I went as a teacher, ready to help for two weeks. Then I met a school principal caring for forty students with only twelve textbooks—and I made a promise to help her find the resources the classroom needed.",
-    "That first promise taught me something I still carry into every partnership: communities already know what progress looks like. Our responsibility is to listen, bring the right people and resources together, and stay accountable for the long term.",
-    "ShareHope has grown, but our approach has not changed. Every program starts with local leadership, every decision is grounded in dignity, and every result belongs to the community that made it possible.",
+    "I was raised by my grandmother. Some days there was nothing to eat, and she pawned her wraps and jewelry so we could have a meal. When I told her I was hungry, she would say, “Go drink a glass of water—and bring me one too.” Later, after my father passed away, I spent three years out of school.",
+    "In those hard years, I made myself a promise: I would do everything I could so that no child, no pregnant woman, no one would go through what I went through. That promise became ShareHope. We began with school kits for children whose parents could not afford them, because I know exactly how that feels.",
+    "Today we share food at Christmas, visit sick children in hospital with gifts and prayer, and help single mothers start a small trade. This work has taught me that there is more joy in giving than in receiving. If we wait until we have more than enough, we will never give—and the little we have can do more than we think.",
   ],
   milestones: [
-    { value: "2016", label: "The first promise" },
-    { value: "12", label: "Countries reached" },
-    { value: "Today", label: "Local leaders guide every program" },
+    { value: "2022", label: "People's Care Center begins" },
+    { value: "2023", label: "Hospital visits begin" },
+    { value: "2026", label: "People's Care Center becomes ShareHope" },
   ],
   principles: [
     { number: "01", title: "Listen first", body: "Start with local knowledge, lived experience, and the priorities communities set for themselves." },
