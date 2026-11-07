@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isLoginPage = ["/admin/login", "/admin/forgot-password", "/admin/reset-password", "/admin/activate"].includes(pathname);
 
   if (isLoginPage) {
-    return <div className="flex min-h-full flex-1">{children}</div>;
+    return <div className="flex min-h-full w-full flex-1">{children}</div>;
   }
 
   return (
