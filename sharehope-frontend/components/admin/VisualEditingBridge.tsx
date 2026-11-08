@@ -125,20 +125,23 @@ export function VisualEditingBridge() {
           window.clearTimeout(revealTimer);
           delete content.dataset.visualContentLoading;
         });
+      const publicObserverOptions: MutationObserverInit = {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["src", "srcset", "style"],
+      };
       let patchFrame: number | null = null;
       const publicObserver = new MutationObserver(() => {
         if (patchFrame !== null) return;
         patchFrame = requestAnimationFrame(() => {
           patchFrame = null;
+          publicObserver.disconnect();
           applyAll(publishedPatches);
+          publicObserver.observe(content, publicObserverOptions);
         });
       });
-      publicObserver.observe(content, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["src", "srcset", "style"],
-      });
+      publicObserver.observe(content, publicObserverOptions);
       return () => {
         window.clearTimeout(revealTimer);
         delete content.dataset.visualContentLoading;
@@ -329,14 +332,27 @@ export function VisualEditingBridge() {
       });
     };
     mark();
-    const observer = new MutationObserver(mark);
-    observer.observe(content, {
+    const editorObserverOptions: MutationObserverInit = {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ["src", "srcset", "style"],
+    };
+    let markFrame: number | null = null;
+    const observer = new MutationObserver(() => {
+      if (markFrame !== null) return;
+      markFrame = requestAnimationFrame(() => {
+        markFrame = null;
+        observer.disconnect();
+        mark();
+        observer.observe(content, editorObserverOptions);
+      });
     });
-    cleanups.push(() => observer.disconnect());
+    observer.observe(content, editorObserverOptions);
+    cleanups.push(() => {
+      observer.disconnect();
+      if (markFrame !== null) cancelAnimationFrame(markFrame);
+    });
 
     const select = (event: MouseEvent) => {
       const clicked = (event.target as HTMLElement).closest<HTMLElement>(editableSelector);

@@ -73,7 +73,6 @@ export function VisualSiteEditor() {
         patchesRef.current = next;
         setPatches(next);
         setStatus("Unsaved changes");
-        send({ action: "apply", patch });
       }
       if (event.data.action === "select" && event.data.selection) {
         setSelection(event.data.selection);
