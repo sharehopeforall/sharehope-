@@ -221,6 +221,7 @@ export function VisualSiteEditor() {
             src={frameUrl}
             onLoad={() => send({ action: "hydrate", patches: patchesRef.current })}
             className="h-full w-full border-0"
+            scrolling="yes"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
           />
         </div>

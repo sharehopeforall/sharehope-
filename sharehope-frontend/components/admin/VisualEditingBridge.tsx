@@ -147,6 +147,21 @@ export function VisualEditingBridge() {
       };
     }
 
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflowY = document.documentElement.style.overflowY;
+    const previousBodyOverflowY = document.body.style.overflowY;
+    document.documentElement.style.overflow = "auto";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflow = "auto";
+    document.body.style.overflowY = "auto";
+    cleanups.push(() => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.documentElement.style.overflowY = previousHtmlOverflowY;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overflowY = previousBodyOverflowY;
+    });
+
     document.documentElement.dataset.visualEditing = "true";
     let activePatches: VisualPatchMap = {};
     const editableSelector = "h1,h2,h3,h4,h5,h6,p,li,figcaption,a,span,img,[style*='background-image']";
