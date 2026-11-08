@@ -35,13 +35,23 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (token) headers.set("authorization", `Bearer ${token}`);
 
-  const response = await fetch(target, {
-    method: request.method,
-    headers,
-    body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer(),
-    cache: "no-store",
-    signal: AbortSignal.timeout(10_000),
-  });
+  const timeout = backendPath.startsWith("admin/website/visual-content") ? 30_000 : 10_000;
+  let response: Response;
+  try {
+    response = await fetch(target, {
+      method: request.method,
+      headers,
+      body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer(),
+      cache: "no-store",
+      signal: AbortSignal.timeout(timeout),
+    });
+  } catch (error) {
+    const timedOut = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+    return NextResponse.json(
+      { error: timedOut ? "The backend took too long to respond." : "The backend is temporarily unavailable." },
+      { status: timedOut ? 504 : 502 },
+    );
+  }
 
   if (backendPath === "auth/login" && response.ok) {
     const session = (await response.json()) as {

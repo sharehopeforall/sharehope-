@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLink, Loader2, Monitor, RotateCcw, Save, Send, Smartphone, Tablet } from "lucide-react";
 import { websiteApi } from "@/lib/api/website";
+import { ApiError } from "@/lib/api/client";
 import { useCurrentUser } from "@/hooks/useAuth";
 import type { VisualPatch, VisualPatchMap } from "@/types/website";
 
@@ -102,7 +103,18 @@ export function VisualSiteEditor() {
     setSaving(true);
     setStatus("Translating English and French…");
     try {
-      const result = await websiteApi.saveVisualDraft(path, locale, patchesRef.current, versionRef.current);
+      let content = patchesRef.current;
+      let result;
+      try {
+        result = await websiteApi.saveVisualDraft(path, locale, content, versionRef.current);
+      } catch (error) {
+        if (!(error instanceof ApiError) || error.status !== 409) throw error;
+        setStatus("Merging a newer page version…");
+        const latest = await websiteApi.getVisualContent(path, locale);
+        const latestContent = Object.keys(latest.draftContent).length ? latest.draftContent : latest.publishedContent;
+        content = { ...latestContent, ...content };
+        result = await websiteApi.saveVisualDraft(path, locale, content, latest.version);
+      }
       if (identityRef.current !== identity) return false;
       versionRef.current = result.version;
       patchesRef.current = result.draftContent;
@@ -114,8 +126,12 @@ export function VisualSiteEditor() {
       return true;
     } catch (error) {
       if (identityRef.current === identity) {
-        const conflict = error instanceof Error && "status" in error && (error as { status?: number }).status === 409;
-        setStatus(conflict ? "Another editor changed this page — reload before saving" : "Draft save failed — nothing was published");
+        const message = error instanceof ApiError && error.message
+          ? error.message
+          : error instanceof Error && error.message
+            ? error.message
+            : "Draft save failed";
+        setStatus(`Draft save failed — ${message}`);
       }
       return false;
     } finally {
