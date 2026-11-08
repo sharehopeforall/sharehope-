@@ -230,6 +230,7 @@ export default function Hero({
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string>("");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [mobileDonationOpen, setMobileDonationOpen] = useState(false);
   const mobileHeadline = locale === "fr"
     ? "Un avenir meilleur commence ici."
     : "A brighter future starts here.";
@@ -265,7 +266,7 @@ export default function Hero({
           {editor ? (
             <div className="mx-auto mt-8 inline-flex min-h-16 items-center rounded-md bg-[#FFC72C] px-9 text-base font-black uppercase tracking-[0.15em] text-brand-navy">{mobileButton}</div>
           ) : (
-            <button type="button" onClick={() => setPaymentModalOpen(true)} className="mt-8 min-h-16 rounded-md bg-[#FFC72C] px-9 py-5 text-base font-black uppercase tracking-[0.15em] text-brand-navy shadow-md transition hover:bg-white active:scale-[0.98]">{mobileButton}</button>
+            <button type="button" onClick={() => setMobileDonationOpen(true)} className="mt-8 min-h-16 rounded-md bg-[#FFC72C] px-9 py-5 text-base font-black uppercase tracking-[0.15em] text-brand-navy shadow-md transition hover:bg-white active:scale-[0.98]">{mobileButton}</button>
           )}
         </div>
       </section>
@@ -416,6 +417,48 @@ export default function Hero({
 
         </div>
       </section>
+
+      {mobileDonationOpen && !editor && (
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-brand-navy/55 p-0 backdrop-blur-sm lg:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-donation-title">
+          <button type="button" aria-label={locale === "fr" ? "Fermer" : "Close donation options"} onClick={() => setMobileDonationOpen(false)} className="absolute inset-0 cursor-default" />
+          <div className="relative z-10 max-h-[92svh] w-full overflow-y-auto rounded-t-2xl border border-[#E5E0D8] bg-white shadow-2xl">
+            <div className="sticky top-0 z-20 flex items-center justify-between border-b border-[#E5E0D8] bg-white px-5 py-4">
+              <h2 id="mobile-donation-title" className="font-serif text-xl font-semibold text-brand-navy">{locale === "fr" ? "Choisissez votre don" : "Choose your gift"}</h2>
+              <button type="button" aria-label={locale === "fr" ? "Fermer" : "Close"} onClick={() => setMobileDonationOpen(false)} className="grid h-10 w-10 place-items-center rounded-full bg-[#EFECE6] text-2xl leading-none text-brand-navy">×</button>
+            </div>
+
+            <div className="grid grid-cols-2 border-b border-[#E5E0D8] bg-[#EFECE6] p-1.5">
+              <button type="button" onClick={() => setFrequency("monthly")} className={`min-h-14 text-sm font-black uppercase tracking-wider transition ${frequency === "monthly" ? "bg-[#FFC72C] text-[#121212] shadow-sm" : "text-neutral-600"}`}>{page.frequencyMonthly} <span aria-hidden="true">♡</span></button>
+              <button type="button" onClick={() => setFrequency("once")} className={`min-h-14 text-sm font-black uppercase tracking-wider transition ${frequency === "once" ? "bg-[#FFC72C] text-[#121212] shadow-sm" : "text-neutral-600"}`}>{page.frequencyOnce}</button>
+            </div>
+
+            <div className="space-y-5 p-5">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-neutral-700">{page.amountLabel}</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                {PRESET_AMOUNTS.map((presetVal) => {
+                  const selected = !isCustom && amount === presetVal;
+                  return <button key={presetVal} type="button" onClick={() => handleSelectPreset(presetVal)} className={`min-h-16 rounded-lg px-2 text-lg font-black transition ${selected ? "bg-[#FFC72C] text-[#121212] shadow-md" : "bg-[#EFECE6] text-neutral-800"}`}>${presetVal} <span className="text-xs font-medium text-neutral-600">{frequency === "monthly" ? page.presetSuffixMonthly : page.presetSuffixOnce}</span></button>;
+                })}
+              </div>
+
+              {!isCustom ? (
+                <button type="button" onClick={() => setIsCustom(true)} className="min-h-12 w-full rounded-lg bg-[#EFECE6] text-sm font-black uppercase tracking-wider text-neutral-700">{page.customToggle}</button>
+              ) : (
+                <label className="relative block">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-neutral-500">$</span>
+                  <input type="number" min={1} max={100000} step={0.01} autoFocus value={customValue} onChange={handleCustomInputChange} placeholder={page.customPlaceholder} className="min-h-14 w-full rounded-lg border-2 border-[#FFC72C] bg-[#EFECE6] pl-8 pr-16 font-bold outline-none" />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-neutral-500">USD</span>
+                </label>
+              )}
+
+              <div className="flex min-h-12 items-start gap-3 text-sm font-medium leading-6 text-neutral-800"><span className="text-2xl leading-6 text-[#E2AD17]" aria-hidden="true">♡</span><p>{getImpactMessage()}</p></div>
+              <button type="button" disabled={!Number.isFinite(amount) || amount < 1} onClick={() => { setMobileDonationOpen(false); setPaymentModalOpen(true); }} className="min-h-16 w-full rounded-lg bg-[#FFC72C] px-5 text-base font-black uppercase tracking-[0.16em] text-[#121212] shadow-md disabled:cursor-not-allowed disabled:opacity-50">{locale === "fr" ? "DONNER MAINTENANT" : "DONATE NOW"}</button>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 border-t border-[#E5E0D8] bg-[#EFECE6]/80 px-5 py-4 text-[11px] font-semibold text-neutral-600"><span>🔒 {page.trustLeft}</span><span className="text-right">{page.trustRight}</span></div>
+          </div>
+        </div>
+      )}
 
       <DonationPaymentModal
         open={paymentModalOpen}
