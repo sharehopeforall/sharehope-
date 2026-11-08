@@ -33,6 +33,7 @@ interface EventData {
   reservedSeats?: number;
   remainingSeats?: number | null;
   soldOut?: boolean;
+  registrationClosed?: boolean;
   enableRsvp?: boolean;
   enableDonate?: boolean;
   enableVolunteer?: boolean;
@@ -446,7 +447,7 @@ const content = {
   },
 } as const;
 
-export default function EventsContent({ locale, managedEvents, editor }: { locale: string; managedEvents?: PublicEvent[]; editor?: { onEditEvent: (slug: string) => void; onCreateEvent: () => void } }) {
+export default function EventsContent({ locale, managedEvents, editor, loadFailed = false }: { locale: string; managedEvents?: PublicEvent[]; loadFailed?: boolean; editor?: { onEditEvent: (slug: string) => void; onCreateEvent: () => void } }) {
   const t = locale === "fr" ? content.fr : content.en;
   const [filter, setFilter] = useState<Filter>("all");
   const [openEvent, setOpenEvent] = useState<EventData | null>(null);
@@ -475,6 +476,7 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
       reservedSeats: "reservedSeats" in event ? event.reservedSeats : 0,
       remainingSeats: "remainingSeats" in event ? event.remainingSeats : null,
       soldOut: "soldOut" in event ? event.soldOut : false,
+      registrationClosed: "registrationClosed" in event ? event.registrationClosed : false,
       enableRsvp: "enableRsvp" in event ? event.enableRsvp : true,
       enableDonate: "enableDonate" in event ? event.enableDonate : true,
       enableVolunteer: "enableVolunteer" in event ? event.enableVolunteer : true,
@@ -687,7 +689,7 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
 
         {/* Event rows */}
         <div aria-live="polite" className="divide-y divide-[#E2E8F0] border-b border-t border-[#E2E8F0]">
-          {visibleEvents.length === 0 && <p className="py-12 text-center text-sm text-[#64748B]">{locale === "fr" ? "Aucun événement ne correspond à ce filtre." : "No events match this filter."}</p>}
+          {visibleEvents.length === 0 && <p className="py-12 text-center text-sm text-[#64748B]">{loadFailed ? (locale === "fr" ? "Les événements sont temporairement indisponibles. Veuillez réessayer plus tard." : "Events are temporarily unavailable. Please try again later.") : (locale === "fr" ? "Aucun événement ne correspond à ce filtre." : "No events match this filter.")}</p>}
           {visibleEvents.map((event) => (
             <article
               key={event.id}
@@ -895,11 +897,11 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                     {rsvpStatus === "success" ? (
                       <div className="space-y-4 border border-blue-200 bg-blue-50 p-5 text-center" role="status" tabIndex={-1}>
                         <p className="font-serif text-xl font-bold text-blue-900">{t.drawer.rsvp.success}</p>
-                        <p className="mt-2 text-xs text-blue-800">{t.drawer.successNote}</p>
+                        <p className="mt-2 text-xs text-blue-800">{locale === "fr" ? "Vérifiez votre courriel et confirmez votre adresse pour réserver votre place." : "Check your email and confirm your address to reserve your place."}</p>
                         <div className="text-xs text-blue-900"><strong>{openEvent.title}</strong><br />{openEvent.dateLine}<br />{openEvent.location}{registrationId&&<><br />{locale === "fr" ? "Référence" : "Reference"}: {registrationId.slice(0,8).toUpperCase()}</>}</div>
                         {calendarLinks&&<div className="flex flex-wrap justify-center gap-2"><a href={calendarLinks.google} target="_blank" rel="noreferrer" className="border border-blue-700 px-3 py-2 text-xs font-bold text-blue-900">Google Calendar</a><a href={calendarLinks.ics} download={`${openEvent.id}.ics`} className="border border-blue-700 px-3 py-2 text-xs font-bold text-blue-900">{locale === "fr" ? "Télécharger .ics" : "Download .ics"}</a></div>}
                       </div>
-                    ) : openEvent.soldOut ? <div className="border border-amber-200 bg-amber-50 p-5 text-center"><p className="font-serif text-xl font-bold text-amber-900">{locale === "fr" ? "Cet événement est complet" : "This event is sold out"}</p><p className="mt-2 text-xs text-amber-800">{locale === "fr" ? "Contactez notre équipe pour connaître les prochaines possibilités." : "Contact our team for future opportunities."}</p></div> : (
+                    ) : openEvent.soldOut || openEvent.registrationClosed ? <div className="border border-amber-200 bg-amber-50 p-5 text-center"><p className="font-serif text-xl font-bold text-amber-900">{openEvent.registrationClosed ? (locale === "fr" ? "Les inscriptions sont closes" : "Registration is closed") : (locale === "fr" ? "Cet événement est complet" : "This event is sold out")}</p><p className="mt-2 text-xs text-amber-800">{locale === "fr" ? "Contactez notre équipe pour connaître les prochaines possibilités." : "Contact our team for future opportunities."}</p></div> : (
                       <form className="space-y-4" onSubmit={submitRsvp}>
                         <p className="text-xs text-[#64748B]">{t.drawer.rsvp.intro}</p>
                         <label className="block space-y-1.5 text-xs font-bold text-brand-navy">
@@ -921,8 +923,8 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                           </label>
                         </div>
                         <label className="block space-y-1.5 text-xs font-bold text-brand-navy">
-                          <span>{t.drawer.rsvp.email}</span>
-                          <input name="email" type="email" maxLength={320} autoComplete="email" placeholder={t.drawer.rsvp.emailPlaceholder} className="w-full border border-[#CBD5E1] px-3 py-3 font-normal" />
+                          <span>{locale === "fr" ? "Adresse courriel *" : "Email address *"}</span>
+                          <input name="email" required type="email" maxLength={320} autoComplete="email" placeholder={t.drawer.rsvp.emailPlaceholder} className="w-full border border-[#CBD5E1] px-3 py-3 font-normal" />
                         </label>
                         <p className="text-[11px] leading-relaxed text-[#64748B]">{locale === "fr" ? "Nous utiliserons ces informations uniquement pour gérer votre inscription à cet événement. " : "We’ll use this information only to manage your registration for this event. "}<Link href="/privacy" className="underline">{locale === "fr" ? "Politique de confidentialité" : "Privacy policy"}</Link>.</p>
                         {rsvpStatus === "error" && <p className="text-sm font-semibold text-red-700" role="alert">{rsvpError}</p>}
@@ -950,13 +952,13 @@ export default function EventsContent({ locale, managedEvents, editor }: { local
                 {/* Volunteer action */}
                 {activeTab === "volunteer" ? (
                   <div id="event-panel-volunteer" role="tabpanel" aria-labelledby="event-tab-volunteer" className="space-y-4">
-                    {volunteerStatus === "success" ? <div role="status" className="border border-blue-200 bg-blue-50 p-5 text-center text-sm font-semibold text-blue-900">{locale === "fr" ? "Merci! Votre place de bénévole est confirmée." : "Thank you! Your volunteer place is confirmed."}</div> : <form className="space-y-4" onSubmit={submitVolunteer}>
+                    {volunteerStatus === "success" ? <div role="status" className="border border-blue-200 bg-blue-50 p-5 text-center text-sm font-semibold text-blue-900">{locale === "fr" ? "Vérifiez votre courriel pour confirmer votre place de bénévole." : "Check your email to confirm your volunteer place."}</div> : <form className="space-y-4" onSubmit={submitVolunteer}>
                       <p className="text-xs text-[#64748B]">{t.drawer.volunteer.intro}</p>
                       <label className="block space-y-1.5 text-xs font-bold text-brand-navy"><span>{locale === "fr" ? "Rôle bénévole" : "Volunteer role"}</span><select name="role" required className="w-full border border-[#CBD5E1] bg-white px-3 py-3 font-normal">{(openEvent.roles.length ? openEvent.roles : [locale === "fr" ? "Soutien général à l’événement" : "General event support"]).map((role) => <option key={role}>{role}</option>)}</select></label>
                       <label className="block space-y-1.5 text-xs font-bold text-brand-navy"><span>{locale === "fr" ? "Nom complet *" : "Full name *"}</span><input name="fullName" required maxLength={160} autoComplete="name" className="w-full border border-[#CBD5E1] px-3 py-3 font-normal" /></label>
                       <label className="block space-y-1.5 text-xs font-bold text-brand-navy"><span>{locale === "fr" ? "Adresse courriel (facultatif)" : "Email address (optional)"}</span><input name="email" type="email" maxLength={320} autoComplete="email" className="w-full border border-[#CBD5E1] px-3 py-3 font-normal" /></label>
                       {volunteerStatus === "error" && <p role="alert" className="text-sm font-semibold text-red-700">{volunteerError}</p>}
-                      <button type="submit" disabled={volunteerStatus === "submitting" || openEvent.soldOut} className="font-space-mono block w-full bg-brand-navy py-4 text-center text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#0A1C2E] disabled:cursor-not-allowed disabled:opacity-60">{openEvent.soldOut ? (locale === "fr" ? "Complet" : "Event is full") : volunteerStatus === "submitting" ? (locale === "fr" ? "Inscription…" : "Registering…") : (locale === "fr" ? "Confirmer mon bénévolat" : "Confirm volunteer registration")}</button>
+                      <button type="submit" disabled={volunteerStatus === "submitting" || openEvent.soldOut || openEvent.registrationClosed} className="font-space-mono block w-full bg-brand-navy py-4 text-center text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-[#0A1C2E] disabled:cursor-not-allowed disabled:opacity-60">{openEvent.registrationClosed ? (locale === "fr" ? "Inscriptions closes" : "Registration closed") : openEvent.soldOut ? (locale === "fr" ? "Complet" : "Event is full") : volunteerStatus === "submitting" ? (locale === "fr" ? "Inscription…" : "Registering…") : (locale === "fr" ? "Confirmer mon bénévolat" : "Confirm volunteer registration")}</button>
                     </form>}
                   </div>
                 ) : null}

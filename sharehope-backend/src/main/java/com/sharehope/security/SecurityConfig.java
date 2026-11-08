@@ -82,7 +82,8 @@ public class SecurityConfig {
                                 "/api/admin/submissions/**",
                                 "/api/admin/donations/**",
                                 "/api/admin/newsletter/**",
-                                "/api/admin/events/*/registrations/**"
+                                "/api/admin/events/*/registrations/**",
+                                "/api/admin/events/*/donations"
                         ).hasRole("SUPER_ADMIN")
 
                         .requestMatchers(

@@ -6,7 +6,7 @@ import { publicFormRateLimited } from "@/lib/server/public-form-rate-limit";
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8080";
 const rsvpSchema = z.object({
   fullName: z.string().trim().min(1).max(160),
-  email: z.union([z.email().max(320), z.literal(""), z.null()]).optional(),
+  email: z.email().max(320),
   guestCount: z.number().int().min(1).max(10),
   passType: z.string().trim().min(1).max(80),
   registrationType: z.enum(["RSVP", "VOLUNTEER"]).optional(),
@@ -17,8 +17,12 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
-  if (await publicFormRateLimited(request, "event-registration")) {
-    return NextResponse.json({ error: "Too many registrations. Please try again later." }, { status: 429 });
+  try {
+    if (await publicFormRateLimited(request, "event-registration")) {
+      return NextResponse.json({ error: "Too many registrations. Please try again later." }, { status: 429 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Registration protection is temporarily unavailable." }, { status: 503 });
   }
   const { slug } = await params;
   const parsed = rsvpSchema.safeParse(await request.json().catch(() => null));

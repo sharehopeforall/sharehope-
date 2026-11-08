@@ -1,6 +1,9 @@
 package com.sharehope.event.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -8,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.sharehope.event.dto.EventRsvpRequest;
 import com.sharehope.event.model.Event;
+import com.sharehope.event.model.EventRegistration;
 import com.sharehope.event.repository.EventRegistrationRepository;
 import com.sharehope.event.repository.EventRepository;
 import com.sharehope.notification.NotificationService;
@@ -21,8 +25,29 @@ import org.junit.jupiter.api.Test;
 class EventRegistrationServiceTest {
     private final EventRepository events = mock(EventRepository.class);
     private final EventRegistrationRepository registrations = mock(EventRegistrationRepository.class);
+    private final NotificationService notifications = mock(NotificationService.class);
     private final EventRegistrationService service = new EventRegistrationService(
-            events, registrations, mock(NotificationService.class));
+            events, registrations, notifications);
+
+    @Test
+    void createsPendingRegistrationAndEmailsVerificationLink() {
+        Event event = volunteerEvent();
+        when(events.findBySlugForRegistration("community-day")).thenReturn(Optional.of(event));
+        when(registrations.findByEventIdAndEmailIgnoreCase(event.getId(), "alex@example.org")).thenReturn(Optional.empty());
+        when(registrations.save(any(EventRegistration.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(notifications.sendEventRegistrationVerification(any(), any(), anyString())).thenReturn(true);
+
+        var response = service.register("community-day", new EventRsvpRequest(
+                "Alex Volunteer", "Alex@Example.org", 1, "Volunteer — Check-in host", "VOLUNTEER", "en"));
+
+        assertThat(response.verificationRequired()).isTrue();
+        var registration = org.mockito.ArgumentCaptor.forClass(EventRegistration.class);
+        verify(registrations).save(registration.capture());
+        assertThat(registration.getValue().getStatus()).isEqualTo("PENDING_CONFIRMATION");
+        assertThat(registration.getValue().getEmail()).isEqualTo("alex@example.org");
+        assertThat(registration.getValue().getConfirmationTokenHash()).hasSize(64);
+        verify(notifications).sendEventRegistrationVerification(any(), any(), anyString());
+    }
 
     @Test
     void rejectsVolunteerRoleThatIsNotConfiguredForTheEvent() {

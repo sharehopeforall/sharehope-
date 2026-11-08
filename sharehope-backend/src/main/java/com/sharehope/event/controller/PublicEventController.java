@@ -36,4 +36,13 @@ public class PublicEventController {
         publicFormGuard.requireValid(formSecret);
         return registrationService.register(slug, request);
     }
+
+    @PostMapping("/registrations/confirm")
+    public EventRsvpResponse confirm(@RequestHeader(value="X-Public-Form-Secret",required=false) String formSecret,
+                                     @RequestBody java.util.Map<String, String> body) {
+        publicFormGuard.requireValid(formSecret);
+        String token = body.get("token");
+        if (token == null || token.isBlank() || token.length() > 200) throw new IllegalArgumentException("Invalid confirmation token.");
+        return registrationService.confirm(token);
+    }
 }

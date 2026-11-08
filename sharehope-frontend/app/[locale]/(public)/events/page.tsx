@@ -31,7 +31,8 @@ export default async function EventsPage({
 }) {
   const { locale } = await params;
   let events: PublicEvent[] | undefined;
-  try { const response = await fetchBackend(`${backendUrl}/api/public/events?locale=${encodeURIComponent(locale)}`, { cache: "no-store" }); if (response.ok) events = await response.json() as PublicEvent[]; } catch { /* Built-in fallback remains available. */ }
+  let loadFailed = false;
+  try { const response = await fetchBackend(`${backendUrl}/api/public/events?locale=${encodeURIComponent(locale)}`, { cache: "no-store" }); if (response.ok) events = await response.json() as PublicEvent[]; else loadFailed = true; } catch { loadFailed = true; }
 
-  return <EventsContent locale={locale} managedEvents={events} />;
+  return <EventsContent locale={locale} managedEvents={events ?? []} loadFailed={loadFailed} />;
 }

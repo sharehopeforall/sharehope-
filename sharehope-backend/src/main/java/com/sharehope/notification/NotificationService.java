@@ -3,6 +3,8 @@ package com.sharehope.notification;
 import com.sharehope.donation.model.Donation;
 import com.sharehope.donation.service.DonationManageTokenService;
 import com.sharehope.user.model.User;
+import com.sharehope.event.model.Event;
+import com.sharehope.event.model.EventRegistration;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.net.URI;
@@ -94,6 +96,32 @@ public class NotificationService {
         String url = site + "/en/admin/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
         String text = "Hello " + user.getFirstName() + ",\n\nUse this link to reset your ShareHope administrator password. It expires in 30 minutes:\n" + url + "\n\nIf you did not request this, ignore this email.";
         return send(user.getEmail(), "Reset your ShareHope password", null, text);
+    }
+
+    public boolean sendEventRegistrationVerification(Event event, EventRegistration registration, String token) {
+        String locale = "fr".equals(registration.getLocale()) ? "fr" : "en";
+        String url = site + "/" + locale + "/events/confirm?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
+        String subject = "fr".equals(locale) ? "Confirmez votre inscription à l’événement ShareHope" : "Confirm your ShareHope event registration";
+        String text = ("fr".equals(locale)
+                ? "Bonjour " + registration.getFullName() + ",\n\nConfirmez votre inscription en ouvrant ce lien dans les 30 minutes:\n"
+                : "Hello " + registration.getFullName() + ",\n\nConfirm your registration by opening this link within 30 minutes:\n")
+                + url + "\n\n" + ("fr".equals(locale) ? "Si vous n’avez pas demandé cette inscription, ignorez ce message." : "If you did not request this registration, ignore this email.");
+        return send(registration.getEmail(), subject, null, text);
+    }
+
+    public boolean sendEventRegistrationConfirmed(Event event, EventRegistration registration) {
+        String locale = "fr".equals(registration.getLocale()) ? "fr" : "en";
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> translation = event.getTranslations().get(locale) instanceof java.util.Map<?, ?> value
+                ? (java.util.Map<String, Object>) value : java.util.Map.of();
+        String title = String.valueOf(translation.getOrDefault("title", event.getSlug()));
+        String joining = event.getVirtualUrl() != null && !event.getVirtualUrl().isBlank()
+                ? "\n\n" + ("fr".equals(locale) ? "Lien sécurisé de participation: " : "Secure joining link: ") + event.getVirtualUrl()
+                : "";
+        String text = ("fr".equals(locale) ? "Votre inscription est confirmée pour " : "Your registration is confirmed for ")
+                + title + ".\n" + event.getStartAt() + " (" + event.getTimezone() + ")" + joining
+                + "\n\n" + ("fr".equals(locale) ? "Merci,\nL’équipe ShareHope" : "Thank you,\nThe ShareHope Team");
+        return send(registration.getEmail(), "fr".equals(locale) ? "Inscription ShareHope confirmée" : "Your ShareHope registration is confirmed", null, text);
     }
 
     private boolean send(String recipient, String subject, String htmlContent, String textContent) {

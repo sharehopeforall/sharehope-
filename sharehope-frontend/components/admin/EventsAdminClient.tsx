@@ -9,16 +9,18 @@ import EventsContent from "@/components/public/EventsContent";
 import { useAdminEvents, useCreateEvent, useDeleteEvent, useUpdateEvent } from "@/hooks/useEvents";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 import type { AdminEvent, EventInput, EventTranslation, PublicEvent } from "@/types/event";
+import { instantToZonedLocal, isValidTimeZone, zonedLocalToIso } from "@/lib/event-time";
 
 const blankContent = (): EventTranslation => ({ title: "New Event", excerpt: "", description: "", buttonText: "View event", imageAlt: "", metaTag: "", agenda: [""], roles: [""] });
 const field = "mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10";
 
 function EventEditor({ event, order, onSave, onCancel, busy }: { event?: AdminEvent; order: number; onSave: (value: EventInput) => void; onCancel: () => void; busy: boolean }) {
+  const initialTimezone = event?.timezone ?? "America/Los_Angeles";
   const [slug, setSlug] = useState(event?.slug ?? "new-event");
   const [category, setCategory] = useState<EventInput["category"]>(event?.category ?? "in-person");
-  const [startAt, setStartAt] = useState((event?.startAt ?? new Date().toISOString()).slice(0, 16));
-  const [endAt, setEndAt] = useState(event?.endAt?.slice(0, 16) ?? "");
-  const [timezone, setTimezone] = useState(event?.timezone ?? "America/Los_Angeles");
+  const [startAt, setStartAt] = useState(instantToZonedLocal(event?.startAt ?? new Date().toISOString(), initialTimezone));
+  const [endAt, setEndAt] = useState(event?.endAt ? instantToZonedLocal(event.endAt, initialTimezone) : "");
+  const [timezone, setTimezone] = useState(initialTimezone);
   const [location, setLocation] = useState(event?.location ?? "");
   const [virtualUrl, setVirtualUrl] = useState(event?.virtualUrl ?? "");
   const [status, setStatus] = useState<EventInput["status"]>(event?.status ?? "DRAFT");
@@ -29,13 +31,14 @@ function EventEditor({ event, order, onSave, onCancel, busy }: { event?: AdminEv
   const [enableRsvp, setEnableRsvp] = useState(event?.enableRsvp ?? true);
   const [enableDonate, setEnableDonate] = useState(event?.enableDonate ?? true);
   const [enableVolunteer, setEnableVolunteer] = useState(event?.enableVolunteer ?? true);
+  const [validationError, setValidationError] = useState("");
   const file = useRef<HTMLInputElement>(null);
   const upload = useMediaUpload();
   const patchContent = (value: Partial<EventTranslation>) => setContent((current) => ({ ...current, ...value }));
   const hasAction = enableRsvp || enableDonate || enableVolunteer;
 
   return (
-    <form onSubmit={(submitEvent) => { submitEvent.preventDefault(); if (!hasAction) return; onSave({ slug, category, startAt: new Date(startAt).toISOString(), endAt: endAt ? new Date(endAt).toISOString() : null, timezone, location: location || null, virtualUrl: virtualUrl || null, imageUrl, displayOrder: event?.displayOrder ?? order, status, featured, highlighted: false, capacity: capacity ? Number(capacity) : null, enableRsvp, enableDonate, enableVolunteer, en: content, fr: content }); }} className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+    <form onSubmit={(submitEvent) => { submitEvent.preventDefault(); if (!hasAction) return; try { setValidationError(""); const normalizedStart = zonedLocalToIso(startAt, timezone); const normalizedEnd = endAt ? zonedLocalToIso(endAt, timezone) : null; if (normalizedEnd && new Date(normalizedEnd) <= new Date(normalizedStart)) throw new Error("The end time must be after the start time."); if ((category === "in-person" || category === "hybrid") && !location.trim()) throw new Error("A location is required for in-person and hybrid events."); if ((category === "virtual" || category === "hybrid") && !/^https:\/\//i.test(virtualUrl.trim())) throw new Error("A secure HTTPS meeting URL is required for virtual and hybrid events."); if (enableVolunteer && !content.roles.some((role) => role.trim())) throw new Error("Add at least one volunteer role."); onSave({ slug, category, startAt: normalizedStart, endAt: normalizedEnd, timezone, location: location.trim() || null, virtualUrl: virtualUrl.trim() || null, imageUrl, displayOrder: event?.displayOrder ?? order, status, featured, highlighted: false, capacity: capacity ? Number(capacity) : null, enableRsvp, enableDonate, enableVolunteer, en: content, fr: content }); } catch (error) { setValidationError(error instanceof Error ? error.message : "Check the event details."); } }} className="overflow-hidden rounded-2xl border bg-white shadow-sm">
       <header className="flex flex-wrap items-center gap-3 border-b bg-slate-50 px-6 py-4">
         <div><h2 className="font-serif text-2xl font-bold text-brand-navy">{event ? "Edit event" : "Create event"}</h2><p className="text-sm text-slate-500">One-language editor · translations can be added later</p></div>
         <select value={status} onChange={(changeEvent) => setStatus(changeEvent.target.value as EventInput["status"])} className="ml-auto rounded-lg border px-3 py-2 text-sm"><option>DRAFT</option><option>PUBLISHED</option><option>CANCELLED</option><option>ARCHIVED</option></select>
@@ -60,7 +63,7 @@ function EventEditor({ event, order, onSave, onCancel, busy }: { event?: AdminEv
 
           <section className="space-y-3">
             <h3 className="text-sm font-bold uppercase tracking-wider text-brand-navy">Publishing</h3>
-            <label className="block text-sm font-medium">URL slug<input value={slug} onChange={(changeEvent) => setSlug(changeEvent.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className={field} /></label>
+            <label className="block text-sm font-medium">URL slug<input required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" value={slug} onChange={(changeEvent) => setSlug(changeEvent.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, ""))} className={field} /></label>
             <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={featured} onChange={(changeEvent) => setFeatured(changeEvent.target.checked)} /> Feature this event</label>
           </section>
         </aside>
@@ -69,26 +72,26 @@ function EventEditor({ event, order, onSave, onCancel, busy }: { event?: AdminEv
           <section className="space-y-4">
             <div><p className="text-xs font-bold uppercase tracking-[.18em] text-slate-500">Content</p><h3 className="font-serif text-2xl font-bold text-brand-navy">Event details</h3></div>
             <label className="block text-sm font-medium">Event label<input value={content.metaTag} onChange={(changeEvent) => patchContent({ metaTag: changeEvent.target.value })} placeholder="GALA • NEW YORK" className={field} /></label>
-            <label className="block text-sm font-medium">Event title<input value={content.title} onChange={(changeEvent) => patchContent({ title: changeEvent.target.value })} className={`${field} font-serif text-2xl font-bold text-brand-navy`} /></label>
-            <label className="block text-sm font-medium">Short summary<textarea rows={2} value={content.excerpt} onChange={(changeEvent) => patchContent({ excerpt: changeEvent.target.value })} className={field} /></label>
-            <label className="block text-sm font-medium">Full description<textarea rows={5} value={content.description} onChange={(changeEvent) => patchContent({ description: changeEvent.target.value })} className={field} /></label>
+            <label className="block text-sm font-medium">Event title<input required maxLength={180} value={content.title} onChange={(changeEvent) => patchContent({ title: changeEvent.target.value })} className={`${field} font-serif text-2xl font-bold text-brand-navy`} /></label>
+            <label className="block text-sm font-medium">Short summary<textarea required maxLength={500} rows={2} value={content.excerpt} onChange={(changeEvent) => patchContent({ excerpt: changeEvent.target.value })} className={field} /></label>
+            <label className="block text-sm font-medium">Full description<textarea required maxLength={10000} rows={5} value={content.description} onChange={(changeEvent) => patchContent({ description: changeEvent.target.value })} className={field} /></label>
           </section>
 
           <section className="grid gap-4 rounded-xl border p-5 md:grid-cols-2">
             <div className="md:col-span-2"><h3 className="font-serif text-xl font-bold text-brand-navy">Schedule and location</h3></div>
             <label className="text-sm font-medium">Event type<select value={category} onChange={(changeEvent) => setCategory(changeEvent.target.value as EventInput["category"])} className={field}><option value="in-person">In person</option><option value="virtual">Virtual</option><option value="hybrid">Hybrid</option></select></label>
-            <label className="text-sm font-medium">Timezone<input value={timezone} onChange={(changeEvent) => setTimezone(changeEvent.target.value)} className={field} /></label>
-            <label className="text-sm font-medium">Starts<input type="datetime-local" value={startAt} onChange={(changeEvent) => setStartAt(changeEvent.target.value)} className={field} /></label>
+            <label className="text-sm font-medium">Timezone<input required value={timezone} onChange={(changeEvent) => setTimezone(changeEvent.target.value)} aria-invalid={!isValidTimeZone(timezone)} className={field} /></label>
+            <label className="text-sm font-medium">Starts<input required type="datetime-local" value={startAt} onChange={(changeEvent) => setStartAt(changeEvent.target.value)} className={field} /></label>
             <label className="text-sm font-medium">Ends<input type="datetime-local" value={endAt} onChange={(changeEvent) => setEndAt(changeEvent.target.value)} className={field} /></label>
             <label className="text-sm font-medium md:col-span-2">Location<input value={location} onChange={(changeEvent) => setLocation(changeEvent.target.value)} className={field} /></label>
-            {category !== "in-person" && <label className="text-sm font-medium md:col-span-2">Virtual meeting URL<input value={virtualUrl} onChange={(changeEvent) => setVirtualUrl(changeEvent.target.value)} className={field} /></label>}
+            {category !== "in-person" && <label className="text-sm font-medium md:col-span-2">Virtual meeting URL<input required type="url" pattern="https://.*" value={virtualUrl} onChange={(changeEvent) => setVirtualUrl(changeEvent.target.value)} className={field} /></label>}
           </section>
 
           {(enableRsvp || enableVolunteer) && <section className="grid gap-4 rounded-xl border p-5 md:grid-cols-2"><div className="md:col-span-2"><h3 className="font-serif text-xl font-bold text-brand-navy">Registration setup</h3></div>{enableRsvp && <label className="text-sm font-medium">Capacity <span className="font-normal text-slate-500">(blank for unlimited)</span><input type="number" min="1" value={capacity} onChange={(changeEvent) => setCapacity(changeEvent.target.value)} className={field} /></label>}<label className="text-sm font-medium md:col-span-2">Agenda <span className="font-normal text-slate-500">(one item per line)</span><textarea value={content.agenda.join("\n")} onChange={(changeEvent) => patchContent({ agenda: changeEvent.target.value.split("\n") })} rows={4} className={field} /></label>{enableVolunteer && <label className="text-sm font-medium md:col-span-2">Volunteer roles <span className="font-normal text-slate-500">(one role per line)</span><textarea value={content.roles.join("\n")} onChange={(changeEvent) => patchContent({ roles: changeEvent.target.value.split("\n") })} rows={4} className={field} /></label>}</section>}
         </div>
       </div>
 
-      <footer className="sticky bottom-0 flex justify-end gap-3 border-t bg-white/95 px-6 py-4 backdrop-blur"><button type="button" onClick={onCancel} className="rounded-lg border px-5 py-2.5">Cancel</button><button disabled={busy || upload.isPending || !hasAction || !content.title.trim() || !content.excerpt.trim() || !content.description.trim()} className="rounded-lg bg-brand-navy px-6 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Saving…" : "Save event"}</button></footer>
+      <footer className="sticky bottom-0 flex flex-wrap items-center justify-end gap-3 border-t bg-white/95 px-6 py-4 backdrop-blur">{validationError && <p role="alert" className="mr-auto text-sm font-semibold text-red-700">{validationError}</p>}<button type="button" onClick={onCancel} className="rounded-lg border px-5 py-2.5">Cancel</button><button disabled={busy || upload.isPending || !hasAction || !content.title.trim() || !content.excerpt.trim() || !content.description.trim()} className="rounded-lg bg-brand-navy px-6 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? "Saving…" : "Save event"}</button></footer>
     </form>
   );
 }
@@ -110,7 +113,8 @@ export function EventsAdminClient() {
     .sort((a, b) => a.displayOrder - b.displayOrder || new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
     .map((event) => {
       const remainingSeats = event.capacity === null ? null : Math.max(0, event.capacity - event.reservedSeats);
-      return { id: event.id, slug: event.slug, category: event.category, startAt: event.startAt, endAt: event.endAt, timezone: event.timezone, location: event.location, imageUrl: event.imageUrl, displayOrder: event.displayOrder, featured: event.featured, highlighted: event.highlighted, capacity: event.capacity, reservedSeats: event.reservedSeats, remainingSeats, soldOut: remainingSeats === 0, enableRsvp: event.enableRsvp, enableDonate: event.enableDonate, enableVolunteer: event.enableVolunteer, ...event.en };
+      const registrationClosed = new Date(event.endAt ?? event.startAt) <= new Date();
+      return { id: event.id, slug: event.slug, category: event.category, startAt: event.startAt, endAt: event.endAt, timezone: event.timezone, location: event.location, imageUrl: event.imageUrl, displayOrder: event.displayOrder, featured: event.featured, highlighted: event.highlighted, capacity: event.capacity, reservedSeats: event.reservedSeats, remainingSeats, soldOut: remainingSeats === 0, registrationClosed, enableRsvp: event.enableRsvp, enableDonate: event.enableDonate, enableVolunteer: event.enableVolunteer, ...event.en };
     }), [data, includeDrafts]);
 
   const filtered = useMemo(() => data.filter((event) => {

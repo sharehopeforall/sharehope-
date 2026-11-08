@@ -45,6 +45,15 @@ public class EventRegistration {
     @Column(name = "checked_in_at")
     private OffsetDateTime checkedInAt;
 
+    @Column(name = "confirmation_token_hash", length = 64)
+    private String confirmationTokenHash;
+
+    @Column(name = "confirmation_expires_at")
+    private OffsetDateTime confirmationExpiresAt;
+
+    @Column(name = "confirmed_at")
+    private OffsetDateTime confirmedAt;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
