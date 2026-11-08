@@ -138,7 +138,7 @@ async function paypalCheckout(request: Request, donation: ReturnType<typeof pars
     }),
   });
   if (typeof plan.id !== "string") throw new Error("PayPal plan creation failed.");
-  const successUrl = absoluteAppUrl(request, `/${donation.locale}/donate/success?provider=paypal&frequency=monthly`);
+  const successUrl = absoluteAppUrl(request, `/api/donations/paypal/subscription/complete?locale=${donation.locale}`);
   const subscription = await paypalRequest("/v1/billing/subscriptions", {
     method: "POST",
     body: JSON.stringify({

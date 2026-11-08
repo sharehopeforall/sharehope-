@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 public record DonationRecordRequest(
         @NotBlank String provider,
         @NotBlank String providerReference,
+        String subscriptionReference,
         String donorName,
         @Email String donorEmail,
         String donorPhone,

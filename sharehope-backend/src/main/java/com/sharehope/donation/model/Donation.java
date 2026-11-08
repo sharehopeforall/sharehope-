@@ -16,6 +16,8 @@ public class Donation {
     @Id private UUID id;
     @Column(nullable = false, length = 20) private String provider;
     @Column(name = "provider_reference", nullable = false, unique = true, length = 200) private String providerReference;
+    @Column(name = "subscription_reference", length = 200) private String subscriptionReference;
+    @Column(name = "subscription_status", length = 30) private String subscriptionStatus;
     @Column(name = "donor_name", length = 200) private String donorName;
     @Column(name = "donor_email", length = 320) private String donorEmail;
     @Column(name = "donor_phone", length = 40) private String donorPhone;
@@ -26,6 +28,7 @@ public class Donation {
     @Column(nullable = false, length = 30) private String status;
     @Column(name = "receipt_url", columnDefinition = "text") private String receiptUrl;
     @Column(name = "confirmation_sent_at") private OffsetDateTime confirmationSentAt;
+    @Column(name = "cancellation_sent_at") private OffsetDateTime cancellationSentAt;
     @Column(name = "created_at", nullable = false) private OffsetDateTime createdAt;
     @Column(name = "updated_at", nullable = false) private OffsetDateTime updatedAt;
 

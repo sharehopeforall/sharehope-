@@ -28,6 +28,8 @@ type Donation = {
   designation: string;
   date: string;
   receiptUrl?: string;
+  status: string;
+  subscriptionStatus?: string;
   anonymous?: boolean;
 };
 type SortOption = "Newest" | "Oldest" | "Amount high" | "Amount low";
@@ -92,12 +94,11 @@ export function DonationsAdminTemplate() {
           designation?: string;
           createdAt: string;
           status: string;
+          subscriptionStatus?: string;
           receiptUrl?: string;
         }>;
         setDonations(
-          rows
-            .filter((row) => row.status === "Succeeded")
-            .map((row) => ({
+          rows.map((row) => ({
               id: row.providerReference || row.id,
               provider: row.provider,
               donor: row.donorName || "Anonymous donor",
@@ -109,6 +110,8 @@ export function DonationsAdminTemplate() {
               designation: row.designation || "Where needed most",
               date: row.createdAt,
               receiptUrl: row.receiptUrl,
+              status: row.status,
+              subscriptionStatus: row.subscriptionStatus,
             })),
         );
       })
@@ -128,7 +131,7 @@ export function DonationsAdminTemplate() {
       return sort === "Oldest" ? -dates : dates;
     });
   }, [donations, query, sort]);
-  const succeeded = donations;
+  const succeeded = donations.filter((donation) => donation.status === "Succeeded");
   const total = succeeded.reduce((sum, donation) => sum + donation.amount, 0);
   const now = new Date();
   const thisMonth = succeeded.filter((donation) => {
@@ -167,6 +170,7 @@ export function DonationsAdminTemplate() {
         "Currency",
         "Frequency",
         "Designation",
+        "Status",
         "Date",
       ],
       ...filtered.map((d) => [
@@ -179,6 +183,7 @@ export function DonationsAdminTemplate() {
         d.currency,
         d.frequency,
         d.designation,
+        d.subscriptionStatus || d.status,
         d.date,
       ]),
     ];
@@ -347,6 +352,7 @@ export function DonationsAdminTemplate() {
                     <th className="px-4 py-3">Amount</th>
                     <th className="px-4 py-3">Frequency</th>
                     <th className="px-4 py-3">Designation</th>
+                    <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Date</th>
                     <th className="px-4 py-3">Reference</th>
                     <th className="px-5 py-3 text-right">Actions</th>
@@ -382,6 +388,9 @@ export function DonationsAdminTemplate() {
                           />
                           {donation.designation}
                         </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${donation.status === "Succeeded" && !/cancel/i.test(donation.subscriptionStatus || "") ? "bg-green-50 text-green-700" : /cancel/i.test(donation.subscriptionStatus || donation.status) ? "bg-amber-50 text-amber-800" : "bg-slate-100 text-slate-700"}`}>{donation.subscriptionStatus || donation.status}</span>
                       </td>
                       <td className="px-4 py-4 text-sm text-slate-600">
                         {new Intl.DateTimeFormat("en-US", {
@@ -480,6 +489,10 @@ export function DonationsAdminTemplate() {
                 <div>
                   <dt className="text-slate-500">Frequency</dt>
                   <dd>{selected.frequency}</dd>
+                </div>
+                <div>
+                  <dt className="text-slate-500">Status</dt>
+                  <dd>{selected.subscriptionStatus || selected.status}</dd>
                 </div>
                 <div>
                   <dt className="text-slate-500">Date</dt>

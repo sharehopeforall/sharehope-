@@ -1,6 +1,7 @@
 package com.sharehope.notification;
 
 import com.sharehope.donation.model.Donation;
+import com.sharehope.donation.service.DonationManageTokenService;
 import com.sharehope.user.model.User;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class NotificationService {
+    private final DonationManageTokenService manageTokens;
+
+    public NotificationService(DonationManageTokenService manageTokens) {
+        this.manageTokens = manageTokens;
+    }
     @Value("${app.brevo.api-key:}") String key;
     @Value("${app.notifications.admin-email:}") String admin;
     @Value("${app.notifications.sender-email:}") String sender;
@@ -37,6 +43,9 @@ public class NotificationService {
                 ? "ShareHope programs" : donation.getDesignation().replace('-', ' ');
         String receipt = donation.getReceiptUrl() == null || donation.getReceiptUrl().isBlank() ? ""
                 : "<p style=\"margin:24px 0\"><a href=\"" + html(donation.getReceiptUrl()) + "\" style=\"display:inline-block;background:#FFC72C;color:#102F4F;padding:13px 20px;text-decoration:none;font-weight:700;border-radius:6px\">View your receipt</a></p>";
+        String manage = "Monthly".equalsIgnoreCase(donation.getFrequency())
+                ? "<p style=\"margin:24px 0\"><a href=\"" + html(site + "/en/donate/manage?token=" + manageTokens.create(donation)) + "\" style=\"color:#17324D;font-weight:700\">Manage or cancel your monthly donation</a></p>"
+                : "";
         String body = "<div style=\"background:#F7F3E9;padding:32px 16px;font-family:Arial,sans-serif;color:#17324D\">"
                 + "<div style=\"max-width:600px;margin:auto;background:#FFFFFF;padding:36px;border-radius:12px\">"
                 + "<p style=\"margin-top:0\">Hello " + html(name) + ",</p>"
@@ -47,12 +56,25 @@ public class NotificationService {
                 + "<p style=\"margin:0 0 8px\"><strong>Giving:</strong> " + html(donation.getFrequency()) + "</p>"
                 + "<p style=\"margin:0\"><strong>Supports:</strong> " + html(designation) + "</p></div>"
                 + receipt
+                + manage
                 + "<p style=\"line-height:1.7\">With gratitude,<br><strong>The ShareHope Team</strong></p>"
                 + "<p><a href=\"" + html(site) + "\" style=\"color:#17324D\">sharehopeforall.org</a></p>"
                 + "<hr style=\"border:0;border-top:1px solid #E2E8F0;margin:28px 0\">"
                 + "<p style=\"font-size:12px;color:#64748B;line-height:1.5\">This transactional email confirms a donation made using this email address. Questions? Contact info@sharehopeforall.org.</p>"
                 + "</div></div>";
         return send(donation.getDonorEmail(), "Thank you for your donation to ShareHope", body, null);
+    }
+
+    public boolean sendDonationCancellation(Donation donation) {
+        if (donation.getDonorEmail() == null || donation.getDonorEmail().isBlank()) return false;
+        String body = "<div style=\"background:#F7F3E9;padding:32px 16px;font-family:Arial,sans-serif;color:#17324D\">"
+                + "<div style=\"max-width:600px;margin:auto;background:#FFFFFF;padding:36px;border-radius:12px\">"
+                + "<h1 style=\"font-family:Georgia,serif\">Your monthly donation has been cancelled.</h1>"
+                + "<p style=\"line-height:1.7\">No additional recurring payments will be collected for this ShareHope donation.</p>"
+                + "<p style=\"line-height:1.7\">Thank you for the hope you have shared.<br><strong>The ShareHope Team</strong></p>"
+                + "<p style=\"font-size:12px;color:#64748B\">Questions? Contact info@sharehopeforall.org.</p>"
+                + "</div></div>";
+        return send(donation.getDonorEmail(), "Your ShareHope monthly donation was cancelled", body, null);
     }
 
     @org.springframework.scheduling.annotation.Async
