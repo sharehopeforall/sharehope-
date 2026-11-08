@@ -2,7 +2,9 @@ import { CheckCircle2, Heart } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { paypalRequest } from "@/lib/payments";
 
-async function isConfirmed(query: { provider?: string; reference?: string; session_id?: string; frequency?: string; subscription_id?: string; token?: string }) {
+type PaymentQuery = { provider?: string; reference?: string; session_id?: string; frequency?: string; subscription_id?: string; token?: string };
+
+async function isConfirmedOnce(query: PaymentQuery) {
   try {
     if (query.provider === "stripe" && query.session_id && process.env.STRIPE_SECRET_KEY) {
       const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(query.session_id)}`, {
@@ -24,6 +26,17 @@ async function isConfirmed(query: { provider?: string; reference?: string; sessi
     }
   } catch {
     return false;
+  }
+  return false;
+}
+
+async function isConfirmed(query: PaymentQuery) {
+  const attempts = 5;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    if (await isConfirmedOnce(query)) return true;
+    if (attempt < attempts - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 750));
+    }
   }
   return false;
 }
