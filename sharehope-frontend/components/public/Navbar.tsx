@@ -200,7 +200,7 @@ export default function Navbar({ managed }: { managed?: ManagedPageContent | nul
           {/* Donate */}
           <Link
             href="/donate"
-            className="type-button rounded-full bg-brand-orange px-5 py-2.5 text-xs text-white shadow-[0_4px_14px_rgba(240,90,36,0.26)] transition hover:-translate-y-0.5 hover:bg-brand-orange-hover hover:shadow-[0_6px_20px_rgba(240,90,36,0.34)] sm:text-sm lg:px-7 lg:py-3"
+            className="type-button hidden rounded-full bg-brand-orange px-5 py-2.5 text-xs text-white shadow-[0_4px_14px_rgba(240,90,36,0.26)] transition hover:-translate-y-0.5 hover:bg-brand-orange-hover hover:shadow-[0_6px_20px_rgba(240,90,36,0.34)] sm:text-sm lg:block lg:px-7 lg:py-3"
           >
             {setting("donateLabel", t("donate"))}
           </Link>

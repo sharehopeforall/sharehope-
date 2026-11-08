@@ -230,6 +230,10 @@ export default function Hero({
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string>("");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const mobileHeadline = locale === "fr"
+    ? "Un avenir meilleur commence ici."
+    : "A brighter future starts here.";
+  const mobileButton = locale === "fr" ? "DONNEZ DE L’ESPOIR" : "GIVE HOPE TODAY";
 
   const handleSelectPreset = (selectedAmount: number): void => {
     setAmount(selectedAmount);
@@ -254,7 +258,19 @@ export default function Hero({
 
   return (
     <>
-      <section className="relative flex min-h-[calc(100vh-80px)] items-center overflow-hidden bg-[#FAF7F2] px-6 py-10 text-[#121212] selection:bg-[#FFC72C] selection:text-[#121212]">
+      <section className="relative min-h-[calc(100svh-80px)] overflow-hidden bg-[#E9D9C9] text-brand-navy selection:bg-[#FFC72C] selection:text-[#121212] lg:hidden">
+        <Image src="/images/sharehope-mobile-hero.png" alt="A smiling child supported by ShareHope" fill priority unoptimized sizes="100vw" className="object-cover object-top" />
+        <div className="relative z-10 flex min-h-[390px] flex-col items-center justify-center px-5 py-14 text-center">
+          <h1 className="mx-auto max-w-[350px] text-balance font-serif text-[3.35rem] font-semibold leading-[0.98] tracking-[-0.035em] text-brand-navy">{mobileHeadline}</h1>
+          {editor ? (
+            <div className="mx-auto mt-8 inline-flex min-h-16 items-center rounded-md bg-[#FFC72C] px-9 text-base font-black uppercase tracking-[0.15em] text-brand-navy">{mobileButton}</div>
+          ) : (
+            <button type="button" onClick={() => setPaymentModalOpen(true)} className="mt-8 min-h-16 rounded-md bg-[#FFC72C] px-9 py-5 text-base font-black uppercase tracking-[0.15em] text-brand-navy shadow-md transition hover:bg-white active:scale-[0.98]">{mobileButton}</button>
+          )}
+        </div>
+      </section>
+
+      <section className="relative hidden min-h-[calc(100vh-80px)] items-center overflow-hidden bg-[#FAF7F2] px-6 py-10 text-[#121212] selection:bg-[#FFC72C] selection:text-[#121212] lg:flex">
         <>
           <div className="absolute inset-0">
             <Image

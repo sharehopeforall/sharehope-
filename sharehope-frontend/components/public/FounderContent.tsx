@@ -32,21 +32,21 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
   return (
     <main data-locale={locale} className="overflow-x-clip bg-[#FAF6ED] text-brand-navy">
       <section className="border-b border-brand-navy/10">
-        <div className="mx-auto grid min-h-[690px] max-w-[1440px] lg:grid-cols-[1.02fr_.98fr]">
-          <div className="flex items-center px-6 py-20 sm:px-10 lg:px-16 xl:px-24">
-            <div className="max-w-2xl">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#13306B]">{page.eyebrow}</p>
-              <h1 className="mt-7 max-w-xl font-serif text-[2.8rem] font-semibold leading-[1.06] tracking-[-0.025em] sm:text-[3.6rem] xl:text-[4.4rem]">{page.title}</h1>
-              <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600">{page.intro}</p>
-              <a href="#founder-letter" className="mt-9 inline-flex items-center gap-3 border-b-2 border-brand-navy pb-2 text-xs font-black uppercase tracking-[0.18em] transition hover:gap-5">
+        <div className="mx-auto grid max-w-[1440px] lg:min-h-[690px] lg:grid-cols-[1.02fr_.98fr]">
+          <div className="flex items-center bg-brand-navy px-5 py-14 text-center text-white sm:px-10 sm:py-16 lg:bg-transparent lg:px-16 lg:py-20 lg:text-left lg:text-brand-navy xl:px-24">
+            <div className="mx-auto max-w-2xl lg:mx-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#FFC72C] sm:text-xs sm:tracking-[0.24em] lg:text-[#13306B]">{page.eyebrow}</p>
+              <h1 className="mx-auto mt-5 max-w-xl text-balance font-serif text-[2.55rem] font-semibold leading-[1.04] tracking-[-0.025em] sm:mt-7 sm:text-[3.6rem] lg:mx-0 xl:text-[4.4rem]">{page.title}</h1>
+              <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/80 sm:mt-7 sm:text-lg sm:leading-8 lg:mx-0 lg:text-slate-600">{page.intro}</p>
+              <a href="#founder-letter" className="mt-8 inline-flex min-h-14 items-center gap-3 rounded-md bg-[#FFC72C] px-7 py-3 text-[11px] font-black uppercase tracking-[0.16em] text-brand-navy shadow-sm transition hover:gap-5 hover:bg-white sm:mt-9 sm:text-xs sm:tracking-[0.18em] lg:min-h-11 lg:rounded-none lg:border-b-2 lg:border-brand-navy lg:bg-transparent lg:px-0 lg:py-1 lg:shadow-none lg:hover:bg-transparent">
                 Read her story <span aria-hidden="true">↓</span>
               </a>
             </div>
           </div>
-          <figure className="relative min-h-[520px] overflow-hidden bg-brand-navy lg:min-h-full">
+          <figure className="relative aspect-[4/5] overflow-hidden bg-brand-navy sm:aspect-[4/3] lg:aspect-auto lg:min-h-full">
             <Image src="https://tqf6nuipthkqkz7n.public.blob.vercel-storage.com/uploads/33af0070-3e0d-4da4-86ac-44b771b17487.webp" alt={copy.imageAlt} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover object-center" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/25 to-transparent px-7 pb-8 pt-24 text-white sm:px-10">
-              <figcaption className="text-xs font-bold uppercase tracking-[0.2em]">{copy.role}</figcaption>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/25 to-transparent px-5 pb-5 pt-20 text-white sm:px-10 sm:pb-8 sm:pt-24">
+              <figcaption className="text-[10px] font-bold uppercase leading-5 tracking-[0.16em] sm:text-xs sm:tracking-[0.2em]">{copy.role}</figcaption>
             </div>
           </figure>
         </div>
@@ -89,8 +89,8 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
             <p className="max-w-xl text-lg leading-8 text-slate-600 lg:justify-self-end">Three principles keep ShareHope close to the people and communities at the center of the work.</p>
           </div>
           <div className="mt-14 grid overflow-hidden border border-brand-navy/15 bg-white lg:grid-cols-[.9fr_1.1fr]">
-            <div className="relative min-h-[440px] lg:min-h-[620px]">
-              <Image src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=85" alt="Community members working together in the field" fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+            <div className="relative aspect-[4/3] bg-slate-100 lg:aspect-auto lg:min-h-[620px]">
+              <Image src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=85" alt="Community members working together in the field" fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover object-center" />
             </div>
             <div className="divide-y divide-brand-navy/15 px-7 py-3 sm:px-10 lg:px-12">
               {copy.principles.map((principle) => (
