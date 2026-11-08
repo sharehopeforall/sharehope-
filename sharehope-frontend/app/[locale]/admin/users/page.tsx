@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CheckCircle2, FilePenLine, Loader2, MailPlus, ShieldCheck, UserRoundPlus } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, FilePenLine, Loader2, MailPlus, ShieldCheck, UserRoundPlus } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { usersApi, type InviteUserResult } from "@/lib/api/users";
@@ -22,6 +22,7 @@ export default function AdminUsersPage() {
   const [editingEmail, setEditingEmail] = useState(false);
   const [emailChangePending, setEmailChangePending] = useState(false);
   const [emailChangeError, setEmailChangeError] = useState("");
+  const [showEmailPassword, setShowEmailPassword] = useState(false);
 
   const changeEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -92,7 +93,7 @@ export default function AdminUsersPage() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#EFF6FF] text-brand-green"><UserRoundPlus size={20} aria-hidden="true" /></div>
             <h2 className="mt-4 font-semibold text-brand-navy">Signed-in administrator</h2>
             <p className="mt-3 text-sm font-bold text-slate-800">{currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "Loading…"}</p>
-            {currentUser && <><p className="mt-1 break-all text-xs text-slate-500">{currentUser.email}</p><span className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">{currentUser.role === "SUPER_ADMIN" ? "Super Administrator" : "Content Editor"}</span><button type="button" onClick={() => { setEditingEmail((value) => !value); setEmailChangeError(""); }} className="mt-4 block text-xs font-bold text-brand-navy underline">{editingEmail ? "Cancel email change" : "Change email address"}</button>{editingEmail && <form onSubmit={changeEmail} className="mt-4 space-y-3 border-t border-slate-200 pt-4"><label className="block text-xs font-semibold text-brand-navy">New email<input name="newEmail" type="email" required defaultValue="kristyn@sharehopeforall.org" autoComplete="email" className={fieldClass} /></label><label className="block text-xs font-semibold text-brand-navy">Current password<input name="currentPassword" type="password" required autoComplete="current-password" className={fieldClass} /></label>{emailChangeError && <p role="alert" className="text-xs font-semibold text-red-700">{emailChangeError}</p>}<button disabled={emailChangePending} className="h-10 w-full rounded-lg bg-brand-navy text-xs font-bold text-white disabled:opacity-50">{emailChangePending ? "Updating…" : "Update email and sign out"}</button></form>}</>}
+            {currentUser && <><p className="mt-1 break-all text-xs text-slate-500">{currentUser.email}</p><span className="mt-4 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600">{currentUser.role === "SUPER_ADMIN" ? "Super Administrator" : "Content Editor"}</span><button type="button" onClick={() => { setEditingEmail((value) => !value); setEmailChangeError(""); setShowEmailPassword(false); }} className="mt-4 block text-xs font-bold text-brand-navy underline">{editingEmail ? "Cancel email change" : "Change email address"}</button>{editingEmail && <form onSubmit={changeEmail} className="mt-4 space-y-3 border-t border-slate-200 pt-4"><label className="block text-xs font-semibold text-brand-navy">New email<input name="newEmail" type="email" required defaultValue="kristyn@sharehopeforall.org" autoComplete="email" className={fieldClass} /></label><label className="block text-xs font-semibold text-brand-navy">Current password<span className="relative mt-2 block"><input name="currentPassword" type={showEmailPassword ? "text" : "password"} required autoComplete="current-password" className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 pr-11 text-sm font-normal text-brand-navy outline-none focus:border-brand-green focus:ring-4 focus:ring-brand-green/10"/><button type="button" onClick={() => setShowEmailPassword((visible) => !visible)} aria-label={showEmailPassword ? "Hide current password" : "Show current password"} className="absolute inset-y-0 right-0 grid w-11 place-items-center text-slate-500 hover:text-brand-navy">{showEmailPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></span></label>{emailChangeError && <p role="alert" className="text-xs font-semibold text-red-700">{emailChangeError}</p>}<button disabled={emailChangePending} className="h-10 w-full rounded-lg bg-brand-navy text-xs font-bold text-white disabled:opacity-50">{emailChangePending ? "Updating…" : "Update email and sign out"}</button></form>}</>}
           </div>
           <div className="rounded-2xl bg-brand-navy p-6 text-white"><h2 className="font-semibold">Choose roles carefully</h2><p className="mt-2 text-sm leading-6 text-white/70">Only Super Administrators can invite users or publish website changes. Give this role only to trusted account owners.</p></div>
         </aside>
