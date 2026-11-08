@@ -30,7 +30,7 @@ const Arrow = () => <span aria-hidden="true">↗</span>;
 export default function FounderContent({ locale, managed }: { locale: string; managed?: ManagedPageContent | null }) {
   const page = { ...copy, title: managed?.title || copy.title, eyebrow: managed?.subtitle || copy.eyebrow, intro: managed?.body || copy.intro };
   return (
-    <main data-locale={locale} className="overflow-hidden bg-[#FAF6ED] text-brand-navy">
+    <main data-locale={locale} className="overflow-x-clip bg-[#FAF6ED] text-brand-navy">
       <section className="border-b border-brand-navy/10">
         <div className="mx-auto grid min-h-[690px] max-w-[1440px] lg:grid-cols-[1.02fr_.98fr]">
           <div className="flex items-center px-6 py-20 sm:px-10 lg:px-16 xl:px-24">
@@ -44,7 +44,7 @@ export default function FounderContent({ locale, managed }: { locale: string; ma
             </div>
           </div>
           <figure className="relative min-h-[520px] overflow-hidden bg-brand-navy lg:min-h-full">
-            <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1400&q=88" alt={copy.imageAlt} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover object-center" />
+            <Image src="https://tqf6nuipthkqkz7n.public.blob.vercel-storage.com/uploads/33af0070-3e0d-4da4-86ac-44b771b17487.webp" alt={copy.imageAlt} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover object-center" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/25 to-transparent px-7 pb-8 pt-24 text-white sm:px-10">
               <figcaption className="text-xs font-bold uppercase tracking-[0.2em]">{copy.role}</figcaption>
             </div>

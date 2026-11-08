@@ -108,6 +108,11 @@ export function VisualEditingBridge() {
     const cleanups: (() => void)[] = [];
 
     if (!editing) {
+      // A modal or editor preview interrupted during client-side navigation can
+      // leave the shared document scroll-locked. Public pages must always
+      // recover normal scrolling when a new route mounts.
+      document.body.style.removeProperty("overflow");
+      document.documentElement.style.removeProperty("overflow");
       assignStableKeys(content);
       content.dataset.visualContentLoading = "true";
       const revealTimer = window.setTimeout(() => delete content.dataset.visualContentLoading, 1500);
