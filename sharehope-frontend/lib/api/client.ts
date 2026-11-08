@@ -42,7 +42,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       window.location.assign(loginPath);
     }
 
-    throw new ApiError(response.status, response.statusText, errorBody);
+    const message = errorBody && typeof errorBody === "object" && "error" in errorBody
+      && typeof errorBody.error === "string" ? errorBody.error : response.statusText;
+    throw new ApiError(response.status, message, errorBody);
   }
 
   if (response.status === 204) {

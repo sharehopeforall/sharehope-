@@ -84,18 +84,16 @@ public class NotificationService {
                 : "Your ShareHope monthly donation was cancelled", body, null);
     }
 
-    @org.springframework.scheduling.annotation.Async
-    public void sendAdminInvitation(User user, String token) {
+    public boolean sendAdminInvitation(User user, String token) {
         String url = site + "/en/admin/activate?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
         String text = "Hello " + user.getFirstName() + ",\n\nYou were invited to the ShareHope administration portal. Create your password within 48 hours:\n" + url + "\n\nIf you were not expecting this invitation, ignore this email.";
-        send(user.getEmail(), "Your ShareHope administrator invitation", null, text);
+        return send(user.getEmail(), "Your ShareHope administrator invitation", null, text);
     }
 
-    @org.springframework.scheduling.annotation.Async
-    public void sendPasswordReset(User user, String token) {
+    public boolean sendPasswordReset(User user, String token) {
         String url = site + "/en/admin/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
         String text = "Hello " + user.getFirstName() + ",\n\nUse this link to reset your ShareHope administrator password. It expires in 30 minutes:\n" + url + "\n\nIf you did not request this, ignore this email.";
-        send(user.getEmail(), "Reset your ShareHope password", null, text);
+        return send(user.getEmail(), "Reset your ShareHope password", null, text);
     }
 
     private boolean send(String recipient, String subject, String htmlContent, String textContent) {

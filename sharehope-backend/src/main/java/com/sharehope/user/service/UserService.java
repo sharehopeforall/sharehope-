@@ -92,16 +92,17 @@ public class UserService {
         user.getRoles().add(role);
 
         User savedUser = userRepository.save(user);
-        notifications.sendAdminInvitation(savedUser, rawToken);
+        boolean emailSent = notifications.sendAdminInvitation(savedUser, rawToken);
 
         return new InviteUserResult(
                 savedUser,
-                rawToken
+                rawToken,
+                emailSent
         );
     }
 
     @Transactional
-    public void resendInvitation(UUID userId) {
+    public boolean resendInvitation(UUID userId) {
         User user = userRepository.findById(userId)
                 .filter(candidate -> candidate.getStatus() == UserStatus.INVITED)
                 .orElseThrow(() -> new ResourceNotFoundException("Pending invitation not found."));
@@ -112,7 +113,7 @@ public class UserService {
         user.setInvitedAt(now);
         user.setUpdatedAt(now);
         userRepository.save(user);
-        notifications.sendAdminInvitation(user, rawToken);
+        return notifications.sendAdminInvitation(user, rawToken);
     }
 
     private String generateSecureToken() {

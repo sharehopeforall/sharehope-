@@ -6,6 +6,7 @@ import com.sharehope.auth.dto.ForgotPasswordRequest;
 import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.auth.dto.ChangePasswordRequest;
 import com.sharehope.auth.dto.ChangeEmailRequest;
+import com.sharehope.auth.dto.MfaCodeRequest;
 import com.sharehope.auth.service.AuthService;
 import com.sharehope.auth.service.LoginAttemptService;
 import com.sharehope.user.dto.ActivateUserRequest;
@@ -57,20 +58,21 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             HttpServletRequest httpRequest
     ) {
-        String key = httpRequest.getRemoteAddr() + ":" + request.email().trim().toLowerCase();
-        loginAttemptService.checkAllowed(key);
+        String accountKey = "login:account:" + request.email().trim().toLowerCase();
+        loginAttemptService.checkAllowed(accountKey);
         try {
             LoginResponse response = authService.login(request);
-            loginAttemptService.recordSuccess(key);
+            loginAttemptService.recordSuccess(accountKey);
             return ResponseEntity.ok(response);
         } catch (RuntimeException exception) {
-            loginAttemptService.recordFailure(key);
+            loginAttemptService.recordFailure(accountKey);
             throw exception;
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal Jwt jwt) {
+        authService.logout(java.util.UUID.fromString(jwt.getSubject()));
         return ResponseEntity.noContent().build();
     }
 
@@ -104,6 +106,28 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+    @org.springframework.web.bind.annotation.GetMapping("/mfa/status")
+    public ResponseEntity<Map<String, Boolean>> mfaStatus(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(Map.of("enabled", authService.mfaEnabled(java.util.UUID.fromString(jwt.getSubject()))));
+    }
+
+    @PostMapping("/mfa/setup")
+    public ResponseEntity<Map<String, Object>> setupMfa(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(authService.beginMfaSetup(java.util.UUID.fromString(jwt.getSubject())));
+    }
+
+    @PostMapping("/mfa/enable")
+    public ResponseEntity<Void> enableMfa(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody MfaCodeRequest request) {
+        authService.enableMfa(java.util.UUID.fromString(jwt.getSubject()), request.code());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/mfa/disable")
+    public ResponseEntity<Void> disableMfa(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody MfaCodeRequest request) {
+        authService.disableMfa(java.util.UUID.fromString(jwt.getSubject()), request.code());
+        return ResponseEntity.noContent().build();
+    }
+
     @org.springframework.web.bind.annotation.GetMapping("/me")
     public ResponseEntity<LoginResponse> me(@AuthenticationPrincipal Jwt jwt) {
         User user = userRepository.findById(java.util.UUID.fromString(jwt.getSubject()))
@@ -113,7 +137,8 @@ public class AuthController {
                 .orElseThrow(() -> new IllegalStateException("User does not have an assigned role."))
                 .getName();
         return ResponseEntity.ok(new LoginResponse(
-                null, "Bearer", 0, user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), role
+                null, "Bearer", 0, user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), role,
+                "SUPER_ADMIN".equals(role) && !Boolean.TRUE.equals(user.getMfaEnabled())
         ));
     }
 }

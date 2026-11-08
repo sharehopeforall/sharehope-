@@ -27,7 +27,7 @@ class AuthServiceRecoveryTest {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         AuthService service = new AuthService(users, encoder,
                 new JwtService("test-only-secret-that-is-at-least-thirty-two-characters-long", 30),
-                mock(NotificationService.class));
+                mock(NotificationService.class), new PasswordPolicy(), mock(TotpService.class));
         String token = "secure-one-time-reset-token";
         User user = User.builder().id(UUID.randomUUID()).email("admin@sharehope.org")
                 .status(UserStatus.ACTIVE).passwordHash(encoder.encode("Previous-password-123"))
@@ -35,9 +35,9 @@ class AuthServiceRecoveryTest {
                 .sessionVersion(3).createdAt(OffsetDateTime.now()).updatedAt(OffsetDateTime.now()).build();
         when(users.findByPasswordResetTokenHash(sha256(token))).thenReturn(Optional.of(user));
 
-        service.resetPassword(new ResetPasswordRequest(token, "Replacement-password-456"));
+        service.resetPassword(new ResetPasswordRequest(token, "R3placement-Secure!456"));
 
-        assertThat(encoder.matches("Replacement-password-456", user.getPasswordHash())).isTrue();
+        assertThat(encoder.matches("R3placement-Secure!456", user.getPasswordHash())).isTrue();
         assertThat(user.getPasswordResetTokenHash()).isNull();
         assertThat(user.getPasswordResetExpiresAt()).isNull();
         assertThat(user.getSessionVersion()).isEqualTo(4);

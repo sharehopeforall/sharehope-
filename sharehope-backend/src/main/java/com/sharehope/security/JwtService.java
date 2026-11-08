@@ -33,6 +33,12 @@ public class JwtService {
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-minutes}") long expirationMinutes
     ) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET must contain at least 32 bytes of random data.");
+        }
+        if (expirationMinutes < 5 || expirationMinutes > 60) {
+            throw new IllegalStateException("JWT_EXPIRATION_MINUTES must be between 5 and 60.");
+        }
         this.secretKeyBytes = secret.getBytes(StandardCharsets.UTF_8);
         this.expirationMinutes = expirationMinutes;
     }
@@ -46,6 +52,7 @@ public class JwtService {
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("role", role)
+                .claim("mfaSetupRequired", "SUPER_ADMIN".equals(role) && !Boolean.TRUE.equals(user.getMfaEnabled()))
                 .claim("sessionVersion", user.getSessionVersion())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(expiresAt))

@@ -63,6 +63,13 @@ public class User {
     @Builder.Default
     private Integer sessionVersion = 0;
 
+    @Column(name = "mfa_secret_encrypted")
+    private String mfaSecretEncrypted;
+
+    @Column(name = "mfa_enabled", nullable = false)
+    @Builder.Default
+    private Boolean mfaEnabled = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invited_by")
     private User invitedBy;

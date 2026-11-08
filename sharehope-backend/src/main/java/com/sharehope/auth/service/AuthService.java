@@ -35,19 +35,25 @@ public class AuthService {
     private final JwtService jwtService;
     private final String dummyPasswordHash;
     private final NotificationService notifications;
+    private final PasswordPolicy passwordPolicy;
+    private final TotpService totp;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            NotificationService notifications
+            NotificationService notifications,
+            PasswordPolicy passwordPolicy,
+            TotpService totp
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.dummyPasswordHash = passwordEncoder.encode("not-a-real-password");
         this.notifications = notifications;
+        this.passwordPolicy = passwordPolicy;
+        this.totp = totp;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -57,24 +63,18 @@ public class AuthService {
                 .toLowerCase();
 
         User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
-        if (user == null) {
-            passwordEncoder.matches(request.password(), dummyPasswordHash);
-            throw new InvalidCredentialsException("Invalid email or password.");
-        }
-
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        boolean validPassword = passwordEncoder.matches(request.password(),
+                user != null && user.getStatus() == UserStatus.ACTIVE && user.getPasswordHash() != null
+                        ? user.getPasswordHash() : dummyPasswordHash);
+        if (user == null || user.getStatus() != UserStatus.ACTIVE || !validPassword) {
             throw new InvalidCredentialsException(
                     "Invalid email or password."
             );
         }
 
-        if (!passwordEncoder.matches(
-                request.password(),
-                user.getPasswordHash()
-        )) {
-            throw new InvalidCredentialsException(
-                    "Invalid email or password."
-            );
+        if (Boolean.TRUE.equals(user.getMfaEnabled()) && (user.getMfaSecretEncrypted() == null
+                || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), request.mfaCode()))) {
+            throw new InvalidCredentialsException("A valid authenticator code is required.");
         }
 
         Role role = user.getRoles()
@@ -96,7 +96,8 @@ public class AuthService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                role.getName()
+                role.getName(),
+                "SUPER_ADMIN".equals(role.getName()) && !Boolean.TRUE.equals(user.getMfaEnabled())
         );
     }
 
@@ -128,6 +129,7 @@ public class AuthService {
 
         OffsetDateTime now = OffsetDateTime.now();
 
+        passwordPolicy.validate(request.password(), user);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setStatus(UserStatus.ACTIVE);
         user.setActivatedAt(now);
@@ -196,7 +198,65 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void logout(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidCredentialsException("Authenticated user not found."));
+        user.setSessionVersion(user.getSessionVersion() + 1);
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public java.util.Map<String, Object> beginMfaSetup(UUID userId) {
+        User user = activeUser(userId);
+        String secret = totp.generateSecret();
+        user.setMfaSecretEncrypted(totp.encrypt(secret));
+        user.setMfaEnabled(false);
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepository.save(user);
+        String label = java.net.URLEncoder.encode("ShareHope:" + user.getEmail(), StandardCharsets.UTF_8);
+        return java.util.Map.of("secret", secret,
+                "otpauthUri", "otpauth://totp/" + label + "?secret=" + secret + "&issuer=ShareHope&digits=6&period=30");
+    }
+
+    @Transactional
+    public void enableMfa(UUID userId, String code) {
+        User user = activeUser(userId);
+        if (user.getMfaSecretEncrypted() == null || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), code)) {
+            throw new InvalidCredentialsException("Authenticator code is invalid.");
+        }
+        user.setMfaEnabled(true);
+        user.setSessionVersion(user.getSessionVersion() + 1);
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void disableMfa(UUID userId, String code) {
+        User user = activeUser(userId);
+        if (!Boolean.TRUE.equals(user.getMfaEnabled()) || user.getMfaSecretEncrypted() == null
+                || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), code)) {
+            throw new InvalidCredentialsException("Authenticator code is invalid.");
+        }
+        user.setMfaEnabled(false);
+        user.setMfaSecretEncrypted(null);
+        user.setSessionVersion(user.getSessionVersion() + 1);
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepository.save(user);
+    }
+
+    public boolean mfaEnabled(UUID userId) {
+        return Boolean.TRUE.equals(activeUser(userId).getMfaEnabled());
+    }
+
+    private User activeUser(UUID userId) {
+        return userRepository.findById(userId).filter(user -> user.getStatus() == UserStatus.ACTIVE)
+                .orElseThrow(() -> new InvalidCredentialsException("Authenticated user not found."));
+    }
+
     private void applyNewPassword(User user, String password) {
+        passwordPolicy.validate(password, user);
         if (passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new IllegalArgumentException("New password must be different from the current password.");
         }

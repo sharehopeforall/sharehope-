@@ -5,18 +5,27 @@ import { Eye, EyeOff, KeyRound } from "lucide-react";
 import { authApi } from "@/lib/api/auth";
 import { useLogout } from "@/hooks/useAuth";
 import { useRouter } from "@/i18n/navigation";
+import { ApiError } from "@/lib/api/client";
+import { isStrongPassword, PASSWORD_REQUIREMENTS } from "@/lib/auth/password-policy";
 
 export function ChangePasswordCard() {
   const logout = useLogout();
   const router = useRouter();
   const [state, setState] = useState<"idle" | "pending" | "error">("idle");
+  const [message, setMessage] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const currentPassword = String(form.get("current") || "");
     const newPassword = String(form.get("next") || "");
+    if (!isStrongPassword(newPassword)) {
+      setMessage(PASSWORD_REQUIREMENTS);
+      setState("error");
+      return;
+    }
     if (newPassword !== String(form.get("confirm") || "")) {
+      setMessage("The new passwords do not match.");
       setState("error");
       return;
     }
@@ -25,7 +34,8 @@ export function ChangePasswordCard() {
       await authApi.changePassword(currentPassword, newPassword);
       await logout();
       router.replace("/admin/login");
-    } catch {
+    } catch (error) {
+      setMessage(error instanceof ApiError ? error.message : "The password could not be updated.");
       setState("error");
     }
   }
@@ -41,7 +51,8 @@ export function ChangePasswordCard() {
             <PasswordField name="current" label="Current password" autoComplete="current-password" />
             <PasswordField name="next" label="New password" autoComplete="new-password" />
             <PasswordField name="confirm" label="Confirm new password" autoComplete="new-password" />
-            {state === "error" && <p className="text-sm font-semibold text-red-700">Check your current password and ensure the new passwords match.</p>}
+            <p className="text-xs text-slate-500">{PASSWORD_REQUIREMENTS}</p>
+            {state === "error" && <p className="text-sm font-semibold text-red-700">{message}</p>}
             <button disabled={state === "pending"} className="w-fit rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">{state === "pending" ? "Updating…" : "Update password"}</button>
           </form>
         </div>

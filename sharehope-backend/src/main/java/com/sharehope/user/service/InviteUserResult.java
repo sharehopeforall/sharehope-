@@ -4,5 +4,6 @@ import com.sharehope.user.model.User;
 
 public record InviteUserResult(
         User user,
-        String rawToken
+        String rawToken,
+        boolean emailSent
 ) {}

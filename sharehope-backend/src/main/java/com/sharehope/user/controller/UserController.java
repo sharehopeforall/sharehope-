@@ -46,13 +46,16 @@ public class UserController {
                         "userId", result.user().getId(),
                         "email", result.user().getEmail(),
                         "status", result.user().getStatus().name(),
-                        "role", request.role().name()
+                        "role", request.role().name(),
+                        "emailSent", result.emailSent()
                 ));
     }
 
     @PostMapping("/{userId}/resend-invitation")
     public ResponseEntity<Map<String, String>> resendInvitation(@PathVariable UUID userId) {
-        userService.resendInvitation(userId);
+        boolean sent = userService.resendInvitation(userId);
+        if (!sent) return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("message", "Invitation saved, but the email provider rejected delivery."));
         return ResponseEntity.ok(Map.of("message", "Invitation resent."));
     }
 

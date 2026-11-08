@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/api/auth/me",
                                 "/api/auth/logout",
                                 "/api/auth/change-password",
-                                "/api/auth/change-email"
+                                "/api/auth/change-email",
+                                "/api/auth/mfa/**"
                         ).authenticated()
 
                         .requestMatchers(
@@ -146,9 +147,11 @@ public class SecurityConfig {
             try {
                 java.util.UUID userId = java.util.UUID.fromString(jwt.getSubject());
                 Number claimVersion = jwt.getClaim("sessionVersion");
-                boolean valid = claimVersion != null && users.findById(userId)
+                String claimRole = jwt.getClaimAsString("role");
+                boolean valid = claimVersion != null && claimRole != null && users.findById(userId)
                         .filter(user -> user.getStatus() == com.sharehope.user.model.UserStatus.ACTIVE)
-                        .map(user -> user.getSessionVersion().intValue() == claimVersion.intValue())
+                        .map(user -> user.getSessionVersion().intValue() == claimVersion.intValue()
+                                && user.getRoles().stream().anyMatch(role -> role.getName().equals(claimRole)))
                         .orElse(false);
                 return valid ? OAuth2TokenValidatorResult.success()
                         : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "Session is no longer valid", null));
@@ -175,6 +178,9 @@ public class SecurityConfig {
                 return List.of();
             }
 
+            if (Boolean.TRUE.equals(jwt.getClaimAsBoolean("mfaSetupRequired"))) {
+                return List.of(new SimpleGrantedAuthority("ROLE_MFA_SETUP"));
+            }
             return List.of(new SimpleGrantedAuthority("ROLE_" + role));
         });
 

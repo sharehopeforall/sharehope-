@@ -2,6 +2,7 @@ import { ArrowRight, UsersRound } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Link } from "@/i18n/navigation";
 import { ChangePasswordCard } from "@/components/admin/ChangePasswordCard";
+import { MfaCard } from "@/components/admin/MfaCard";
 
 export default function AdminSettingsPage() {
   return (
@@ -23,6 +24,7 @@ export default function AdminSettingsPage() {
           </div>
         </section>
         <ChangePasswordCard />
+        <MfaCard />
       </main>
     </>
   );
