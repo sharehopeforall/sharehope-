@@ -90,7 +90,7 @@ public class DonationController {
                 .max(Comparator.comparing(Donation::getCreatedAt)).orElse(null);
         for (Donation donation : matches) {
             donation.setSubscriptionStatus(status);
-            if (!cancellationAlreadySent && donation == cancellationRecipient && "Cancelled".equalsIgnoreCase(status)
+            if (!cancellationAlreadySent && donation == cancellationRecipient && status.toLowerCase(Locale.ROOT).contains("cancel")
                     && notifications.sendDonationCancellation(donation)) {
                 donation.setCancellationSentAt(OffsetDateTime.now());
                 cancellationAlreadySent = true;

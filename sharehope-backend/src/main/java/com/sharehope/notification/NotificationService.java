@@ -67,14 +67,21 @@ public class NotificationService {
 
     public boolean sendDonationCancellation(Donation donation) {
         if (donation.getDonorEmail() == null || donation.getDonorEmail().isBlank()) return false;
+        boolean scheduled = "Cancellation scheduled".equalsIgnoreCase(donation.getSubscriptionStatus());
+        String heading = scheduled ? "Your monthly donation cancellation is scheduled." : "Your monthly donation has been cancelled.";
+        String explanation = scheduled
+                ? "Your current billing period remains active, but no additional recurring payments will be collected."
+                : "No additional recurring payments will be collected for this ShareHope donation.";
         String body = "<div style=\"background:#F7F3E9;padding:32px 16px;font-family:Arial,sans-serif;color:#17324D\">"
                 + "<div style=\"max-width:600px;margin:auto;background:#FFFFFF;padding:36px;border-radius:12px\">"
-                + "<h1 style=\"font-family:Georgia,serif\">Your monthly donation has been cancelled.</h1>"
-                + "<p style=\"line-height:1.7\">No additional recurring payments will be collected for this ShareHope donation.</p>"
+                + "<h1 style=\"font-family:Georgia,serif\">" + heading + "</h1>"
+                + "<p style=\"line-height:1.7\">" + explanation + "</p>"
                 + "<p style=\"line-height:1.7\">Thank you for the hope you have shared.<br><strong>The ShareHope Team</strong></p>"
                 + "<p style=\"font-size:12px;color:#64748B\">Questions? Contact info@sharehopeforall.org.</p>"
                 + "</div></div>";
-        return send(donation.getDonorEmail(), "Your ShareHope monthly donation was cancelled", body, null);
+        return send(donation.getDonorEmail(), scheduled
+                ? "Your ShareHope monthly donation cancellation is scheduled"
+                : "Your ShareHope monthly donation was cancelled", body, null);
     }
 
     @org.springframework.scheduling.annotation.Async

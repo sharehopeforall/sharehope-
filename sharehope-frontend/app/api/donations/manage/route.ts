@@ -43,10 +43,10 @@ export async function POST(request: Request) {
     if (!token || token.length < 40 || token.length > 200) return NextResponse.json({ error: "This management link is invalid." }, { status: 404 });
     const donation = await donationFor(token);
     if (!donation) return NextResponse.json({ error: "This management link is invalid or expired." }, { status: 404 });
-    if (/cancel/i.test(donation.status)) return NextResponse.json({ ...publicDonation(donation), status: donation.status });
-
     let status: "Cancelled" | "Cancellation scheduled";
-    if (donation.provider.toLowerCase() === "stripe") {
+    if (/cancel/i.test(donation.status)) {
+      status = donation.status === "Cancellation scheduled" ? "Cancellation scheduled" : "Cancelled";
+    } else if (donation.provider.toLowerCase() === "stripe") {
       const secret = process.env.STRIPE_SECRET_KEY;
       if (!secret) throw new Error("Stripe cancellation is not configured.");
       const response = await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(donation.subscriptionReference)}`, {
