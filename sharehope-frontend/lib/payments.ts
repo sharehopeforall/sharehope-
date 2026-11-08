@@ -31,8 +31,8 @@ export function parseDonationCheckout(value: unknown): DonationCheckout {
   if (provider !== "stripe" && provider !== "paypal") throw new Error("Select a payment provider.");
   if (frequency !== "once" && frequency !== "monthly") throw new Error("Invalid donation frequency.");
   if (typeof program !== "string" || !programs.has(program as DonationProgram)) throw new Error("Invalid program.");
-  if (!Number.isFinite(amount) || amount < 5 || amount > 100_000 || Math.round(amount * 100) !== amount * 100) {
-    throw new Error("Donation amount must be between $5 and $100,000 USD.");
+  if (!Number.isFinite(amount) || amount < 1 || amount > 100_000 || Math.round(amount * 100) !== amount * 100) {
+    throw new Error("Donation amount must be between $1 and $100,000 USD.");
   }
 
   let donor: DonationCheckout["donor"];

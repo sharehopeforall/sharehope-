@@ -353,6 +353,9 @@ export default function Hero({
                       <input
                         type="number"
                         autoFocus
+                        min={1}
+                        max={100000}
+                        step={0.01}
                         placeholder={page.customPlaceholder}
                         value={customValue}
                         onChange={handleCustomInputChange}
@@ -377,7 +380,7 @@ export default function Hero({
                 ) : (
                   <button
                     type="button"
-                    disabled={amount < 5}
+                    disabled={!Number.isFinite(amount) || amount < 1}
                     onClick={() => setPaymentModalOpen(true)}
                     className="block w-full rounded-sm bg-[#FFC72C] py-4 text-center text-sm font-black uppercase tracking-widest text-[#121212] shadow-md transition-all duration-150 hover:bg-[#E2AD17] active:scale-[0.99]"
                   >

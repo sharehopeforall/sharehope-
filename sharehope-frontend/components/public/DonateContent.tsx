@@ -125,7 +125,7 @@ export default function DonateContent({ locale, managed }: { locale: string; man
   const requestedAmount = Number(searchParams.get("amount"));
   const isPreset = PRESETS.includes(requestedAmount as (typeof PRESETS)[number]);
   const initialAmount = isPreset ? requestedAmount : 60;
-  const initialCustom = !isPreset && Number.isFinite(requestedAmount) && requestedAmount >= 5 && requestedAmount <= 100_000 ? String(Math.round(requestedAmount)) : "";
+  const initialCustom = !isPreset && Number.isFinite(requestedAmount) && requestedAmount >= 1 && requestedAmount <= 100_000 ? String(requestedAmount) : "";
   const [frequency, setFrequency] = useState<Frequency>(initialFrequency);
   const [amount, setAmount] = useState<number>(initialAmount);
   const [customAmount, setCustomAmount] = useState(initialCustom);
@@ -232,8 +232,9 @@ export default function DonateContent({ locale, managed }: { locale: string; man
             </div>
             <input
               type="number"
-              min={5}
-              step={1}
+              min={1}
+              max={100000}
+              step={0.01}
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
               placeholder={t.customPlaceholder}
@@ -252,7 +253,7 @@ export default function DonateContent({ locale, managed }: { locale: string; man
             {/* CTA */}
             <button
               type="button"
-              disabled={effectiveAmount < 5}
+              disabled={!Number.isFinite(effectiveAmount) || effectiveAmount < 1}
               onClick={() => setPaymentModalOpen(true)}
               className="w-full bg-[#FFC72C] py-4 text-sm font-black uppercase tracking-[.12em] text-[#121212] shadow-md transition-all hover:bg-[#E2AD17] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
             >
