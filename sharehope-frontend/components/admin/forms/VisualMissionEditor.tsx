@@ -22,7 +22,8 @@ interface Props {
 }
 
 const DEFAULT_TITLE = "Creating opportunities. Building brighter futures.";
-const DEFAULT_BODY = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives.";
+const REMOVED_LEGACY_BODY = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives.";
+const DEFAULT_BODY = "";
 const DEFAULT_BUTTON = "Learn More About Us";
 const DEFAULT_IMAGE = "/images/hero-placeholders/children-school.png";
 
@@ -34,7 +35,7 @@ export function VisualMissionEditor({ section, onSave, isSaving, locale }: Props
   const t = useTranslations("HomepageEditor");
   const [enabled] = useState(section.enabled);
   const [title, setTitle] = useState({ en: section.en.title ?? DEFAULT_TITLE, fr: section.fr.title ?? "" });
-  const [body, setBody] = useState({ en: section.en.body ?? DEFAULT_BODY, fr: section.fr.body ?? "" });
+  const [body, setBody] = useState({ en: section.en.body === REMOVED_LEGACY_BODY ? DEFAULT_BODY : section.en.body ?? DEFAULT_BODY, fr: section.fr.body ?? "" });
   const [buttonText, setButtonText] = useState({ en: section.en.buttonText ?? DEFAULT_BUTTON, fr: section.fr.buttonText ?? "" });
   const [imageUrl, setImageUrl] = useState(setting(section, "imageUrl", DEFAULT_IMAGE));
   const [ctaUrl, setCtaUrl] = useState(setting(section, "ctaUrl", "/about"));
@@ -68,7 +69,7 @@ export function VisualMissionEditor({ section, onSave, isSaving, locale }: Props
 
   const save = async () => {
     setError(null);
-    if (!title.en.trim() || !body.en.trim() || !buttonText.en.trim()) {
+    if (!title.en.trim() || !buttonText.en.trim()) {
       setError(t("requiredFields"));
       throw new Error("Mission section is incomplete.");
     }

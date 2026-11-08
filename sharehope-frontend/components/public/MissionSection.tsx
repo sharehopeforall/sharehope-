@@ -22,7 +22,9 @@ interface MissionEditor {
 }
 
 export default function MissionSection({ content = {}, editor }: { content?: MissionContent; editor?: MissionEditor }) {
+  const removedLegacyBody = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives.";
   const title = content.title ?? "Creating opportunities. Building brighter futures.";
+  const body = content.body === removedLegacyBody ? "" : content.body ?? "";
   const titleParts = title.split(/(?<=\.)\s+/, 2);
   const accentLines = (content.accentText ?? "Hope Empowers Communities").split(" ");
 
@@ -40,11 +42,11 @@ export default function MissionSection({ content = {}, editor }: { content?: Mis
             ) : <>{titleParts[0]}{titleParts[1] && <><br />{titleParts[1]}</>}</>}
           </h2>
 
-          <p className="max-w-[590px] text-sm font-medium leading-relaxed text-neutral-700 sm:text-base">
+          {(editor || body) && <p className="max-w-[590px] text-sm font-medium leading-relaxed text-neutral-700 sm:text-base">
             {editor ? (
-              <textarea aria-label="Description" rows={5} value={content.body ?? ""} onChange={(event) => editor.onChange("body", event.target.value)} className="w-full resize-none border-0 bg-transparent p-0 font-inherit text-inherit outline-none focus:ring-2 focus:ring-[#FFC72C]/50" />
-            ) : content.body ?? "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives."}
-          </p>
+              <textarea aria-label="Description" rows={5} value={body} onChange={(event) => editor.onChange("body", event.target.value)} className="w-full resize-none border-0 bg-transparent p-0 font-inherit text-inherit outline-none focus:ring-2 focus:ring-[#FFC72C]/50" />
+            ) : body}
+          </p>}
 
           {editor ? (
             <div className="inline-flex items-center gap-2 rounded-sm border-2 border-[#FFC72C] px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-[#121212]">
