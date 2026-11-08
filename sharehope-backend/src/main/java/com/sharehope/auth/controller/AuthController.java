@@ -137,8 +137,7 @@ public class AuthController {
                 .orElseThrow(() -> new IllegalStateException("User does not have an assigned role."))
                 .getName();
         return ResponseEntity.ok(new LoginResponse(
-                null, "Bearer", 0, user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), role,
-                "SUPER_ADMIN".equals(role) && !Boolean.TRUE.equals(user.getMfaEnabled())
+                null, "Bearer", 0, user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), role
         ));
     }
 }

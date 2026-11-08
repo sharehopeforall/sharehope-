@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
 
   const onSubmit = (values: LoginValues) => {
     mutate(values, {
-      onSuccess: (user) => router.replace(user.mfaSetupRequired ? "/admin/settings" : "/admin/dashboard"),
+      onSuccess: () => router.replace("/admin/dashboard"),
     });
   };
 

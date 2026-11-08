@@ -178,9 +178,6 @@ public class SecurityConfig {
                 return List.of();
             }
 
-            if (Boolean.TRUE.equals(jwt.getClaimAsBoolean("mfaSetupRequired"))) {
-                return List.of(new SimpleGrantedAuthority("ROLE_MFA_SETUP"));
-            }
             return List.of(new SimpleGrantedAuthority("ROLE_" + role));
         });
 

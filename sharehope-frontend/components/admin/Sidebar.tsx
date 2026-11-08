@@ -33,9 +33,6 @@ export function Sidebar() {
     { href: "/admin/blog", label: t("blog"), icon: Newspaper },
     { href: "/admin/settings", label: t("settings"), icon: Settings },
   ];
-  if (user?.mfaSetupRequired) {
-    return null;
-  }
   const groups = [
     { label: "Overview", links: [{ href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard }] },
     { label: "Website", links: [{ href: "/admin/website", label: "Visual Editor", icon: Globe }] },

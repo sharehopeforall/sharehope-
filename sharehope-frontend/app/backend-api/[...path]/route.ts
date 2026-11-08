@@ -52,7 +52,6 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
       lastName: string;
       email: string;
       role: "SUPER_ADMIN" | "CONTENT_EDITOR";
-      mfaSetupRequired: boolean;
     };
     const result = NextResponse.json({
       id: session.userId,
@@ -60,7 +59,6 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
       lastName: session.lastName,
       email: session.email,
       role: session.role,
-      mfaSetupRequired: session.mfaSetupRequired,
     });
     result.cookies.set(SESSION_COOKIE, session.accessToken, cookieOptions(session.expiresIn));
     return result;
@@ -73,7 +71,6 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
       lastName: string;
       email: string;
       role: "SUPER_ADMIN" | "CONTENT_EDITOR";
-      mfaSetupRequired: boolean;
     };
     return NextResponse.json({
       id: session.userId,
@@ -81,7 +78,6 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
       lastName: session.lastName,
       email: session.email,
       role: session.role,
-      mfaSetupRequired: session.mfaSetupRequired,
     });
   }
 

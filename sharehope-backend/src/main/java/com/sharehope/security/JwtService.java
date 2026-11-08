@@ -52,7 +52,6 @@ public class JwtService {
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("role", role)
-                .claim("mfaSetupRequired", "SUPER_ADMIN".equals(role) && !Boolean.TRUE.equals(user.getMfaEnabled()))
                 .claim("sessionVersion", user.getSessionVersion())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(expiresAt))

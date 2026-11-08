@@ -96,8 +96,7 @@ public class AuthService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                role.getName(),
-                "SUPER_ADMIN".equals(role.getName()) && !Boolean.TRUE.equals(user.getMfaEnabled())
+                role.getName()
         );
     }
 
