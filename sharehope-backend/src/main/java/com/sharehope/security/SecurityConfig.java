@@ -64,7 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/me",
                                 "/api/auth/logout",
-                                "/api/auth/change-password"
+                                "/api/auth/change-password",
+                                "/api/auth/change-email"
                         ).authenticated()
 
                         .requestMatchers(

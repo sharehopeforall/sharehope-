@@ -5,6 +5,7 @@ import com.sharehope.auth.dto.LoginResponse;
 import com.sharehope.auth.dto.ForgotPasswordRequest;
 import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.auth.dto.ChangePasswordRequest;
+import com.sharehope.auth.dto.ChangeEmailRequest;
 import com.sharehope.auth.service.AuthService;
 import com.sharehope.auth.service.LoginAttemptService;
 import com.sharehope.user.dto.ActivateUserRequest;
@@ -93,6 +94,13 @@ public class AuthController {
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(java.util.UUID.fromString(jwt.getSubject()), request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/change-email")
+    public ResponseEntity<Void> changeEmail(
+            @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ChangeEmailRequest request) {
+        authService.changeEmail(java.util.UUID.fromString(jwt.getSubject()), request);
         return ResponseEntity.noContent().build();
     }
 

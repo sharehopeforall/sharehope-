@@ -8,6 +8,7 @@ import com.sharehope.role.model.Role;
 import com.sharehope.security.JwtService;
 import com.sharehope.notification.NotificationService;
 import com.sharehope.auth.dto.ChangePasswordRequest;
+import com.sharehope.auth.dto.ChangeEmailRequest;
 import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.user.dto.ActivateUserRequest;
 import com.sharehope.user.model.User;
@@ -172,6 +173,27 @@ public class AuthService {
             throw new InvalidCredentialsException("Current password is incorrect.");
         }
         applyNewPassword(user, request.newPassword());
+    }
+
+    @Transactional
+    public void changeEmail(UUID userId, ChangeEmailRequest request) {
+        User user = userRepository.findById(userId)
+                .filter(candidate -> candidate.getStatus() == UserStatus.ACTIVE)
+                .orElseThrow(() -> new InvalidCredentialsException("Authenticated user not found."));
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Current password is incorrect.");
+        }
+        String email = request.email().trim().toLowerCase();
+        if (email.equalsIgnoreCase(user.getEmail())) throw new IllegalArgumentException("Enter a different email address.");
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new com.sharehope.exception.ResourceAlreadyExistsException("An administrator with this email already exists.");
+        }
+        user.setEmail(email);
+        user.setSessionVersion(user.getSessionVersion() + 1);
+        user.setPasswordResetTokenHash(null);
+        user.setPasswordResetExpiresAt(null);
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepository.save(user);
     }
 
     private void applyNewPassword(User user, String password) {
