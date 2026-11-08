@@ -91,16 +91,31 @@ async function paypalCheckout(request: Request, donation: ReturnType<typeof pars
 
   if (donation.frequency === "once") {
     const returnUrl = absoluteAppUrl(request, `/api/donations/paypal/complete?locale=${donation.locale}`);
+    const amount = donation.amount.toFixed(2);
+    const donationName = donation.event ? `Donation to ${donation.event}` : "Donation to ShareHope";
     const order = await paypalRequest("/v2/checkout/orders", {
       method: "POST",
       body: JSON.stringify({
         intent: "CAPTURE",
         purchase_units: [{
+          reference_id: "SHAREHOPE-DONATION",
           description,
           custom_id: [donation.program, donation.event].filter(Boolean).join(":"),
-          amount: { currency_code: "USD", value: donation.amount.toFixed(2) },
+          soft_descriptor: "SHAREHOPE",
+          items: [{
+            name: donationName,
+            description,
+            quantity: "1",
+            category: "DIGITAL_GOODS",
+            unit_amount: { currency_code: "USD", value: amount },
+          }],
+          amount: {
+            currency_code: "USD",
+            value: amount,
+            breakdown: { item_total: { currency_code: "USD", value: amount } },
+          },
         }],
-        payment_source: { paypal: { experience_context: { return_url: returnUrl, cancel_url: cancelUrl, user_action: "PAY_NOW", shipping_preference: "NO_SHIPPING" } } },
+        payment_source: { paypal: { experience_context: { brand_name: "ShareHope", return_url: returnUrl, cancel_url: cancelUrl, user_action: "PAY_NOW", shipping_preference: "NO_SHIPPING" } } },
       }),
     });
     return approvalUrl(order);
