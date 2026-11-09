@@ -9,6 +9,12 @@ type EditorMessage =
   | { source: "sharehope-editor"; session?: string; action: "hydrate"; patches: VisualPatchMap }
   | { source: "sharehope-editor"; session?: string; action: "apply"; patch: VisualPatch };
 
+const REMOVED_LEGACY_HOMEPAGE_TEXT = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives";
+
+function isRemovedLegacyHomepageText(value: string) {
+  return value.replace(/[.\s]+$/, "") === REMOVED_LEGACY_HOMEPAGE_TEXT;
+}
+
 function selectorFor(element: Element, root: Element): string {
   const visualKey = element.getAttribute("data-visual-key");
   if (visualKey) return `[data-visual-key="${visualKey.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"]`;
@@ -25,6 +31,7 @@ function selectorFor(element: Element, root: Element): string {
 }
 
 function applyPatch(patch: VisualPatch) {
+  if (patch.type === "text" && isRemovedLegacyHomepageText(patch.value)) return;
   let element: HTMLElement | null = null;
   try { element = document.querySelector<HTMLElement>(patch.selector); } catch { return; }
   if (!element) return;
