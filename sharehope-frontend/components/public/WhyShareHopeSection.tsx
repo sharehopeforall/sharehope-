@@ -30,6 +30,8 @@ const DEFAULT_ITEMS: WhyShareHopeItem[] = [
   { label: "Community", description: "We work alongside local communities to create lasting opportunities and stronger support systems.", buttonText: "Explore Community", buttonUrl: "/community", imageUrl: "/images/hero-placeholders/clean-water.png" },
 ];
 
+const REMOVED_LEGACY_EYEBROW = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives";
+
 export default function WhyShareHopeSection({ content = {} }: { content?: WhyShareHopeContent }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const title = content.title ?? "Because opportunity changes everything";
@@ -44,12 +46,15 @@ export default function WhyShareHopeSection({ content = {} }: { content?: WhySha
   const savedItems = content.items?.filter((item) => !/life skills|compétences de vie/i.test(item.label));
   const items = savedItems?.length ? savedItems : legacyItems?.length ? legacyItems : DEFAULT_ITEMS;
   const active = items[Math.min(activeIndex, items.length - 1)];
+  const eyebrow = content.eyebrow?.replace(/[.\s]+$/, "") === REMOVED_LEGACY_EYEBROW
+    ? "Why ShareHope?"
+    : content.eyebrow ?? "Why ShareHope?";
 
   return (
     <section id="why-sharehope" className="scroll-mt-20 border-t border-[#E5E0D8] bg-[#FAF7F2] px-6 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 space-y-3 text-center">
-          <p className="font-mono-spaced text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">{content.eyebrow ?? "Why ShareHope?"}</p>
+          <p className="font-mono-spaced text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">{eyebrow}</p>
           <h2 className="mx-auto max-w-[760px] text-balance font-serif text-3xl tracking-tight text-[#121212] sm:text-5xl">
             {titleBreak ? <>{titleBreak[1]}<br />{titleBreak[2].trim()}</> : title}
           </h2>

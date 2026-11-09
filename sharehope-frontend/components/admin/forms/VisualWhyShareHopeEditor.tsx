@@ -28,6 +28,12 @@ const DEFAULT_TEXT = {
   fr: { eyebrow: "Pourquoi ShareHope ?", title: "Parce que les opportunités changent tout" },
 };
 
+const REMOVED_LEGACY_EYEBROW = "ShareHope empowers underserved children and young adults through education, life skills development, and access to essential resources, helping them build more independent and hope-filled lives";
+
+function initialEyebrow(value: string | null | undefined, fallback: string) {
+  return value?.replace(/[.\s]+$/, "") === REMOVED_LEGACY_EYEBROW ? fallback : value ?? fallback;
+}
+
 const DEFAULT_ITEMS: LocalizedItems = {
   en: [
     { label: "Education", description: "We expand access to learning, school supplies, and educational support so every child has the chance to thrive.", buttonText: "Explore Education", buttonUrl: "/programs", imageUrl: "/images/hero-placeholders/child-learning.png" },
@@ -53,7 +59,10 @@ function storedItems(section: MergedHomepageSection, locale: EditableLocale): Wh
 export function VisualWhyShareHopeEditor({ section, onSave, isSaving, locale }: Props) {
   const t = useTranslations("HomepageEditor");
   const [enabled] = useState(section.enabled);
-  const [eyebrow, setEyebrow] = useState({ en: section.en.subtitle ?? DEFAULT_TEXT.en.eyebrow, fr: section.fr.subtitle ?? DEFAULT_TEXT.fr.eyebrow });
+  const [eyebrow, setEyebrow] = useState({
+    en: initialEyebrow(section.en.subtitle, DEFAULT_TEXT.en.eyebrow),
+    fr: initialEyebrow(section.fr.subtitle, DEFAULT_TEXT.fr.eyebrow),
+  });
   const [title, setTitle] = useState({ en: section.en.title ?? DEFAULT_TEXT.en.title, fr: section.fr.title ?? DEFAULT_TEXT.fr.title });
   const [items, setItems] = useState<LocalizedItems>({ en: storedItems(section, "en"), fr: storedItems(section, "fr") });
   const [activeIndex, setActiveIndex] = useState(0);
