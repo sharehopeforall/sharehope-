@@ -54,7 +54,7 @@ export default function WhyShareHopeSection({ content = {} }: { content?: WhySha
     <section id="why-sharehope" className="scroll-mt-20 border-t border-[#E5E0D8] bg-[#FAF7F2] px-6 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 space-y-3 text-center">
-          <p className="font-mono-spaced text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">{eyebrow}</p>
+          <p data-visual-key="why-sharehope-eyebrow" className="font-mono-spaced text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">{eyebrow}</p>
           <h2 className="mx-auto max-w-[760px] text-balance font-serif text-3xl tracking-tight text-[#121212] sm:text-5xl">
             {titleBreak ? <>{titleBreak[1]}<br />{titleBreak[2].trim()}</> : title}
           </h2>

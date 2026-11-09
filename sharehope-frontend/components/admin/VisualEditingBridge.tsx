@@ -35,6 +35,13 @@ function applyPatch(patch: VisualPatch) {
   let element: HTMLElement | null = null;
   try { element = document.querySelector<HTMLElement>(patch.selector); } catch { return; }
   if (!element) return;
+  // Once a CMS field has a permanent visual key, patches saved under an older
+  // positional or generated selector must not keep overriding that field.
+  if (
+    patch.type === "text"
+    && element.dataset.visualKey === "why-sharehope-eyebrow"
+    && patch.selector !== '[data-visual-key="why-sharehope-eyebrow"]'
+  ) return;
   if (patch.type === "text" && element.textContent !== patch.value) {
     element.textContent = patch.value;
   }
