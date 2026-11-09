@@ -14,7 +14,7 @@ const pages = [
 ] as const;
 
 type VisualSelection = { selector: string; type: VisualPatch["type"]; value: string; href?: string; tag: string };
-type PreviewMessage = { source: "sharehope-preview"; session?: string; action: "ready" | "patch" | "select" | "navigate"; patch?: VisualPatch; path?: string; selection?: VisualSelection };
+type PreviewMessage = { source: "sharehope-preview"; session?: string; action: "ready" | "patch" | "select" | "navigate" | "error"; patch?: VisualPatch; path?: string; selection?: VisualSelection; message?: string };
 const widths = { desktop: "100%", tablet: "820px", mobile: "390px" } as const;
 
 export function VisualSiteEditor() {
@@ -86,6 +86,9 @@ export function VisualSiteEditor() {
           setSelection(null);
         }
       }
+      if (event.data.action === "error") {
+        setStatus(event.data.message || "The visual editor could not complete that change");
+      }
     };
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
@@ -100,6 +103,7 @@ export function VisualSiteEditor() {
 
   const saveDraft = async () => {
     const identity = previewSession;
+    let reconciledAfterTimeout = false;
     setSaving(true);
     setStatus("Translating English and French…");
     try {
@@ -108,21 +112,43 @@ export function VisualSiteEditor() {
       try {
         result = await websiteApi.saveVisualDraft(path, locale, content, versionRef.current);
       } catch (error) {
-        if (!(error instanceof ApiError) || error.status !== 409) throw error;
+        if (error instanceof ApiError && (error.status === 502 || error.status === 504)) {
+          // The backend may have committed the authoritative draft immediately
+          // after the proxy timed out. Reconcile before telling the editor that
+          // their work was lost.
+          for (const delay of [750, 1_500, 2_500]) {
+            await new Promise((resolve) => window.setTimeout(resolve, delay));
+            const latest = await websiteApi.getVisualContent(path, locale).catch(() => null);
+            if (latest && JSON.stringify(latest.draftContent) === JSON.stringify(content)) {
+              result = latest;
+              break;
+            }
+          }
+          if (result) {
+            reconciledAfterTimeout = true;
+          } else {
+            throw error;
+          }
+        } else if (!(error instanceof ApiError) || error.status !== 409) {
+          throw error;
+        } else {
         setStatus("Merging a newer page version…");
         const latest = await websiteApi.getVisualContent(path, locale);
         const latestContent = Object.keys(latest.draftContent).length ? latest.draftContent : latest.publishedContent;
         content = { ...latestContent, ...content };
         result = await websiteApi.saveVisualDraft(path, locale, content, latest.version);
+        }
       }
       if (identityRef.current !== identity) return false;
       versionRef.current = result.version;
       patchesRef.current = result.draftContent;
       setPatches(result.draftContent);
       setSaved(result.draftContent);
-      setStatus(result.translationSucceeded === false
-        ? "Draft saved, but automatic translation failed — check Render logs"
-        : "Draft saved and translated automatically");
+      setStatus(reconciledAfterTimeout || result.translationSucceeded == null
+        ? "Draft saved; translation is finishing in the background"
+        : result.translationSucceeded === false
+          ? "Draft saved, but automatic translation failed — check Render logs"
+          : "Draft saved and translated automatically");
       return true;
     } catch (error) {
       if (identityRef.current === identity) {

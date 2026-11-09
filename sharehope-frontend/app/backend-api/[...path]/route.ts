@@ -35,7 +35,10 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (token) headers.set("authorization", `Bearer ${token}`);
 
-  const timeout = backendPath.startsWith("admin/website/visual-content") ? 30_000 : 10_000;
+  // Visual draft saves may include an external translation request. Give that
+  // operation more time than DeepL's own 30-second timeout so the proxy does
+  // not abort just before the backend commits the draft.
+  const timeout = backendPath.startsWith("admin/website/visual-content") ? 75_000 : 10_000;
   let response: Response;
   try {
     response = await fetch(target, {

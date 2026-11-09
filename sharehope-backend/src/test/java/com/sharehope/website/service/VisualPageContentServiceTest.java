@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
 
 import com.sharehope.website.model.VisualPageContent;
 import com.sharehope.website.repository.VisualPageContentRepository;
@@ -20,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 class VisualPageContentServiceTest {
     private final VisualPageContentRepository repository = mock(VisualPageContentRepository.class);
-    private final TranslationService translation = mock(TranslationService.class);
+    private final VisualPageDraftTranslationService translation = mock(VisualPageDraftTranslationService.class);
     private final VisualPageContentService service = new VisualPageContentService(repository, translation);
 
     @Test
@@ -62,7 +61,7 @@ class VisualPageContentServiceTest {
     }
 
     @Test
-    void savesSourceDraftWhenTranslationProviderFails() {
+    void savesSourceDraftBeforeStartingTranslation() {
         VisualPageContent page = VisualPageContent.builder()
                 .id(UUID.randomUUID())
                 .pagePath("/")
@@ -79,14 +78,12 @@ class VisualPageContentServiceTest {
                 "value", "A brighter future"
         );
         Map<String, Object> content = Map.of("title::text", patch);
-        doThrow(new IllegalStateException("DeepL unavailable"))
-                .when(translation).translateContent(content, "EN", "FR");
-
         VisualPageContentResponse result = service.saveDraft("/", "en", content, 0L);
 
         assertEquals(content, result.draftContent());
         assertEquals(content, page.getDraftContent());
         verify(repository).save(page);
         verify(repository).flush();
+        verify(translation).translate("/", "en", content, null);
     }
 }

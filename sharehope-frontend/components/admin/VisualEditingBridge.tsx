@@ -34,6 +34,10 @@ function applyPatch(patch: VisualPatch) {
   if (patch.type === "text" && isRemovedLegacyHomepageText(patch.value)) return;
   let element: HTMLElement | null = null;
   try { element = document.querySelector<HTMLElement>(patch.selector); } catch { return; }
+  if (!element) {
+    const legacyKey = patch.selector.match(/^\[data-visual-key=["']?(auto-[^"'\]]+)["']?\]$/)?.[1];
+    if (legacyKey) element = document.querySelector<HTMLElement>(`[data-visual-legacy-key="${legacyKey}"]`);
+  }
   if (!element) return;
   // Once a CMS field has a permanent visual key, patches saved under an older
   // positional or generated selector must not keep overriding that field.
@@ -79,10 +83,22 @@ function stableHash(value: string) {
   return (hash >>> 0).toString(36);
 }
 
+function canonicalMediaSource(value: string) {
+  if (!value) return "media";
+  try {
+    const url = new URL(value, window.location.origin);
+    // Responsive Next/Image URLs vary by viewport width. The underlying `url`
+    // parameter is the persistent media identity.
+    if (url.pathname === "/_next/image") return url.searchParams.get("url") || value;
+    return url.origin === window.location.origin ? `${url.pathname}${url.search}` : url.href;
+  } catch {
+    return value;
+  }
+}
+
 function assignStableKeys(content: HTMLElement) {
   const selector = "h1,h2,h3,h4,h5,h6,p,li,figcaption,a,span,img,video,[style*='background-image']";
   content.querySelectorAll<HTMLElement>(selector).forEach((element) => {
-    if (element.dataset.visualKey || element.id) return;
     const parts: string[] = [];
     let current: Element | null = element;
     while (current && current !== content) {
@@ -93,9 +109,33 @@ function assignStableKeys(content: HTMLElement) {
       parts.unshift(`${tag}:${Math.max(1, siblings.indexOf(current) + 1)}`);
       current = current.parentElement;
     }
-    // The key must be identical on English and French versions of the same
-    // layout. Never derive it from visible text, alt text, or image URLs.
-    element.dataset.visualKey = `auto-${stableHash(parts.join("/"))}`;
+    const legacyKey = `auto-${stableHash(parts.join("/"))}`;
+    element.dataset.visualLegacyKey = legacyKey;
+    if (element.id || (element.dataset.visualKey && !element.dataset.visualKey.startsWith("auto-"))) return;
+
+    // Media identities should survive wrapper and layout changes. Next/Image
+    // renders a stable source URL before visual patches are applied, so use it
+    // as the key seed rather than the element's full DOM position.
+    if (element instanceof HTMLImageElement || element instanceof HTMLVideoElement) {
+      const source = canonicalMediaSource(element.getAttribute("src") || element.getAttribute("poster") || "media");
+      const peers = [...content.querySelectorAll(element.tagName.toLowerCase())]
+        .filter((peer) => canonicalMediaSource(peer.getAttribute("src") || peer.getAttribute("poster") || "media") === source);
+      const occurrence = Math.max(0, peers.indexOf(element));
+      element.dataset.visualKey = `media-${stableHash(`${element.tagName}:${source}:${occurrence}`)}`;
+      return;
+    }
+
+    if (element.matches("[style*='background-image']")) {
+      const source = element.style.backgroundImage || "background";
+      const peers = [...content.querySelectorAll<HTMLElement>("[style*='background-image']")]
+        .filter((peer) => peer.style.backgroundImage === source);
+      const occurrence = Math.max(0, peers.indexOf(element));
+      element.dataset.visualKey = `media-${stableHash(`BACKGROUND:${source}:${occurrence}`)}`;
+      return;
+    }
+
+    // Text keys remain independent of translated content.
+    element.dataset.visualKey = legacyKey;
   });
 }
 
@@ -267,6 +307,7 @@ export function VisualEditingBridge() {
               const message = error instanceof Error ? error.message : "Please try again.";
               changeButton.textContent = "Upload failed";
               changeButton.title = message;
+              window.parent.postMessage({ source: "sharehope-preview", session, action: "error", message: `Picture upload failed — ${message}` }, window.location.origin);
               console.error("ShareHope image upload failed:", error);
             } finally {
               URL.revokeObjectURL(previewUrl);
