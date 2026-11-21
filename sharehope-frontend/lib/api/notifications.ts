@@ -14,7 +14,7 @@ export type AdminNotification = {
 export type NotificationFeed = {items: AdminNotification[]; unreadCount: number};
 
 export const notificationApi = {
-  list: () => apiClient.get<NotificationFeed>("/api/admin/notifications"),
-  read: (id: string) => apiClient.patch<AdminNotification>(`/api/admin/notifications/${id}/read`),
-  readAll: () => apiClient.post<void>("/api/admin/notifications/read-all"),
+  list: () => apiClient.get<NotificationFeed>("/admin/notifications"),
+  read: (id: string) => apiClient.patch<AdminNotification>(`/admin/notifications/${id}/read`),
+  readAll: () => apiClient.post<void>("/admin/notifications/read-all"),
 };
