@@ -11,6 +11,8 @@ interface ActivateResponse {
 export const authApi = {
   login: (email: string, password: string, mfaCode = "") =>
     apiClient.post<User>("/auth/login", { email, password, mfaCode }, { auth: false }),
+  googleLogin: (credential: string) =>
+    apiClient.post<User>("/auth/google", { credential }, { auth: false }),
   currentUser: () => apiClient.get<User>("/auth/me"),
   logout: () => apiClient.post<void>("/auth/logout"),
   forgotPassword: (email: string) => apiClient.post<{ message: string }>("/auth/forgot-password", { email }, { auth: false }),

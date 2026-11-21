@@ -7,6 +7,7 @@ import com.sharehope.auth.dto.ResetPasswordRequest;
 import com.sharehope.auth.dto.ChangePasswordRequest;
 import com.sharehope.auth.dto.ChangeEmailRequest;
 import com.sharehope.auth.dto.MfaCodeRequest;
+import com.sharehope.auth.dto.GoogleLoginRequest;
 import com.sharehope.auth.service.AuthService;
 import com.sharehope.auth.service.LoginAttemptService;
 import com.sharehope.user.dto.ActivateUserRequest;
@@ -36,6 +37,23 @@ public class AuthController {
         this.authService = authService;
         this.userRepository = userRepository;
         this.loginAttemptService = loginAttemptService;
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<LoginResponse> google(
+            @Valid @RequestBody GoogleLoginRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        String key = "login:google:" + httpRequest.getRemoteAddr();
+        loginAttemptService.checkAllowed(key);
+        try {
+            LoginResponse response = authService.loginWithGoogle(request.credential());
+            loginAttemptService.recordSuccess(key);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException exception) {
+            loginAttemptService.recordFailure(key);
+            throw exception;
+        }
     }
 
     @PostMapping("/activate")

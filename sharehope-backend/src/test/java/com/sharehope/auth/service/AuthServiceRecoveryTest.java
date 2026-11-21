@@ -11,23 +11,50 @@ import com.sharehope.security.JwtService;
 import com.sharehope.user.model.User;
 import com.sharehope.user.model.UserStatus;
 import com.sharehope.user.repository.UserRepository;
+import com.sharehope.role.model.Role;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 class AuthServiceRecoveryTest {
+    @Test
+    void invitedAdministratorCanActivateWithMatchingVerifiedGoogleEmail() {
+        UserRepository users = mock(UserRepository.class);
+        GoogleIdentityService google = mock(GoogleIdentityService.class);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        AuthService service = new AuthService(users, encoder,
+                new JwtService("test-only-secret-that-is-at-least-thirty-two-characters-long", 30),
+                mock(NotificationService.class), new PasswordPolicy(), mock(TotpService.class), google);
+        Role role = Role.builder().name("CONTENT_EDITOR").build();
+        User user = User.builder().id(UUID.randomUUID()).email("editor@sharehopeforall.org")
+                .firstName("ShareHope").lastName("Editor").status(UserStatus.INVITED)
+                .invitationExpiresAt(OffsetDateTime.now().plusDays(1)).sessionVersion(0)
+                .roles(Set.of(role)).createdAt(OffsetDateTime.now()).updatedAt(OffsetDateTime.now()).build();
+        when(google.verify("google-token")).thenReturn(
+                new GoogleIdentityService.GoogleIdentity("editor@sharehopeforall.org", "ShareHope", "Editor"));
+        when(users.findByEmailIgnoreCase("editor@sharehopeforall.org")).thenReturn(Optional.of(user));
+
+        var response = service.loginWithGoogle("google-token");
+
+        assertThat(response.email()).isEqualTo("editor@sharehopeforall.org");
+        assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(user.getInvitationExpiresAt()).isNull();
+        verify(users).save(user);
+    }
+
     @Test
     void resetPasswordConsumesTokenAndRevokesExistingSessions() throws Exception {
         UserRepository users = mock(UserRepository.class);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         AuthService service = new AuthService(users, encoder,
                 new JwtService("test-only-secret-that-is-at-least-thirty-two-characters-long", 30),
-                mock(NotificationService.class), new PasswordPolicy(), mock(TotpService.class));
+                mock(NotificationService.class), new PasswordPolicy(), mock(TotpService.class), mock(GoogleIdentityService.class));
         String token = "secure-one-time-reset-token";
         User user = User.builder().id(UUID.randomUUID()).email("admin@sharehope.org")
                 .status(UserStatus.ACTIVE).passwordHash(encoder.encode("Previous-password-123"))

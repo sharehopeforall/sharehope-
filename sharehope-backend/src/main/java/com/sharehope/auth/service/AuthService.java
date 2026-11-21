@@ -37,6 +37,7 @@ public class AuthService {
     private final NotificationService notifications;
     private final PasswordPolicy passwordPolicy;
     private final TotpService totp;
+    private final GoogleIdentityService googleIdentityService;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
@@ -45,7 +46,8 @@ public class AuthService {
             JwtService jwtService,
             NotificationService notifications,
             PasswordPolicy passwordPolicy,
-            TotpService totp
+            TotpService totp,
+            GoogleIdentityService googleIdentityService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,6 +56,7 @@ public class AuthService {
         this.notifications = notifications;
         this.passwordPolicy = passwordPolicy;
         this.totp = totp;
+        this.googleIdentityService = googleIdentityService;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -72,11 +75,35 @@ public class AuthService {
             );
         }
 
-        if (Boolean.TRUE.equals(user.getMfaEnabled()) && (user.getMfaSecretEncrypted() == null
-                || !totp.verify(totp.decrypt(user.getMfaSecretEncrypted()), request.mfaCode()))) {
-            throw new InvalidCredentialsException("A valid authenticator code is required.");
-        }
+        return loginResponse(user);
+    }
 
+    @Transactional
+    public LoginResponse loginWithGoogle(String credential) {
+        GoogleIdentityService.GoogleIdentity identity = googleIdentityService.verify(credential);
+        User user = userRepository.findByEmailIgnoreCase(identity.email())
+                .orElseThrow(() -> new InvalidCredentialsException("This Google account is not an authorized ShareHope administrator."));
+        if (user.getStatus() == UserStatus.INVITED) {
+            if (user.getInvitationExpiresAt() == null || user.getInvitationExpiresAt().isBefore(OffsetDateTime.now())) {
+                throw new InvalidCredentialsException("This administrator invitation has expired.");
+            }
+            OffsetDateTime now = OffsetDateTime.now();
+            user.setStatus(UserStatus.ACTIVE);
+            user.setActivatedAt(now);
+            user.setUpdatedAt(now);
+            user.setInvitationTokenHash(null);
+            user.setInvitationExpiresAt(null);
+            user.setMfaEnabled(false);
+            user.setMfaSecretEncrypted(null);
+            userRepository.save(user);
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new InvalidCredentialsException("This administrator account is not active.");
+        }
+        return loginResponse(user);
+    }
+
+    private LoginResponse loginResponse(User user) {
         Role role = user.getRoles()
                 .stream()
                 .findFirst()

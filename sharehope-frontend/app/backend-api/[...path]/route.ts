@@ -56,7 +56,7 @@ async function proxy(request: NextRequest, context: RouteContext<"/backend-api/[
     );
   }
 
-  if (backendPath === "auth/login" && response.ok) {
+  if ((backendPath === "auth/login" || backendPath === "auth/google") && response.ok) {
     const session = (await response.json()) as {
       accessToken: string;
       expiresIn: number;

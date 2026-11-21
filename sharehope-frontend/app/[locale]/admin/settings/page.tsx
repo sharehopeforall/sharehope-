@@ -1,8 +1,7 @@
-import { ArrowRight, UsersRound } from "lucide-react";
+import { ArrowRight, LogIn, UsersRound } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Link } from "@/i18n/navigation";
 import { ChangePasswordCard } from "@/components/admin/ChangePasswordCard";
-import { MfaCard } from "@/components/admin/MfaCard";
 
 export default function AdminSettingsPage() {
   return (
@@ -24,7 +23,12 @@ export default function AdminSettingsPage() {
           </div>
         </section>
         <ChangePasswordCard />
-        <MfaCard />
+        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
+          <div className="flex gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand-navy"><LogIn size={20} aria-hidden="true" /></div>
+            <div><h2 className="font-semibold text-brand-navy">Google sign-in</h2><p className="mt-1 text-sm leading-6 text-slate-600">Administrators can sign in with a verified Google account that uses the same email address as their ShareHope invitation.</p></div>
+          </div>
+        </section>
       </main>
     </>
   );

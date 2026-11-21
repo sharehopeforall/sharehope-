@@ -3,8 +3,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const scriptPolicy = process.env.NODE_ENV === "development"
-  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com"
-  : "script-src 'self' 'unsafe-inline' https://js.stripe.com";
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://accounts.google.com"
+  : "script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -18,7 +18,7 @@ const contentSecurityPolicy = [
   "media-src 'self' blob: https:",
   "font-src 'self' data:",
   "connect-src 'self' https:",
-  "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
+  "frame-src 'self' https://accounts.google.com https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
