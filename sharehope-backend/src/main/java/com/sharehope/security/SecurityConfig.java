@@ -88,6 +88,7 @@ public class SecurityConfig {
                         ).hasRole("SUPER_ADMIN")
 
                         .requestMatchers(
+                                "/api/admin/notifications/**",
                                 "/api/admin/website/**",
                                 "/api/admin/programs/**",
                                 "/api/admin/events/**",

@@ -15,6 +15,7 @@ import com.sharehope.event.model.EventRegistration;
 import com.sharehope.event.repository.EventRegistrationRepository;
 import com.sharehope.event.repository.EventRepository;
 import com.sharehope.notification.NotificationService;
+import com.sharehope.notification.AdminNotificationService;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,9 @@ class EventRegistrationServiceTest {
     private final EventRepository events = mock(EventRepository.class);
     private final EventRegistrationRepository registrations = mock(EventRegistrationRepository.class);
     private final NotificationService notifications = mock(NotificationService.class);
+    private final AdminNotificationService adminNotifications = mock(AdminNotificationService.class);
     private final EventRegistrationService service = new EventRegistrationService(
-            events, registrations, notifications);
+            events, registrations, notifications, adminNotifications);
 
     @Test
     void createsPendingRegistrationAndEmailsVerificationLink() {

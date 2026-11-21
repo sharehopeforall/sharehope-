@@ -18,13 +18,16 @@ public class DonationController {
     private final String secret;
     private final NotificationService notifications;
     private final DonationManageTokenService manageTokens;
+    private final com.sharehope.notification.AdminNotificationService adminNotifications;
 
     DonationController(DonationRepository repo, @Value("${app.payment.internal-secret:}") String secret,
-                       NotificationService notifications, DonationManageTokenService manageTokens) {
+                       NotificationService notifications, DonationManageTokenService manageTokens,
+                       com.sharehope.notification.AdminNotificationService adminNotifications) {
         this.repo = repo;
         this.secret = secret;
         this.notifications = notifications;
         this.manageTokens = manageTokens;
+        this.adminNotifications = adminNotifications;
     }
 
     @PostMapping("/api/public/payment-events")
@@ -48,7 +51,13 @@ public class DonationController {
         donation.setStatus(request.status());
         if (request.receiptUrl() != null && !request.receiptUrl().isBlank()) donation.setReceiptUrl(request.receiptUrl());
         donation = repo.save(donation);
-        if (created) notifications.sendAdminAlert("New ShareHope donation", "/en/admin/donations");
+        if (created) {
+            notifications.sendAdminAlert("New ShareHope donation", "/en/admin/donations");
+            String amount = String.format(Locale.US, "%.2f %s", donation.getAmountCents() / 100.0, donation.getCurrency());
+            adminNotifications.notifyAdmins("DONATION", "SUCCESS", "Donation received", amount + " from " +
+                    (donation.getDonorName() == null || donation.getDonorName().isBlank() ? "a donor" : donation.getDonorName()) + ".",
+                    "/admin/donations", "donation:" + donation.getProviderReference());
+        }
         if ("Succeeded".equalsIgnoreCase(donation.getStatus()) && donation.getConfirmationSentAt() == null
                 && notifications.sendDonationConfirmation(donation)) {
             donation.setConfirmationSentAt(OffsetDateTime.now());

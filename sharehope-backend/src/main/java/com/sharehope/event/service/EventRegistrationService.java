@@ -30,6 +30,7 @@ public class EventRegistrationService {
     private final EventRepository eventRepository;
     private final EventRegistrationRepository registrationRepository;
     private final NotificationService notifications;
+    private final com.sharehope.notification.AdminNotificationService adminNotifications;
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Transactional(readOnly = true)
@@ -158,6 +159,9 @@ public class EventRegistrationService {
         if ("VOLUNTEER".equals(registration.getRegistrationType())) {
             notifications.sendAdminAlert("New event volunteer registration", "/en/admin/events");
         }
+        adminNotifications.notifyAdmins("EVENT_REGISTRATION", "INFO", "New event registration",
+                registration.getFullName() + " confirmed for " + event.getSlug() + ".", "/admin/events",
+                "event-registration:" + registration.getId());
         notifications.sendEventRegistrationConfirmed(event, registration);
         return new EventRsvpResponse(registration.getId(), true, false);
     }

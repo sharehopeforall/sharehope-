@@ -1,10 +1,12 @@
 package com.sharehope.user.repository;
 
 import com.sharehope.user.model.User;
+import com.sharehope.user.model.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
@@ -15,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByInvitationTokenHash(String invitationTokenHash);
 
     Optional<User> findByPasswordResetTokenHash(String passwordResetTokenHash);
+
+    List<User> findAllByStatus(UserStatus status);
 }
