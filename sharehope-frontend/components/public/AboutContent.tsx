@@ -32,6 +32,7 @@ const copy = {
       { name: "Kwame A.", role: "Programs Lead", bio: "Turns community ideas into programs that last.", photo: "" },
       { name: "Sofia R.", role: "Community Partnerships", bio: "Builds bridges between local leaders and supporters.", photo: "" },
       { name: "Daniel T.", role: "Operations", bio: "Keeps every dollar accountable and every project on track.", photo: "" },
+      { name: "New Member", role: "Role", bio: "Short bio coming soon.", photo: "" },
     ],
     ctaTitle: "Be part of the story.",
     ctaBody: "Whether you give, volunteer, or partner with us — there's a place for you here.",
@@ -67,6 +68,7 @@ const copy = {
       { name: "Kwame A.", role: "Responsable des programmes", bio: "Transforme les idées des communautés en programmes durables.", photo: "" },
       { name: "Sofia R.", role: "Partenariats communautaires", bio: "Crée des liens entre leaders locaux et soutiens.", photo: "" },
       { name: "Daniel T.", role: "Opérations", bio: "Veille à ce que chaque dollar et chaque projet soient suivis.", photo: "" },
+      { name: "Nouveau membre", role: "Rôle", bio: "Courte biographie à venir.", photo: "" },
     ],
     ctaTitle: "Faites partie de l'histoire.",
     ctaBody: "Donner, faire du bénévolat ou devenir partenaire — il y a une place pour vous ici.",
@@ -120,7 +122,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
             <h2 className="font-serif mt-3 text-3xl font-bold text-brand-navy sm:text-4xl">{t.teamTitle}</h2>
             <p className="mx-auto mt-4 max-w-xl leading-relaxed text-slate-600">{t.teamLead}</p>
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {t.team.map((member, index) => (
               <article
                 key={member.name}
@@ -131,7 +133,7 @@ export default function AboutContent({ locale, managed }: { locale: string; mana
                     src={member.photo || "/images/team-photo-placeholder.svg"}
                     alt={member.photo ? member.name : `${member.name} photo placeholder`}
                     fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     data-visual-key={`team-photo-${index + 1}`}
                   />
