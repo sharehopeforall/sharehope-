@@ -80,6 +80,7 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/admin/team/**",
+                                "/api/admin/dashboard/**",
                                 "/api/admin/submissions/**",
                                 "/api/admin/donations/**",
                                 "/api/admin/newsletter/**",

@@ -4,6 +4,7 @@ import com.sharehope.event.model.EventRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.util.UUID;
 import java.util.List;
@@ -18,4 +19,10 @@ public interface EventRegistrationRepository extends JpaRepository<EventRegistra
     long reservedSeats(@Param("eventId") UUID eventId);
 
     List<EventRegistration> findByEventIdOrderByCreatedAtDesc(UUID eventId);
+
+    @EntityGraph(attributePaths = "event")
+    List<EventRegistration> findTop6ByOrderByCreatedAtDesc();
+
+    @Query("select count(r) from EventRegistration r where r.registrationType = 'VOLUNTEER' and r.status in ('CONFIRMED', 'CHECKED_IN') and r.event.status = 'PUBLISHED' and r.event.startAt >= :now")
+    long countUpcomingVolunteers(@Param("now") java.time.OffsetDateTime now);
 }
