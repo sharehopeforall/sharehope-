@@ -11,13 +11,6 @@ export function EventRsvpForm({ event, locale }: { event: PublicEvent; locale: s
   const successRef = useRef<HTMLDivElement>(null);
   const isFrench = locale === "fr";
 
-  const start = new Date(event.startAt);
-  const end = event.endAt ? new Date(event.endAt) : new Date(start.getTime() + 60 * 60 * 1000);
-  const compact = (date: Date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const dates = `${compact(start)}/${compact(end)}`;
-  const googleCalendar = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${dates}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location ?? "Online")}`;
-  const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ShareHope//Events//EN\r\nBEGIN:VEVENT\r\nUID:${event.slug}@sharehope.org\r\nDTSTAMP:${compact(new Date())}\r\nDTSTART:${compact(start)}\r\nDTEND:${compact(end)}\r\nSUMMARY:${event.title.replace(/,/g, "\\,")}\r\nLOCATION:${(event.location ?? "Online").replace(/,/g, "\\,")}\r\nDESCRIPTION:${event.description.replace(/\n/g, "\\n").replace(/,/g, "\\,")}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
-
   const submit = async (formEvent: React.FormEvent<HTMLFormElement>) => {
     formEvent.preventDefault();
     const formElement = formEvent.currentTarget;
