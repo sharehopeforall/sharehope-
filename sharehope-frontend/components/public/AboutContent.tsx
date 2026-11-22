@@ -28,7 +28,7 @@ const copy = {
     teamTitle: "Meet the team",
     teamLead: "A small team, powered by hundreds of volunteers and local partners.",
     team: [
-      { name: "Marie L.", role: "Founder & Director", bio: "Founded ShareHope from a childhood promise that no one should live the hardship she knew.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Marie L.", role: "Founder & Director", bio: "Founded ShareHope from a childhood promise that no one should live the hardship she knew.", photo: "" },
       { name: "Kwame A.", role: "Programs Lead", bio: "Turns community ideas into programs that last.", photo: "" },
       { name: "Sofia R.", role: "Community Partnerships", bio: "Builds bridges between local leaders and supporters.", photo: "" },
       { name: "Daniel T.", role: "Operations", bio: "Keeps every dollar accountable and every project on track.", photo: "" },
@@ -64,7 +64,7 @@ const copy = {
     teamTitle: "Rencontrez l'équipe",
     teamLead: "Une petite équipe, portée par des centaines de bénévoles et de partenaires locaux.",
     team: [
-      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A fondé ShareHope à partir d'une promesse d'enfance : que personne ne vive les difficultés qu'elle a connues.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" },
+      { name: "Marie L.", role: "Fondatrice et directrice", bio: "A fondé ShareHope à partir d'une promesse d'enfance : que personne ne vive les difficultés qu'elle a connues.", photo: "" },
       { name: "Kwame A.", role: "Responsable des programmes", bio: "Transforme les idées des communautés en programmes durables.", photo: "" },
       { name: "Sofia R.", role: "Partenariats communautaires", bio: "Crée des liens entre leaders locaux et soutiens.", photo: "" },
       { name: "Daniel T.", role: "Opérations", bio: "Veille à ce que chaque dollar et chaque projet soient suivis.", photo: "" },
