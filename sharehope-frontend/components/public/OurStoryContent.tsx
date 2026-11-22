@@ -13,21 +13,21 @@ const copy = {
         label: "Chapter One",
         title: "The promise",
         body: "Our founder was raised by her grandmother, who sometimes pawned her wraps and jewelry so they could eat. On the hardest days, there was only a glass of water. After her father passed away, she spent three years out of school. In those years she made a promise: she would do everything she could so that no one would live what she lived. That promise became ShareHope.",
-        image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Students in a classroom raising their hands",
       },
       {
         label: "Chapter Two",
         title: "Where it began",
         body: "In 2022, it started as People's Care Center. We shared school supplies and food with children in need, and placed some in apprenticeships such as sewing. Then we thought of families who cannot provide three meals a day, and began distributing food at Christmas. We visit sick children in hospital with gifts and prayer, and we help single mothers start a small trade to provide for their children. And the list continues.",
-        image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Hands joined together in a circle",
       },
       {
         label: "Chapter Three",
         title: "Where we're going",
         body: "The families we serve tell us they found hope again, because someone cares about them. Their words move us to tears, and they challenge us to do more. We have learned that there is more joy in giving than in receiving, and that we must empty our hands to receive new blessings. We cannot do this alone. The next chapter needs you.",
-        image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Children walking together on a road",
       },
     ],
@@ -48,21 +48,21 @@ const copy = {
         label: "Chapitre un",
         title: "La promesse",
         body: "Notre fondatrice a été élevée par sa grand-mère, qui mettait parfois ses pagnes et ses bijoux en gage pour qu'elles puissent manger. Les jours les plus durs, il n'y avait qu'un verre d'eau. Après le décès de son père, elle est restée trois ans sans aller à l'école. Pendant ces années, elle s'est fait une promesse : tout faire pour que personne ne vive ce qu'elle a vécu. Cette promesse est devenue ShareHope.",
-        image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Des élèves lèvent la main dans une salle de classe",
       },
       {
         label: "Chapitre deux",
         title: "Les premiers pas",
         body: "En 2022, tout a commencé sous le nom de People's Care Center. Nous avons partagé des fournitures scolaires et des vivres avec des enfants démunis, et placé certains en apprentissage, comme la couture. Puis nous avons pensé aux familles qui ne peuvent pas assurer trois repas par jour, et avons commencé à distribuer des vivres à Noël. Nous rendons visite aux enfants malades à l'hôpital avec des cadeaux et la prière, et nous aidons des mères célibataires à lancer un petit commerce pour subvenir aux besoins de leurs enfants. Et la liste continue.",
-        image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Des mains jointes formant un cercle",
       },
       {
         label: "Chapitre trois",
         title: "La suite",
         body: "Les familles que nous servons nous disent avoir retrouvé l'espoir, parce que quelqu'un se soucie d'elles. Leurs mots nous émeuvent aux larmes et nous défient de faire plus. Nous avons appris qu'il y a plus de joie à donner qu'à recevoir, et qu'il faut vider nos mains pour recevoir de nouvelles bénédictions. Nous ne pouvons pas le faire seuls. Le prochain chapitre a besoin de vous.",
-        image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
+        image: "/images/blank-placeholder.svg",
         imageAlt: "Des enfants marchent ensemble sur un chemin",
       },
     ],
@@ -93,7 +93,7 @@ export default function OurStoryContent({ locale, managed }: { locale: string; m
       {/* Full-width hero image */}
       <div className="relative mx-auto aspect-[21/9] max-w-6xl overflow-hidden rounded-2xl shadow-xl sm:mx-6 lg:mx-auto">
         <Image
-          src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1800&q=80"
+          src="/images/blank-placeholder.svg"
           alt={t.heroImageAlt}
           fill
           priority
