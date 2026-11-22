@@ -4,8 +4,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import type { PublicProgram } from "@/types/program";
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80";
+const HERO_IMAGE = "/images/blank-placeholder.svg";
 
 type CategoryId = "all" | "education" | "health" | "community";
 
@@ -24,12 +23,9 @@ interface ProgramRow {
 const ACCENT = { hex: "#13306B", text: "#FFFFFF" } as const;
 
 const IMAGES = {
-  education:
-    "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
-  health:
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
-  community:
-    "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80",
+  education: "/images/blank-placeholder.svg",
+  health: "/images/blank-placeholder.svg",
+  community: "/images/blank-placeholder.svg",
 };
 
 const content = {
